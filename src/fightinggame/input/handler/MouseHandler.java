@@ -1,0 +1,121 @@
+package fightinggame.input.handler;
+
+import fightinggame.Gameplay;
+import fightinggame.entity.Animation;
+import fightinggame.entity.CharacterState;
+import fightinggame.entity.Player;
+import fightinggame.entity.enemy.Enemy;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class MouseHandler extends Handler implements MouseListener {
+
+    private final Player player;
+    private Gameplay gameplay;
+    private boolean isClicked = false;
+    private boolean canClick = false;
+    private int mouseCounter = 0;
+
+    public MouseHandler(Player player, String name, Gameplay gameplay) {
+        super(name);
+        this.player = player;
+        this.gameplay = gameplay;
+    }
+
+    @Override
+    public void tick() {
+//        mouseCounter++;
+//        if (mouseCounter > 10) {
+//            canClick = true;
+//        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() >= 1 && !isClicked && !player.isDeath()) {
+            isClicked = true;
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (isClicked && !player.isDeath()) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+//                if (canClick) {
+                if (!player.isAttack() && !player.getPosition().isMoving()) {
+                    Animation attack = null;
+                    if(player.isLTR()) {
+                        attack = player.getAnimations().get(CharacterState.ATTACK_LTR);
+                    } else attack = player.getAnimations().get(CharacterState.ATTACK_RTL);
+                    if (!player.isAttack()) {
+                        player.getPosition().setWidth(player.getPosition().getWidth() + 120);
+                        player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
+                        player.getPosition().setHeight(player.getPosition().getHeight() + 50);
+                        player.setIsAttack(true);
+                        if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
+                            int attackX = player.getPosition().getXPosition() + player.getPosition().getWidth();
+                            int attackY = player.getPosition().getYPosition() + player.getPosition().getHeight() / 3 - 10;
+                            int attackHeight = player.getPosition().getHeight() / 2 - 10;
+                            for (int i = 0; i < gameplay.getEnemies().size(); i++) {
+                                Enemy enemy = gameplay.getEnemies().get(i);
+                                if (enemy.checkHit(attackX, attackY, attackHeight, true, player.getAttackDamage())) {
+                                    enemy.setStunTime(50);
+                                }
+                            }
+                        }
+                    }
+                    player.setCurrAnimation(attack);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(PlayerMovementHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+//                    canClick = false;
+//                    mouseCounter = 0;
+//                }
+            }
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (isClicked) {
+            if (!player.isDeath()) {
+                if (player.isAttack()) {
+                    if (player.getPosition().getWidth() > 200) {
+                        player.getPosition().setWidth(player.getPosition().getWidth() - 120);
+                        player.getPosition().setYPosition(player.getPosition().getYPosition() + 50);
+                        player.getPosition().setHeight(player.getPosition().getHeight() - 50);
+                        player.setIsAttack(false);
+                    }
+//                    if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
+//                        for (int i = 0; i < gameplay.getEnemies().size(); i++) {
+//                            Enemy enemy = gameplay.getEnemies().get(i);
+//                            if (enemy.getCurrAnimation() != null
+//                                    && enemy.getCurrAnimation() instanceof EnemyHit) {
+//                                enemy.setCurrAnimation(enemy.getAnimations().get(CharacterState.NORMAL));
+//                            }
+//                        }
+//                    }
+                }
+                if(player.isLTR()) {
+                    player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_LTR));
+                } else player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_RTL));
+            }
+            isClicked = false;
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+}

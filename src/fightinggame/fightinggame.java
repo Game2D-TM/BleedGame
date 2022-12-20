@@ -36,7 +36,7 @@ public class fightinggame {
                 game.tick();
                 game.render(g);
             } catch (Exception ex) {
-
+                System.out.println(ex.toString());
             }
             updateTime = System.nanoTime() - now;
             wait = (OPTIMAL_TIME - updateTime) / 1000000;

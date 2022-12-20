@@ -1,5 +1,6 @@
 package fightinggame.entity;
 
+import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
 import java.util.ArrayList;
 import java.util.List;

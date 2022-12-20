@@ -1,14 +1,16 @@
 package fightinggame.animation.enemy;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.CharacterState;
 import fightinggame.resource.SpriteSheet;
 
 public class EnemyAttack extends Animation{
     
-    public EnemyAttack(int id, CharacterState state, SpriteSheet sheet) {
-        super(id, state, sheet);
-        tickToExecute = 25;
+    public EnemyAttack(int id, SpriteSheet sheet, int tickToExecute) {
+        super(id, sheet, tickToExecute);
+    }
+
+    public EnemyAttack(int id, SpriteSheet sheet) {
+        super(id, sheet);
     }
     
 }
