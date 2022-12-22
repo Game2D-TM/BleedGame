@@ -65,7 +65,8 @@ public class Gameplay extends JPanel implements Runnable {
     public Gameplay(Game game, int width, int height) {
         background = new Background(0, "Scene 1",
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, "data/scene_1.txt");
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
+                "data/scene_1.txt");
         playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
