@@ -63,18 +63,19 @@ public class Gameplay extends JPanel implements Runnable {
     private final List<Item> itemsOnGround = new ArrayList<Item>();
 
     public Gameplay(Game game, int width, int height) {
-        background = new Background(0, "Street",
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Street"), width, height);
+        background = new Background(0, "Scene 1",
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, "data/scene_1.txt");
         playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
         int xPosition = playPosition.getXPosition();
         enemySpawnXPosition = xPosition + 1700;
         playerInit(xPosition + 10); // playPosition.getYPosition() - 50
-        diorInit(enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520);
-        diorInit(enemySpawnXPosition, playPosition.getYPosition() + 50);
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520);
+//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + 50);
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -299,18 +300,20 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet healthPotionSheet = new SpriteSheet();
         healthPotionSheet.add("assets/res/item/s_potion.png");
         HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
-        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character
-                , new GamePosition(0, 0, 50, 50), this, 1);
+        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character,
+                 new GamePosition(0, 0, 50, 50), this, 1);
         abilitiesItemInit(healthPotion.getAbilities(), character);
         List<Item> items = new ArrayList<Item>();
         items.add(healthPotion);
         inventory.add(items);
         itemCount++;
     }
+
     public void abilitiesItemInit(List<Ability> abilities, Character character) {
         Ability potionHeal = new PotionHeal(5, 0, "S Potion", 500, null, null, this, character);
         abilities.add(potionHeal);
     }
+
     public void abilitiesCharacterInit(List<Ability> abilities, Character character) {
         List<BufferedImage> fireBallsLTR = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/LTR", 200, 365, 580, 200);
         List<BufferedImage> fireBallsRTL = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL", 30, 365, 580, 200);
@@ -413,10 +416,12 @@ public class Gameplay extends JPanel implements Runnable {
                 }
             }
         }
-        if(itemsOnGround.size() > 0) {
-            for(int i = 0 ; i < itemsOnGround.size(); i++) {
+        if (itemsOnGround.size() > 0) {
+            for (int i = 0; i < itemsOnGround.size(); i++) {
                 Item item = itemsOnGround.get(i);
-                if(item != null) item.tick();
+                if (item != null) {
+                    item.tick();
+                }
             }
         }
         if (player != null) {
@@ -426,13 +431,13 @@ public class Gameplay extends JPanel implements Runnable {
 
     public void render(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2  = (Graphics2D)g;
+        Graphics2D g2 = (Graphics2D) g;
         if (background != null) {
             background.render(g2);
             // rectangle
-        g.setColor(Color.red);
-        g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
-                playPosition.getWidth(), playPosition.getHeight());
+            g.setColor(Color.red);
+            g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
+                    playPosition.getWidth(), playPosition.getHeight());
         }
         if (enemies != null) {
             if (enemies.size() > 0) {
@@ -442,10 +447,12 @@ public class Gameplay extends JPanel implements Runnable {
                 }
             }
         }
-        if(itemsOnGround.size() > 0) {
-            for(int i = 0 ; i < itemsOnGround.size(); i++) {
+        if (itemsOnGround.size() > 0) {
+            for (int i = 0; i < itemsOnGround.size(); i++) {
                 Item item = itemsOnGround.get(i);
-                if(item != null) item.render(g2);
+                if (item != null) {
+                    item.render(g2);
+                }
             }
         }
         if (player != null) {
@@ -512,7 +519,7 @@ public class Gameplay extends JPanel implements Runnable {
     public List<Item> getItemsOnGround() {
         return itemsOnGround;
     }
-    
+
     @Override
     public void run() {
         Graphics g = getGraphics();
