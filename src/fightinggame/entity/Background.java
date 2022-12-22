@@ -54,7 +54,6 @@ public class Background {
             for (int i = 0; i < scene.size(); i++) {
                 List<BufferedImage> images = scene.get(i);
                 if (images != null && images.size() > 0) {
-                    System.out.println(images.size());
                     int tempX = x;
                     for (int j = 0; j < images.size(); j++) {
                         BufferedImage image = images.get(j);
