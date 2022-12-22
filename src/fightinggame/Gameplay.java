@@ -169,12 +169,18 @@ public class Gameplay extends JPanel implements Runnable {
     public void playerInit(int xPosition) {
         GamePosition defPlayerPosition = new GamePosition(xPosition,
                 playPosition.getYPosition() - 50, 200, 290);
-        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Idle.png"),
-                0, 0, 200, 200,
-                75, 70, 38, 53, 8);
-        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
-                0, 0, 200, 200,
-                75, 75, 43, 48, 8);
+//        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Idle.png"),
+//                0, 0, 200, 200,
+//                75, 70, 38, 53, 8);
+        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Idle.png"),
+                0, 0, 64, 80,
+                21, 8, 36, 60, 4);
+//        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
+//                0, 0, 200, 200,
+//                75, 75, 43, 48, 8);
+        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
+                0, 0, 80, 80,
+                10, 8, 40, 60, 8);
         SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
                 800, 0, 200, 200,
                 75, 53, 115, 70, 2);
@@ -372,7 +378,8 @@ public class Gameplay extends JPanel implements Runnable {
         }
         if(itemsOnGround.size() > 0) {
             for(int i = 0 ; i < itemsOnGround.size(); i++) {
-                itemsOnGround.get(i).tick();
+                Item item = itemsOnGround.get(i);
+                if(item != null) item.tick();
             }
         }
         if (player != null) {
@@ -400,7 +407,8 @@ public class Gameplay extends JPanel implements Runnable {
         }
         if(itemsOnGround.size() > 0) {
             for(int i = 0 ; i < itemsOnGround.size(); i++) {
-                itemsOnGround.get(i).render(g2);
+                Item item = itemsOnGround.get(i);
+                if(item != null) item.render(g2);
             }
         }
         if (player != null) {

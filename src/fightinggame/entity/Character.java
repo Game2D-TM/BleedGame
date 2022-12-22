@@ -33,8 +33,7 @@ public abstract class Character {
     protected int receiveDamage = 0;
     protected int receiveDamageRenderTick = 0;
 
-    public Character(int id, String name, int health, GamePosition position, Map<CharacterState, 
-            Animation> animations, Map<String, BufferedImage> characterAssets,
+    public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
             boolean isLTR) {
         this.id = id;
         this.name = name;
@@ -68,11 +67,16 @@ public abstract class Character {
                 ablity.tick();
             }
         }
-        if(inventory.size() > 0) {
-            for(int i = 0 ; i < inventory.size(); i++) {
-                for(int j = 0 ; j < inventory.get(i).size(); j++) {
-                    inventory.get(i).get(j).tick();
-                } 
+        if (inventory.size() > 0) {
+            for (int i = 0; i < inventory.size(); i++) {
+                if (inventory.get(i) != null && inventory.get(i).size() > 0) {
+                    for (int j = 0; j < inventory.get(i).size(); j++) {
+                        Item item = inventory.get(i).get(j);
+                        if (item != null) {
+                            item.tick();
+                        }
+                    }
+                }
             }
         }
     }
@@ -100,11 +104,16 @@ public abstract class Character {
                 abilities.get(i).render(g);
             }
         }
-        if(inventory.size() > 0) {
-            for(int i = 0 ; i < inventory.size(); i++) {
-                for(int j = 0 ; j < inventory.get(i).size(); j++) {
-                    inventory.get(i).get(j).render(g);
-                } 
+        if (inventory.size() > 0) {
+            for (int i = 0; i < inventory.size(); i++) {
+                if (inventory.get(i) != null && inventory.get(i).size() > 0) {
+                    for (int j = 0; j < inventory.get(i).size(); j++) {
+                        Item item = inventory.get(i).get(j);
+                        if (item != null) {
+                            item.render(g);
+                        }
+                    }
+                }
             }
         }
     }
@@ -154,6 +163,7 @@ public abstract class Character {
     public List<List<Item>> getInventory() {
         return inventory;
     }
+
     public List<Handler> getController() {
         return controller;
     }
@@ -246,6 +256,4 @@ public abstract class Character {
         this.isLTR = isLTR;
     }
 
-    
-    
 }

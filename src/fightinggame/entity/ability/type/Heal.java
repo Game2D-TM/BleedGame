@@ -21,7 +21,7 @@ public abstract class Heal extends Ability {
 
     public Heal(int healPoint, int id, String name, long resetTime, SpriteSheet skillIcon,
             GamePosition position, Animation animationLTR, Animation animationRTL,
-             BufferedImage border, Gameplay gameplay, Character character) {
+            BufferedImage border, Gameplay gameplay, Character character) {
         super(id, name, resetTime, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
         this.healPoint = healPoint;
     }
@@ -42,16 +42,20 @@ public abstract class Heal extends Ability {
             if (afterHeal > maxHealth) {
                 afterHeal = maxHealth;
             }
-            character.getHealthBar().setHealth(afterHeal);
-            gameplay.getAudioPlayer().startThread("heal_sound", false, 0.8f);
-            canUse = false;
-            return true;
+            if (afterHeal > health) {
+                character.getHealthBar().setHealth(afterHeal);
+                gameplay.getAudioPlayer().startThread("heal_sound", false, 0.8f);
+                canUse = false;
+                return true;
+            }
         }
         return false;
     }
 
     public boolean healing() {
-        if(character == null) return false;
+        if (character == null) {
+            return false;
+        }
         return healing(character);
     }
 

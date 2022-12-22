@@ -11,7 +11,7 @@ import java.util.List;
 public class HealthPotion extends Item {
 
     public HealthPotion(int id, String name, Animation animation, Character character, GamePosition position,
-            Gameplay gameplay,int amount) {
+            Gameplay gameplay, int amount) {
         super(id, name, animation, character, position, gameplay, amount);
     }
 
@@ -23,16 +23,30 @@ public class HealthPotion extends Item {
         }
         boolean result = heal.healing();
         if (result) {
-            amount -= 1;
-            if(amount == 0) {
-                List<List<Item>> items = character.getInventory();
-                if(items != null && items.size() > 0) {
-                    for(int i = 0 ; i < items.size(); i++) {
-                        List<Item> list = items.get(i);
-                        if(list.contains(this)) {
-                            list.remove(this);
+            if (amount > 0) {
+                int nAmount = amount - 1;
+                System.out.println("Used 1" + name
+                        + " " + nAmount + " Left"
+                        + " Wait for " + abilities.get(0).getCoolDownTime());
+                if (nAmount == 0) {
+                    boolean isRemove = false;
+                    List<List<Item>> items = character.getInventory();
+                    if (items != null && items.size() > 0) {
+                        for (int i = 0; i < items.size(); i++) {
+                            List<Item> list = items.get(i);
+                            if (list != null && list.size() > 0) {
+                                if (list.contains(this)) {
+                                    list.remove(this);
+                                    isRemove = true;
+                                    System.out.println(isRemove);
+                                    break;
+                                }
+                            }
+                            if(isRemove) break;
                         }
                     }
+                } else {
+                    amount = nAmount;
                 }
             }
         }

@@ -59,6 +59,8 @@ public abstract class Item {
                 gameplay.getItemsOnGround().remove(this);
                 spawnDrop = false;
                 dropExpireCounter = 0;
+            } else {
+                checkHit(gameplay.getPlayer());
             }
         }
     }
@@ -72,6 +74,56 @@ public abstract class Item {
             for (int i = 0; i < abilities.size(); i++) {
                 Ability ability = abilities.get(i);
                 ability.render(g);
+            }
+        }
+    }
+    
+    public void checkHit(Character character) {
+        if(spawnDrop && dropExpireCounter <= 1500 && !character.isAttack()) {
+            GamePosition charPostion = character.getPosition();
+            if(((charPostion.getXPosition() < position.getXPosition() && charPostion.getMaxX() > position.getMaxX())
+                    ||(charPostion.getXPosition() > position.getXPosition() && charPostion.getMaxX() < position.getMaxX())
+                    || (charPostion.getXPosition() >= position.getXPosition() && charPostion.getXPosition() <= position.getMaxX()
+                    && charPostion.getMaxX() > position.getMaxX())
+                    || (charPostion.getMaxX() >= position.getXPosition() && charPostion.getMaxX() <= position.getMaxX()
+                    && charPostion.getXPosition() < position.getXPosition()))
+                    && ((charPostion.getYPosition() <= position.getYPosition() && charPostion.getMaxY() >= position.getMaxY()
+                    || (charPostion.getYPosition() >= position.getYPosition() && charPostion.getMaxY() <= position.getMaxY())
+                    || (charPostion.getYPosition() > position.getYPosition() && charPostion.getYPosition() <= position.getMaxY()
+                    && charPostion.getMaxY() > position.getMaxY())
+                    || (charPostion.getMaxY() > position.getYPosition() && charPostion.getMaxY() <= position.getMaxY()
+                    && charPostion.getYPosition() < position.getYPosition())))) {
+                List<Item> itemsOnGround = gameplay.getItemsOnGround();
+                if(itemsOnGround.size() > 0) {
+                    if(itemsOnGround.contains(this)) {
+                        this.character = character;
+                        if(abilities.size() > 0) {
+                            for(int i = 0 ; i < abilities.size(); i++) {
+                                Ability ability = abilities.get(i);
+                                if(ability != null) {
+                                    ability.setCharacter(character);
+                                }
+                            }
+                        }
+                        gameplay.getAudioPlayer().startThread("health_pickup", false, 0.8f);
+                        itemsOnGround.remove(this);
+                        List<List<Item>> inventory = character.getInventory();
+                        if(inventory.size() > 0) {
+                            for(int i = 0 ; i < inventory.size(); i++) {
+                                List<Item> items = inventory.get(i);
+                                if(items == null) {
+                                    items = new ArrayList();
+                                    items.add(this);
+                                    inventory.add(i, items);
+                                }
+                                items.add(this);
+                                spawnDrop = false;
+                                dropExpireCounter = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Map;
@@ -83,9 +84,9 @@ public class Player extends Character {
         g.drawString("Score: " + point, getPlayerScorePos().getXPosition(),
                 getPlayerScorePos().getYPosition());
         // hitbox
-//        g.setColor(Color.red);
-//        g.drawRect(getXHitBox(), getYHitBox(),
-//                position.getWidth(), position.getHeight() / 2 - 10);
+        g.setColor(Color.red);
+        g.drawRect(getXHitBox(), getYHitBox(),
+                position.getWidth(), position.getHeight() / 2 - 10);
         //attackhitbox
 //        int attackX;
 //        if(isLTR) {

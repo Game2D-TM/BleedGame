@@ -8,6 +8,7 @@ import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 
 public class PlayerAbilityHandler extends Handler implements KeyListener {
 
@@ -29,10 +30,12 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
         if (!player.isDeath()) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_1:
-                    player.getAbility(0).execute();
+                    if (!player.isDeath()) {
+                        player.getAbility(0).execute();
+                    }
                     break;
                 case KeyEvent.VK_2:
-                    if (!player.getPosition().isMoving()) {
+                    if (!player.getPosition().isMoving() && !player.isDeath()) {
                         int spawnX;
                         if (player.isLTR()) {
                             spawnX = player.getPosition().getMaxX() + 15;
@@ -53,11 +56,33 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_3:
-                    Item item = player.getInventory().get(0).get(0);
-                    System.out.println(item.getName());
-                    if(item.use()) {
-                        System.out.println("Used 1" + item.getName());
-                    } else System.out.println("Wait for " + item.getAbilities().get(0).getCoolDownTime());
+                    if (!player.isDeath()) {
+                        List<List<Item>> inventory = player.getInventory();
+                        Item firstItem = null;
+                        if (inventory != null && inventory.size() > 0) {
+                            for (int i = 0; i < inventory.size(); i++) {
+                                if (inventory.get(i) != null && inventory.get(i).size() > 0) {
+                                    for (int j = 0; j < inventory.get(i).size(); j++) {
+                                        firstItem = inventory.get(i).get(j);
+                                        if (firstItem != null) {
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (firstItem != null) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (firstItem == null) {
+                            break;
+                        }
+                        if (firstItem.use()) {
+                            
+                        } else {
+                            System.out.println("Is Cooldown.");
+                        }
+                    }
                     break;
             }
         }
