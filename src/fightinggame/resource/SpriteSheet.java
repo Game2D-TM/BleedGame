@@ -20,13 +20,15 @@ public class SpriteSheet {
     }
 
     public SpriteSheet(BufferedImage sprite, int cutX, int cutY, int cutWidth, int cutHeight,
-             int x, int y, int width, int height, int imageNum) {
+            int x, int y, int width, int height, int imageNum) {
         this.sprite = sprite;
         getImages(cutX, cutY, cutWidth, cutHeight, x, y, width, height, imageNum);
     }
 
     public void tick(int tickToExecute) {
-        if(tickToExecute < 0) return;
+        if (tickToExecute < 0) {
+            return;
+        }
         spriteCounter++;
         if (spriteCounter > tickToExecute) {
             if (spriteIndex < images.size() - 1) {
@@ -40,10 +42,11 @@ public class SpriteSheet {
 
     public void render(Graphics g, int x, int y, int width, int height) {
         Image image = images.get(spriteIndex);
-        if(image != null) {
+        if (image != null) {
             g.drawImage(image, x, y, width, height, null);
             g.setColor(Color.red);
-            g.drawRect(x, y, width, height);
+            //rectangle
+//            g.drawRect(x, y, width, height);
         }
     }
 
@@ -58,11 +61,24 @@ public class SpriteSheet {
         }
         return images;
     }
-    
+
     public void reverseImages() {
         Collections.reverse(images);
     }
-    
+
+    public boolean add(String filePath) {
+        try {
+            if (images == null) {
+                images = new ArrayList<>();
+            }
+            images.add(ImageManager.loadImage(filePath));
+            return true;
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+        return false;
+    }
+
     public List<BufferedImage> getImages() {
         return images;
     }

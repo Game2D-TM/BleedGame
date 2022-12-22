@@ -7,12 +7,14 @@ import fightinggame.animation.enemy.EnemyHit;
 import fightinggame.animation.enemy.EnemyIdle;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
+import fightinggame.animation.item.HealthPotionAnimation;
 import fightinggame.animation.player.PlayerAttack;
 import fightinggame.animation.player.PlayerDeath;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.animation.player.PlayerIdle;
 import fightinggame.animation.player.PlayerRun;
 import fightinggame.entity.Animation;
+import fightinggame.entity.Background;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
@@ -36,29 +38,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
+import fightinggame.entity.ability.type.healing.PotionHeal;
+import fightinggame.entity.item.Item;
+import fightinggame.entity.item.healing.HealthPotion;
+import fightinggame.resource.AudioPlayer;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import javax.swing.JPanel;
 
-public class Gameplay {
+public class Gameplay extends JPanel implements Runnable {
 
     private GamePosition playPosition;
+    private Background background;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
     private final Map<String, GamePosition> positions = new HashMap<String, GamePosition>();
     private Game game;
+    private int itemCount = 0;
     private int enemyCount = 0;
     private int enemyAnimationCount = 0;
     private int enemySpawnXPosition;
-    private Thread thread;
+    private Thread spawnEnemiesThread;
+    private AudioPlayer audioPlayer;
+    private final List<Item> itemsOnGround = new ArrayList<Item>();
 
-    public Gameplay(Game game) {
-        playPosition = new GamePosition(10, game.getHeight() / 2 + 130, game.getWidth() - 20, game.getHeight() / 3 + 20);
+    public Gameplay(Game game, int width, int height) {
+        background = new Background(0, "Street",
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Street"), width, height);
+        playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
+        audioPlayer = new AudioPlayer("assets/res/sound");
         int xPosition = playPosition.getXPosition();
         enemySpawnXPosition = xPosition + 1700;
         playerInit(xPosition + 10); // playPosition.getYPosition() - 50
         diorInit(enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520);
         diorInit(enemySpawnXPosition, playPosition.getYPosition() + 50);
-        thread = new Thread(spawnEnemies());
-        thread.start();
+        spawnEnemiesThread = new Thread(spawnEnemies());
+        spawnEnemiesThread.start();
+        audioPlayer.startThread("background_music", true, 0.75f);
     }
 
     public void diorInit(int xPosition, int yPosition) {
@@ -139,11 +156,11 @@ public class Gameplay {
         enemyAnimations.put(CharacterState.RUNBACK, runBack);
         enemyAnimations.put(CharacterState.ATTACK_RTL, attack);
         enemyAnimations.put(CharacterState.ATTACK_LTR, attack);
-        Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount, 500, defEnemyPosition,
-                enemyAnimations, null, null, this, 200);
-        if(diorColor == DiorColor.Red) {
-            abilitiesInit(enemy.getAbilities(), enemy);
-        }
+        Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
+                500, defEnemyPosition,
+                enemyAnimations, null, this, 200);
+        abilitiesCharacterInit(enemy.getAbilities(), enemy);
+        itemInit(enemy.getInventory(), enemy);
         enemyCount++;
         enemies.add(enemy);
         positions.put(enemy.getName(), enemy.getPosition());
@@ -170,7 +187,7 @@ public class Gameplay {
         SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Death.png"),
                 0, 0, 200, 200,
                 75, 70, 46, 55, 6);
-        
+
         SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Idle.png"),
                 0, 0, 200, 200,
                 87, 70, 38, 53, 8);
@@ -219,8 +236,9 @@ public class Gameplay {
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
-                playerAnimations, null, null);
-        abilitiesInit(player.getAbilities(), player);
+                playerAnimations, null);
+        abilitiesCharacterInit(player.getAbilities(), player);
+        itemInit(player.getInventory(), player);
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
         player.getAbility(0).getHandlers().add(abilityHandler);
         player.getAbility(1).getHandlers().add(abilityHandler);
@@ -234,8 +252,25 @@ public class Gameplay {
         positions.put(player.getName(), player.getPosition());
     }
 
-    public void abilitiesInit(List<Ability> abilities, Character character) {
-        
+    public void itemInit(List<List<Item>> inventory, Character character) {
+        SpriteSheet healthPotionSheet = new SpriteSheet();
+        healthPotionSheet.add("assets/res/item/s_potion.png");
+        HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
+        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character
+                , new GamePosition(0, 0, 50, 50), this, 1);
+        abilitiesItemInit(healthPotion.getAbilities(), character);
+        List<Item> items = new ArrayList<Item>();
+        items.add(healthPotion);
+        inventory.add(items);
+        itemCount++;
+    }
+    public void abilitiesItemInit(List<Ability> abilities, Character character) {
+        Ability potionHeal = new PotionHeal(5, 0, "S Potion", 500, null, null, this, character);
+        abilities.add(potionHeal);
+    }
+    public void abilitiesCharacterInit(List<Ability> abilities, Character character) {
+        List<BufferedImage> fireBallsLTR = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/LTR", 200, 365, 580, 200);
+        List<BufferedImage> fireBallsRTL = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL", 30, 365, 580, 200);
         if (character instanceof Player) {
             BufferedImage redBorder = ImageManager.loadImage("assets/res/ability/border-red.png");
             SpriteSheet greaterHealSheet = new SpriteSheet();
@@ -243,29 +278,39 @@ public class Gameplay {
             GamePosition firstSkillPosition = new GamePosition(character.getHealthBar().getHealthBarPos().getXPosition(),
                     character.getHealthBar().getHealthBarPos().getMaxY() + 90, 80, 80);
             Ability greaterHeal = new GreaterHeal(20, 1, 2500, greaterHealSheet,
-                    firstSkillPosition, null, redBorder, this, character);
+                    firstSkillPosition, null, null, redBorder, this, character);
             abilities.add(greaterHeal);
             SpriteSheet fireballIcon = new SpriteSheet();
             fireballIcon.getImages().add(ImageManager.loadImage("assets/res/ability/Fire-Ball.png"));
-            SpriteSheet fireBallAniSheet = new SpriteSheet();
-            List<BufferedImage> fireBalls = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/LTR", 200, 365, 580, 200);
-            if(fireBalls == null) return;
-            fireBallAniSheet.setImages(fireBalls);
-            Animation fireBallAnimation = new FireBallAnimation(0, fireBallAniSheet, 0);
+            SpriteSheet sheetLTR = new SpriteSheet();
+            SpriteSheet sheetRTL = new SpriteSheet();
+            if (fireBallsLTR == null || fireBallsRTL == null) {
+                return;
+            }
+            sheetLTR.setImages(fireBallsLTR);
+            sheetRTL.setImages(fireBallsRTL);
+            Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
+            Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
             Fireball fireball = new Fireball(150, 30, 2, 5000, fireballIcon,
                     new GamePosition(firstSkillPosition.getMaxX() + 15,
                             firstSkillPosition.getYPosition(), firstSkillPosition.getWidth(), firstSkillPosition.getHeight()),
-                    fireBallAnimation, redBorder, this, character);
+                    fireBallAnimationLTR, fireBallAnimationRTL, redBorder, this, character);
             abilities.add(fireball);
         } else {
-            SpriteSheet fireBallAniSheet = new SpriteSheet();
-            List<BufferedImage> fireBalls = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL", 30, 365, 580, 200);
-            if(fireBalls == null) return;
-            fireBallAniSheet.setImages(fireBalls);
-            Animation fireBallAnimation = new FireBallAnimation(0, fireBallAniSheet, 0);
-            Fireball fireball = new Fireball(20, 15, 2, 2000, null, null,
-                    fireBallAnimation, this, character);
-            abilities.add(fireball);
+            if (((DiorEnemy) character).getColor() == DiorColor.Red) {
+                SpriteSheet sheetLTR = new SpriteSheet();
+                SpriteSheet sheetRTL = new SpriteSheet();
+                if (fireBallsLTR == null || fireBallsRTL == null) {
+                    return;
+                }
+                sheetLTR.setImages(fireBallsLTR);
+                sheetRTL.setImages(fireBallsRTL);
+                Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
+                Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
+                Fireball fireball = new Fireball(20, 15, 2, 2000, null, null,
+                        fireBallAnimationLTR, fireBallAnimationRTL, this, character);
+                abilities.add(fireball);
+            }
         }
     }
 
@@ -325,22 +370,41 @@ public class Gameplay {
                 }
             }
         }
+        if(itemsOnGround.size() > 0) {
+            for(int i = 0 ; i < itemsOnGround.size(); i++) {
+                itemsOnGround.get(i).tick();
+            }
+        }
         if (player != null) {
             player.tick();
         }
     }
 
     public void render(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2  = (Graphics2D)g;
+        if (background != null) {
+            background.render(g2);
+            // rectangle
+        g.setColor(Color.red);
+        g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
+                playPosition.getWidth(), playPosition.getHeight());
+        }
         if (enemies != null) {
             if (enemies.size() > 0) {
                 for (int i = 0; i < enemies.size(); i++) {
                     Enemy enemy = enemies.get(i);
-                    enemy.render(g);
+                    enemy.render(g2);
                 }
             }
         }
+        if(itemsOnGround.size() > 0) {
+            for(int i = 0 ; i < itemsOnGround.size(); i++) {
+                itemsOnGround.get(i).render(g2);
+            }
+        }
         if (player != null) {
-            player.render(g);
+            player.render(g2);
         }
     }
 
@@ -385,11 +449,62 @@ public class Gameplay {
     }
 
     public Thread getThread() {
-        return thread;
+        return spawnEnemiesThread;
     }
 
     public void setThread(Thread thread) {
-        this.thread = thread;
+        this.spawnEnemiesThread = thread;
+    }
+
+    public AudioPlayer getAudioPlayer() {
+        return audioPlayer;
+    }
+
+    public void setAudioPlayer(AudioPlayer audioPlayer) {
+        this.audioPlayer = audioPlayer;
+    }
+
+    public List<Item> getItemsOnGround() {
+        return itemsOnGround;
+    }
+    
+    @Override
+    public void run() {
+        Graphics g = getGraphics();
+        long now;
+        long updateTime;
+        long wait;
+
+        long lastFpsCheck = 0;
+        int currentFps = 0;
+        int totalFrames = 0;
+
+        final int TARGET_FPS = Game.FPS;
+        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+        while (game.isRunning()) {
+            now = System.nanoTime();
+            totalFrames++;
+            if (System.nanoTime() > lastFpsCheck + 1000000000) {
+                lastFpsCheck = System.nanoTime();
+                currentFps = totalFrames;
+                totalFrames = 0;
+//                System.out.println("Current Fps: " + currentFps);
+            }
+            revalidate();
+            try {
+                tick();
+                render(g);
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
+            }
+            updateTime = System.nanoTime() - now;
+            wait = (OPTIMAL_TIME - updateTime) / 1000000;
+            try {
+                Thread.sleep(wait);
+            } catch (Exception e) {
+//                System.out.println(e.toString());
+            }
+        }
     }
 
 }

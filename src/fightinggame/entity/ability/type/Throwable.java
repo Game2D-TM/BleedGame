@@ -18,16 +18,17 @@ public abstract class Throwable extends Ability {
     protected int throwCounter = 0;
     
     public Throwable(int attackDamage, int speed, int id, String name, long resetTime, 
-            SpriteSheet skillIcon, GamePosition position, Animation animation, Gameplay gameplay, Character character) {
-        super(id, name, resetTime, skillIcon, position, animation, gameplay, character);
+            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
+            , Gameplay gameplay, Character character) {
+        super(id, name, resetTime, skillIcon, position, animationLTR, animationRTL, gameplay, character);
         this.attackDamage = attackDamage;
         this.speed = speed;
     }
 
     public Throwable(int attackDamage, int speed, int id, String name, long resetTime, 
-            SpriteSheet skillIcon, GamePosition position, Animation animation, BufferedImage border, 
-            Gameplay gameplay, Character character) {
-        super(id, name, resetTime, skillIcon, position, animation, border, gameplay, character);
+            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
+            , BufferedImage border, Gameplay gameplay, Character character) {
+        super(id, name, resetTime, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
         this.attackDamage = attackDamage;
         this.speed = speed;
     }

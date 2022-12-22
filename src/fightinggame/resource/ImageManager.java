@@ -12,78 +12,124 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class ImageManager {
+
     public static BufferedImage loadImage(String fileName) {
         try {
-            if(!fileName.contains(".png") && !fileName.contains(".jpg")) return null;
+            if (!fileName.contains(".png") && !fileName.contains(".jpg")) {
+                return null;
+            }
             return ImageIO.read(new File(fileName));
         } catch (IOException ex) {
             Logger.getLogger(ImageManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
+
     public static BufferedImage loadImage(File file) {
         try {
-            if(!file.getName().contains(".png") && !file.getName().contains(".jpg")) return null;
+            if (!file.getName().contains(".png") && !file.getName().contains(".jpg")) {
+                return null;
+            }
             return ImageIO.read(file);
         } catch (IOException ex) {
             Logger.getLogger(ImageManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-    
+
     public static Map<String, BufferedImage> loadImagesFromFolderToMap(String folderName) {
-        File file = new File(folderName);
-        if(file.exists()) {
-            Map<String, BufferedImage> images = new HashMap<>();
-            File[] imageFiles = file.listFiles();
-            if(imageFiles != null && imageFiles.length > 0) {
-                for(File imageFile : imageFiles) {
-                    String fileName = imageFile.getName();
-                    if(fileName.contains(".png")) fileName = fileName.replace(".png", "");
-                    if(fileName.contains(".jpg")) fileName = fileName.replace(".jpg", "");
-                    BufferedImage image = loadImage(imageFile);
-                    if(image != null) images.put(fileName, image);
+        try {
+            File file = new File(folderName);
+            if (file.exists()) {
+                Map<String, BufferedImage> images = new HashMap<>();
+                File[] imageFiles = file.listFiles();
+                if (imageFiles != null && imageFiles.length > 0) {
+                    for (File imageFile : imageFiles) {
+                        if (imageFile == null) {
+                            continue;
+                        }
+                        String fileName = imageFile.getName();
+                        if (fileName.contains(".png")) {
+                            fileName = fileName.replace(".png", "");
+                        }
+                        if (fileName.contains(".jpg")) {
+                            fileName = fileName.replace(".jpg", "");
+                        }
+                        BufferedImage image = loadImage(imageFile);
+                        if (image != null) {
+                            images.put(fileName, image);
+                        }
+                    }
                 }
+                return images;
             }
-            return images;
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
         }
         return null;
     }
-    
+
     public static List<BufferedImage> loadImagesFromFolderToList(String folderName) {
-        File file = new File(folderName);
-        if(file.exists()) {
-            List<BufferedImage> images = new ArrayList<>();
-            File[] imageFiles = file.listFiles();
-            if(imageFiles != null && imageFiles.length > 0) {
-                for(File imageFile : imageFiles) {
-                    String fileName = imageFile.getName();
-                    if(fileName.contains(".png")) fileName = fileName.replace(".png", "");
-                    if(fileName.contains(".jpg")) fileName = fileName.replace(".jpg", "");
-                    BufferedImage image = loadImage(imageFile);
-                    if(image != null) images.add(image);
+        try {
+            File file = new File(folderName);
+            if (file.exists()) {
+                List<BufferedImage> images = new ArrayList<>();
+                File[] imageFiles = file.listFiles();
+                if (imageFiles != null && imageFiles.length > 0) {
+                    for (File imageFile : imageFiles) {
+                        if (imageFile == null) {
+                            continue;
+                        }
+                        String fileName = imageFile.getName();
+                        if (fileName.contains(".png")) {
+                            fileName = fileName.replace(".png", "");
+                        }
+                        if (fileName.contains(".jpg")) {
+                            fileName = fileName.replace(".jpg", "");
+                        }
+                        BufferedImage image = loadImage(imageFile);
+                        if (image != null) {
+                            images.add(image);
+                        }
+                    }
                 }
+                return images;
             }
-            return images;
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
         }
         return null;
     }
-    public static List<BufferedImage> loadImagesWithCutFromFolderToList(String folderName
-            , int x, int y, int width, int height) {
-        File file = new File(folderName);
-        if(file.exists()) {
-            List<BufferedImage> images = new ArrayList<>();
-            File[] imageFiles = file.listFiles();
-            if(imageFiles != null && imageFiles.length > 0) {
-                for(File imageFile : imageFiles) {
-                    String fileName = imageFile.getName();
-                    if(fileName.contains(".png")) fileName = fileName.replace(".png", "");
-                    if(fileName.contains(".jpg")) fileName = fileName.replace(".jpg", "");
-                    BufferedImage image = loadImage(imageFile);
-                    if(image != null) images.add(image.getSubimage(x, y, width, height));
+
+    public static List<BufferedImage> loadImagesWithCutFromFolderToList(String folderName,
+             int x, int y, int width, int height) {
+        try {
+            File file = new File(folderName);
+            if (file.exists()) {
+                List<BufferedImage> images = new ArrayList<>();
+                File[] imageFiles = file.listFiles();
+                if (imageFiles != null && imageFiles.length > 0) {
+                    for (File imageFile : imageFiles) {
+                        if (imageFile == null) {
+                            continue;
+                        }
+                        String fileName = imageFile.getName();
+                        if (fileName.contains(".png")) {
+                            fileName = fileName.replace(".png", "");
+                        }
+                        if (fileName.contains(".jpg")) {
+                            fileName = fileName.replace(".jpg", "");
+                        }
+                        BufferedImage image = loadImage(imageFile);
+                        if (image != null) {
+                            images.add(image.getSubimage(x, y, width, height));
+                        }
+                    }
                 }
+                return images;
             }
-            return images;
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
         }
         return null;
     }

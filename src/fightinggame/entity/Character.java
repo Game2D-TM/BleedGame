@@ -1,5 +1,6 @@
 package fightinggame.entity;
 
+import fightinggame.entity.item.Item;
 import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
 import java.awt.Color;
@@ -20,7 +21,7 @@ public abstract class Character {
     protected Map<CharacterState, Animation> animations;
     protected List<Handler> controller = new ArrayList<>();
     protected Map<String, BufferedImage> characterAssets;
-    protected List<List<Item>> inventory;
+    protected final List<List<Item>> inventory = new ArrayList<>();
     protected final List<Ability> abilities = new ArrayList<>();
     protected BufferedImage avatar;
     protected HealthBar healthBar;
@@ -33,14 +34,13 @@ public abstract class Character {
     protected int receiveDamageRenderTick = 0;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, 
-            Animation> animations, Map<String, BufferedImage> characterAssets, List<List<Item>> inventory,
+            Animation> animations, Map<String, BufferedImage> characterAssets,
             boolean isLTR) {
         this.id = id;
         this.name = name;
         this.position = position;
         this.animations = animations;
         this.characterAssets = characterAssets;
-        this.inventory = inventory;
         this.isLTR = isLTR;
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
@@ -68,6 +68,13 @@ public abstract class Character {
                 ablity.tick();
             }
         }
+        if(inventory.size() > 0) {
+            for(int i = 0 ; i < inventory.size(); i++) {
+                for(int j = 0 ; j < inventory.get(i).size(); j++) {
+                    inventory.get(i).get(j).tick();
+                } 
+            }
+        }
     }
 
     public void render(Graphics g) {
@@ -91,6 +98,13 @@ public abstract class Character {
         if (abilities.size() > 0) {
             for (int i = 0; i < abilities.size(); i++) {
                 abilities.get(i).render(g);
+            }
+        }
+        if(inventory.size() > 0) {
+            for(int i = 0 ; i < inventory.size(); i++) {
+                for(int j = 0 ; j < inventory.get(i).size(); j++) {
+                    inventory.get(i).get(j).render(g);
+                } 
             }
         }
     }
@@ -140,11 +154,6 @@ public abstract class Character {
     public List<List<Item>> getInventory() {
         return inventory;
     }
-
-    public void setInventory(List<List<Item>> inventory) {
-        this.inventory = inventory;
-    }
-
     public List<Handler> getController() {
         return controller;
     }

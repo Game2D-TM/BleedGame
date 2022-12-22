@@ -6,7 +6,6 @@ import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.Map;
 
 public class Player extends Character {
@@ -14,10 +13,10 @@ public class Player extends Character {
     private int isStunCounter = 0;
     private int point = 0;
 
-    public Player(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets, List<List<Item>> inventory) {
-        super(id, name, health, position, animations, characterAssets, inventory, true);
+    public Player(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets) {
+        super(id, name, health, position, animations, characterAssets, true);
         healthBarInit(health);
-        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 50f, 100, 100));
+        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
         speed = 2;
         attackDamage = 50;
         healthBar.getPositions().put("player_score",
@@ -31,7 +30,7 @@ public class Player extends Character {
         healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
                 1, 2, 126, 12));
         healthBar = new HealthBar(avatar, healthBarSheet, this,
-                new GamePosition(120, 60, 550, 80), new GamePosition(15, 48, 100, 110),
+                new GamePosition(120, 20, 550, 80), new GamePosition(15, 8, 100, 110),
                 maxHealth);
     }
 
@@ -148,13 +147,14 @@ public class Player extends Character {
                     } else currAnimation = animations.get(CharacterState.GET_HIT_RTL);
                     isAttacked = true;
                     int health = healthBar.getHealth() - attackDmg;
+                    if(health < 0) health = 0;
                     receiveDamage = attackDmg;
                     healthBar.setHealth(health);
                     if (health <= 0) {
                         isDeath = true;
                         if(isLTR) {
                             currAnimation = animations.get(CharacterState.DEATH_LTR);
-                        }
+                        } else currAnimation = animations.get(CharacterState.DEATH_RTL);
                     }
                     return true;
                 }

@@ -8,32 +8,29 @@ import fightinggame.resource.SpriteSheet;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import fightinggame.entity.Character;
+import java.util.List;
 public class GreaterHeal extends Heal {
 
     public GreaterHeal(int healPoint, int id, long resetTime, SpriteSheet skillIcon, 
-            GamePosition position, Animation animation, Gameplay gameplay, Character character) {
-        super(healPoint, id, "Greater Heal", resetTime, skillIcon, position, animation, gameplay, character);
+            GamePosition position, Animation animationLTR, Animation animationRTL
+            , Gameplay gameplay, Character character) {
+        super(healPoint, id, "Greater Heal", resetTime, skillIcon, position, animationLTR, animationRTL, gameplay, character);
     }
 
     public GreaterHeal(int healPoint, int id, long resetTime, SpriteSheet skillIcon, 
-            GamePosition position, Animation animation, BufferedImage border, Gameplay gameplay,
-            Character character) {
-        super(healPoint, id, "Greater Heal", resetTime, skillIcon, position, animation, border, gameplay, character);
+            GamePosition position, Animation animationLTR, Animation animationRTL
+            , BufferedImage border, Gameplay gameplay, Character character) {
+        super(healPoint, id, "Greater Heal", resetTime, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
     }
     
     @Override
-    public void healing(Character character) {
-        if (canUse) {
-            int maxHealth = character.getHealthBar().getMaxHealth();
-            int health = character.getHealthBar().getHealth();
-            if(health == maxHealth) return;
-            int afterHeal = health + healPoint;
-            if (afterHeal > maxHealth) {
-                afterHeal = maxHealth;
-            }
-            character.getHealthBar().setHealth(afterHeal);
-            canUse = false;
-        }
+    public boolean healing(Character character) {
+        return super.healing(character);
+    }
+    
+    @Override
+    public boolean healing() {
+        return super.healing();
     }
 
     @Override
@@ -52,6 +49,21 @@ public class GreaterHeal extends Heal {
 
     public void setPosition(GamePosition position) {
         this.position = position;
+    }
+
+    @Override
+    public boolean execute() {
+        return healing();
+    }
+
+    @Override
+    public boolean execute(Character character) {
+        return healing(character);
+    }
+
+    @Override
+    public boolean execute(List<Character> characters) {
+        return false;
     }
 
 }

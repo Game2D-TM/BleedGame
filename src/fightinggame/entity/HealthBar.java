@@ -20,6 +20,9 @@ public class HealthBar {
     private Character character;
     private HealthBarState state;
     private final Map<String, GamePosition> positions = new HashMap<>();
+    private int healthBarShowCounter = 0;
+    private int appearTimeLimit = 0;
+    private boolean canShow = true;
 
     public HealthBar(BufferedImage avatar, SpriteSheet healthBar, Character character, GamePosition healthBarPos,
             GamePosition avatarPos, int maxHealth) {
@@ -35,9 +38,16 @@ public class HealthBar {
         positions.put("character_health", new GamePosition(healthBarPos.getXPosition() + healthBarPos.getWidth() / 2 - 50
                 , healthBarPos.getYPosition() + healthBarPos.getHeight() / 2 + 8, 0, 0));
     }
-
+    
     public void tick() {
         character.healthBarTick();
+        if(appearTimeLimit > 0 && canShow) {
+            healthBarShowCounter++;
+            if(healthBarShowCounter > appearTimeLimit) {
+                canShow = false;
+                healthBarShowCounter = 0;
+            }
+        }
         if(maxHealth == health) {
             state = HealthBarState.MAX;
         } else if(health > maxHealth * 90/100 && health <= maxHealth) {
@@ -102,6 +112,7 @@ public class HealthBar {
         g.setColor(Color.red);
         g.drawImage(curHealthImage, getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition()
                 , getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);
+//      rectangle
         g.drawRect(getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition()
                 , getHealthBarPos().getWidth(), getHealthBarPos().getHeight());
         g.setClip(ovalImage);
@@ -115,6 +126,11 @@ public class HealthBar {
                 getHealthPointPos().getXPosition(), getHealthPointPos().getYPosition());
         g.setFont(null);
         g.setColor(null);
+    }
+    
+    public void resetShowCounter() {
+        healthBarShowCounter = 0;
+        canShow = false;
     }
     
     public GamePosition getHealthBarPos() {
@@ -202,6 +218,23 @@ public class HealthBar {
     public Map<String, GamePosition> getPositions() {
         return positions;
     }
+
+    public int getAppearTimeLimit() {
+        return appearTimeLimit;
+    }
+
+    public void setAppearTimeLimit(int appearTimeLimit) {
+        this.appearTimeLimit = appearTimeLimit;
+    }
+
+    public boolean isCanShow() {
+        return canShow;
+    }
+
+    public void setCanShow(boolean canShow) {
+        this.canShow = canShow;
+    }
+    
     
     
 }

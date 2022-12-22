@@ -6,14 +6,13 @@ import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.entity.Animation;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
-import fightinggame.entity.Item;
+import fightinggame.entity.item.Item;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 
@@ -25,17 +24,17 @@ public class Enemy extends Character {
     protected int deathCounter = 0;
     protected int isAttackedCounter = 0;
     protected int walkCounter = 0;
-    protected boolean isForward = true;
     protected boolean animateChange = false;
     protected int point = 10;
     protected int stunTime = 300;
 
-    public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets, List<List<Item>> inventory,
+    public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
             Gameplay gameplay, int rangeRandomSpeed) {
-        super(id, name, health, position, animations, characterAssets, inventory, false);
+        super(id, name, health, position, animations, characterAssets, false);
         this.gameplay = gameplay;
         healthBarInit(health);
-        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 50f, 100, 100));
+        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 10f, 100, 100));
+        healthBar.setAppearTimeLimit(1000);
         Random rand = new Random();
         int range = rand.nextInt(rangeRandomSpeed);
         speed = rand.nextInt(range);
@@ -47,7 +46,7 @@ public class Enemy extends Character {
         healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
                 1, 2, 126, 12));
         healthBar = new HealthBar(avatar, healthBarSheet, this,
-                new GamePosition(975, 60, 550, 80), new GamePosition(1540, 45, 180, 120),
+                new GamePosition(975, 20, 550, 80), new GamePosition(1540, 8, 180, 120),
                 maxHealth);
     }
 
@@ -61,6 +60,21 @@ public class Enemy extends Character {
         if (isDeath) {
             deathCounter++;
             if (deathCounter >= 1500) {
+                if (inventory.size() > 0) {
+                    for (int i = 0; i < inventory.size(); i++) {
+                        if (inventory.get(i) != null && inventory.get(i).size() > 0) {
+                            for (int j = 0; j < inventory.get(i).size(); j++) {
+                                Item item = inventory.get(i).get(j);
+                                GamePosition itemPos = item.getPosition();
+                                itemPos.setXPosition(position.getXPosition() + position.getWidth() / 2 - 20);
+                                itemPos.setYPosition(position.getMaxY() - itemPos.getHeight());
+                                gameplay.getItemsOnGround().add(item);
+                                item.setSpawnDrop(true);
+                                inventory.get(i).remove(item);
+                            }
+                        }
+                    }
+                }
                 gameplay.getPlayer().addPoint(point);
                 gameplay.getEnemies().remove(this);
                 gameplay.getPositions().remove(name);
@@ -70,9 +84,11 @@ public class Enemy extends Character {
         if (isAttacked && !isDeath) {
             isAttackedCounter++;
             if (isAttackedCounter >= stunTime) {
-                if(isLTR) {
+                if (isLTR) {
                     currAnimation = animations.get(CharacterState.IDLE_LTR);
-                } else currAnimation = animations.get(CharacterState.IDLE_RTL);
+                } else {
+                    currAnimation = animations.get(CharacterState.IDLE_RTL);
+                }
                 isAttacked = false;
                 isAttackedCounter = 0;
                 if (isAttack) {
@@ -84,13 +100,13 @@ public class Enemy extends Character {
             walkCounter++;
             if (walkCounter >= 100) {
                 if (currAnimation == null) {
-                    if (isForward) {
+                    if (!isLTR) {
                         currAnimation = animations.get(CharacterState.RUNFORWARD);
                     } else {
                         currAnimation = animations.get(CharacterState.RUNBACK);
                     }
                 } else {
-                    if (isForward) {
+                    if (!isLTR) {
                         if (currAnimation instanceof EnemyRunForward); else {
                             currAnimation = animations.get(CharacterState.RUNFORWARD);
                         }
@@ -100,22 +116,18 @@ public class Enemy extends Character {
                         }
                     }
                 }
-                if (isForward) {
+                if (!isLTR) {
                     if (position.getXPosition() >= gameplay.getPlayPosition().getXPosition()) {
-                        position.isMoveLeft = true;
-                        position.moveLeft(speed);
+                        position.moveLeft(speed, true);
                     } else {
-                        isForward = false;
-                        position.isMoveLeft = false;
+                        isLTR = true;
                     }
                 } else {
                     if (position.getXPosition() + position.getWidth() <= gameplay.getPlayPosition().getXPosition()
                             + gameplay.getPlayPosition().getWidth()) {
-                        position.isMoveRight = true;
-                        position.moveRight(speed);
+                        position.moveRight(speed, true);
                     } else {
-                        isForward = true;
-                        position.isMoveRight = false;
+                        isLTR = false;
                     }
                 }
                 walkCounter = 0;
@@ -126,7 +138,7 @@ public class Enemy extends Character {
     @Override
     public void render(Graphics g) {
         super.render(g);
-        if (isAttacked && this.equals(ENEMY_HEALTHBAR_SHOW)) {
+        if (healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
             healthBar.render(g);
         }
 //        g.setColor(Color.red);
@@ -161,19 +173,30 @@ public class Enemy extends Character {
                     || (attackMaxY > getYHitBox() && attackMaxY <= getYMaxHitBox()
                     && attackY < getYHitBox())))) {
                 setDefAttackedCounter();
-                Enemy.ENEMY_HEALTHBAR_SHOW = this;
-                if(isLTR) {
+                if (ENEMY_HEALTHBAR_SHOW != null) {
+                    ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
+                }
+                ENEMY_HEALTHBAR_SHOW = this;
+                healthBar.setCanShow(true);
+                if (isLTR) {
                     currAnimation = animations.get(CharacterState.GET_HIT_LTR);
-                } else currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                } else {
+                    currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                }
                 isAttacked = true;
                 int health = healthBar.getHealth() - attackDmg;
+                if (health < 0) {
+                    health = 0;
+                }
                 receiveDamage = attackDmg;
                 healthBar.setHealth(health);
                 if (health <= 0) {
                     isDeath = true;
-                    if(isLTR) {
+                    if (isLTR) {
                         currAnimation = animations.get(CharacterState.DEATH_LTR);
-                    } else currAnimation = animations.get(CharacterState.DEATH_RTL);
+                    } else {
+                        currAnimation = animations.get(CharacterState.DEATH_RTL);
+                    }
                 }
                 return true;
             }

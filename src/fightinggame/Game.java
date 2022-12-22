@@ -1,23 +1,18 @@
 package fightinggame;
 
-import fightinggame.entity.Background;
-import fightinggame.resource.ImageManager;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Dimension;
 import java.awt.HeadlessException;
 import javax.swing.JFrame;
 
-public class Game extends JFrame implements Runnable {
-    
+public class Game extends JFrame {
+
     public static final int FPS = 144;
-    
-    private Background background;
     private Gameplay gameplay;
     private boolean isRunning = true;
+    private Thread gameThread;
 
     public Game(int width, int height) throws HeadlessException {
         super("Fighting Game");
-        setVisible(true);
         setSize(width, height);
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -27,6 +22,15 @@ public class Game extends JFrame implements Runnable {
                 formWindowClosing(evt);
             }
         });
+        init();
+        setVisible(true);
+    }
+
+    public void init() {
+        gameplay = new Gameplay(this, getWidth(), getHeight() - 20);
+        gameplay.setPreferredSize(new Dimension(getWidth(), getHeight()));
+        add(gameplay);
+        pack();
     }
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
@@ -34,6 +38,14 @@ public class Game extends JFrame implements Runnable {
         if (gameplay.getThread() != null && gameplay.getThread().isAlive()) {
             gameplay.getThread().suspend();
         }
+        if (gameThread != null && gameThread.isAlive()) {
+            gameThread.suspend();
+        }
+    }
+
+    public void start() {
+        gameThread = new Thread(gameplay);
+        gameThread.start();
     }
 
     public void setIsRunning(boolean isRunning) {
@@ -43,30 +55,4 @@ public class Game extends JFrame implements Runnable {
     public boolean isRunning() {
         return isRunning;
     }
-
-    public void init() {
-        background = new Background(0, "Street",
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Street"), getWidth(), getHeight());
-        gameplay = new Gameplay(this);
-    }
-
-    public void tick() {
-        gameplay.tick();
-    }
-
-    public void render(Graphics g) throws InterruptedException {
-        if (background != null) {
-            background.render(g);
-        }
-        g.setColor(Color.red);
-        g.drawRect(gameplay.getPlayPosition().getXPosition(), gameplay.getPlayPosition().getYPosition(),
-                gameplay.getPlayPosition().getWidth(), gameplay.getPlayPosition().getHeight());
-        gameplay.render(g);
-    }
-
-    @Override
-    public void run() {
-
-    }
-
 }

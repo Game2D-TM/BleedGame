@@ -6,19 +6,20 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
-import fightinggame.entity.Item;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.Map;
 
 public class DiorEnemy extends Enemy {
 
     private DiorColor color;
 
-    public DiorEnemy(DiorColor color, int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets, List<List<Item>> inventory, Gameplay gameplay, int rangeRandomSpeed) {
-        super(id, name, health, position, animations, characterAssets, inventory, gameplay, rangeRandomSpeed);
+    public DiorEnemy(DiorColor color, int id, String name, int health,
+            GamePosition position, Map<CharacterState, Animation> animations,
+            Map<String, BufferedImage> characterAssets,
+            Gameplay gameplay, int rangeRandomSpeed) {
+        super(id, name, health, position, animations, characterAssets, gameplay, rangeRandomSpeed);
         this.color = color;
         switch (color) {
             case Red:
@@ -75,7 +76,7 @@ public class DiorEnemy extends Enemy {
             int xAttack = -1;
             int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
             int attackHeight = position.getHeight() / 2 - 10;
-            if (isForward) {
+            if (!isLTR) {
                 xAttack = position.getXPosition();
             } else {
                 xAttack = position.getMaxX();
@@ -92,16 +93,20 @@ public class DiorEnemy extends Enemy {
                 if (falloutX >= gameplay.getPlayPosition().getXPosition()) {
                     gameplay.getPlayer().getPosition().setXPosition(falloutX);
                 } else {
-                    int falloutY = gameplay.getPlayer().getPosition().getYPosition() - 30;
-                    if (falloutY >= gameplay.getPlayPosition().getYPosition()) {
+                    int falloutY = gameplay.getPlayer().getPosition().getYPosition() - 5;
+                    if (falloutY > gameplay.getPlayPosition().getYPosition() + 15) {
                         gameplay.getPlayer().getPosition().setYPosition(
-                                gameplay.getPlayer().getPosition().getYPosition() - 30);
+                                gameplay.getPlayer().getPosition().getYPosition() - 5);
                     } else {
-                        falloutY = gameplay.getPlayer().getPosition().getYPosition()
-                                + gameplay.getPlayer().getPosition().getHeight() + 30;
-                        if (falloutY <= gameplay.getMaxYPlayArea()) {
+                        falloutY = gameplay.getPlayer().getPosition().getMaxY() + 5;
+                        if (falloutY < gameplay.getMaxYPlayArea() - 20) {
                             gameplay.getPlayer().getPosition().setYPosition(
-                                    gameplay.getPlayer().getPosition().getYPosition() + 30);
+                                    gameplay.getPlayer().getPosition().getYPosition() + 5);
+                        } else {
+                            gameplay.getPlayer().getPosition().setXPosition(
+                                    gameplay.getPlayer().getPosition().getXPosition() + 150);
+                            gameplay.getPlayer().getPosition().setYPosition(
+                                    gameplay.getPlayer().getPosition().getYPosition() - 50);
                         }
                     }
                 }
@@ -112,7 +117,13 @@ public class DiorEnemy extends Enemy {
             if (!isAttack && !isDeath) {
                 Fireball fireBallAbility = ((Fireball) abilities.get(0));
                 if (fireBallAbility.isCanUse()) {
-                    GamePosition fireBallPos = new GamePosition(position.getXPosition() - 215,
+                    int spawnX;
+                    if (!isLTR) {
+                        spawnX = position.getXPosition() - 215;
+                    } else {
+                        spawnX = position.getMaxX() + 15;
+                    }
+                    GamePosition fireBallPos = new GamePosition(spawnX,
                             position.getYPosition() + position.getHeight() / 2 - 10, 200, 100);
                     boolean result = fireBallAbility.execute(fireBallPos, gameplay.getPlayPosition());
                     if (result) {
@@ -130,13 +141,23 @@ public class DiorEnemy extends Enemy {
         if (currAnimation != null && !isAttacked && !isDeath) {
             if (currAnimation instanceof EnemyAttack) {
                 if (animateChange) {
-                    position.setXPosition(position.getXPosition() + 30);
-                    position.setWidth(position.getWidth() - 30);
+                    if (!isLTR) {
+                        position.setXPosition(position.getXPosition() + 30);
+                        position.setWidth(position.getWidth() - 30);
+                    } else {
+                        position.setXPosition(position.getXPosition() - 30);
+                        position.setWidth(position.getWidth() + 30);
+                    }
                     animateChange = false;
                 }
                 if (isAttack) {
-                    position.setWidth(position.getWidth() + 30);
-                    position.setXPosition(position.getXPosition() - 30);
+                    if (!isLTR) {
+                        position.setXPosition(position.getXPosition() - 30);
+                        position.setWidth(position.getWidth() + 30);
+                    } else {
+                        position.setXPosition(position.getXPosition() + 30);
+                        position.setWidth(position.getWidth() - 30);
+                    }
                     isAttack = false;
                     animateChange = true;
                 }
@@ -163,6 +184,11 @@ public class DiorEnemy extends Enemy {
 
     public void setColor(DiorColor color) {
         this.color = color;
+    }
+
+    @Override
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, int attackDmg) {
+        return super.checkHit(attackX, attackY, attackHeight, isAttack, attackDmg);
     }
 
 }

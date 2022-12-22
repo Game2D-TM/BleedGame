@@ -1,6 +1,7 @@
 package fightinggame.input.handler;
 
 import fightinggame.Gameplay;
+import fightinggame.animation.player.PlayerHit;
 import fightinggame.entity.Animation;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
@@ -55,10 +56,10 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
         if (curXpos > playPosition.getXPosition() && curXpos < playPosition.getXPosition() + playPosition.getWidth()) {
             player.moveRight();
         }
-//        keyboardCounter++;
-//        if (keyboardCounter > 0) {
-//            canAttack = true;
-//        }
+        keyboardCounter++;
+        if (keyboardCounter > 8) {
+            canAttack = true;
+        }
     }
 
     @Override
@@ -113,7 +114,15 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                         player.getPosition().isMoveRight = true;
                         break;
                     case KeyEvent.VK_SPACE:
-                        if (!player.isAttack() && !player.getPosition().isMoving()) {
+                        if (!canAttack) {
+                            break;
+                        }
+                        if (!player.isAttack() && !player.getPosition().isMoving() && !player.isAttacked()) {
+                            if (player.getCurrAnimation() != null) {
+                                if (player.getCurrAnimation() instanceof PlayerHit) {
+                                    break;
+                                }
+                            }
                             Animation attack = null;
                             if (player.isLTR()) {
                                 attack = player.getAnimations().get(CharacterState.ATTACK_LTR);
@@ -122,6 +131,7 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                             }
                             player.setIsAttack(true);
                             player.setCurrAnimation(attack);
+                            gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
                             if (player.isLTR()) {
                                 player.getPosition().setWidth(player.getPosition().getWidth() + 120);
                             } else {
@@ -145,6 +155,11 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                                     Enemy enemy = gameplay.getEnemies().get(i);
                                     if (enemy.checkHit(attackX, attackY, attackHeight, true, player.getAttackDamage())) {
                                         enemy.setStunTime(50);
+                                        if (enemy.getHealthBar().getHealth() <= 0) {
+                                            gameplay.getAudioPlayer().startThread("kill_sound", false, 0.8f);
+                                        } else {
+                                            gameplay.getAudioPlayer().startThread("hit_dior_firror", false, 0.8f);
+                                        }
                                     }
                                 }
                             }
@@ -154,10 +169,9 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                                 Logger.getLogger(PlayerMovementHandler.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
-//                            canAttack = false;
-//                            keyboardCounter = 0;
+                        canAttack = false;
+                        keyboardCounter = 0;
                         break;
-
                 }
             }
         }

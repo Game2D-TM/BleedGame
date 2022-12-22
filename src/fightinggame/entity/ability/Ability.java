@@ -22,39 +22,63 @@ public abstract class Ability {
     protected long resetTimeCounter = 0;
     protected boolean canUse = true;
     protected SpriteSheet skillIcon;
-    protected Animation animation;
+    protected Animation animationLTR;
+    protected Animation animationRTL;
+    protected Animation currAnimation;
     protected BufferedImage border;
     protected GamePosition position;
     protected List<Handler> handlers = new ArrayList<>();
     protected Gameplay gameplay;
     protected Character character;
+    protected boolean isLTR;
 
     public Ability(int id, String name, long resetTime, SpriteSheet skillIcon, GamePosition position,
-            Animation animation, Gameplay gameplay, Character character) {
+            Animation animationLTR, Animation animationRTL, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
         this.skillIcon = skillIcon;
         this.position = position;
-        this.animation = animation;
-        coolDown = 0;
+        this.animationLTR = animationLTR;
+        this.animationRTL = animationRTL;
         this.gameplay = gameplay;
         this.character = character;
+        if (character.isLTR()) {
+            currAnimation = animationLTR;
+        } else {
+            currAnimation = animationRTL;
+        }
     }
 
     public Ability(int id, String name, long resetTime, SpriteSheet skillIcon, GamePosition position,
-            Animation animation, BufferedImage border, Gameplay gameplay, Character character) {
+            Animation animationLTR, Animation animationRTL, BufferedImage border, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
         this.skillIcon = skillIcon;
-        this.animation = animation;
+        this.animationLTR = animationLTR;
+        this.animationRTL = animationRTL;
         this.position = position;
         this.border = border;
-        coolDown = 0;
+        this.gameplay = gameplay;
+        this.character = character;
+        if (character.isLTR()) {
+            currAnimation = animationLTR;
+        } else {
+            currAnimation = animationRTL;
+        }
+    }
+
+    public Ability(int id, String name, long resetTime, Animation currAnimation, GamePosition position, Gameplay gameplay, Character character) {
+        this.id = id;
+        this.name = name;
+        this.resetTime = resetTime;
+        this.currAnimation = currAnimation;
+        this.position = position;
         this.gameplay = gameplay;
         this.character = character;
     }
+    
 
     public long getCoolDownTime() {
         return coolDown = (resetTime - resetTimeCounter) / 100;
@@ -74,8 +98,8 @@ public abstract class Ability {
             resetTimeCounter = 0;
             coolDown = resetTime;
         }
-        if (animation != null) {
-            animation.tick();
+        if (currAnimation != null) {
+            currAnimation.tick();
         }
     }
 
@@ -87,8 +111,9 @@ public abstract class Ability {
         }
         if (skillIcon != null && position != null) {
             skillIcon.render(g, position.getXPosition(), position.getYPosition(), position.getWidth(), position.getHeight());
-            g.setColor(Color.red);
-            g.drawRect(position.getXPosition(), position.getYPosition(), position.getWidth(), position.getHeight());
+//          rectangle
+//            g.setColor(Color.red);
+//            g.drawRect(position.getXPosition(), position.getYPosition(), position.getWidth(), position.getHeight());
             g.setColor(Color.white);
             g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
             g.drawString(id + "", position.getXPosition() + 5, position.getMaxY() - 10);
@@ -101,6 +126,12 @@ public abstract class Ability {
 
     }
 
+    public abstract boolean execute();
+    
+    public abstract boolean execute(Character character);
+    
+    public abstract boolean execute(List<Character> characters);
+    
     public int getId() {
         return id;
     }
@@ -172,5 +203,5 @@ public abstract class Ability {
     public void setCharacter(Character character) {
         this.character = character;
     }
-    
+
 }
