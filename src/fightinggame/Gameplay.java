@@ -175,7 +175,13 @@ public class Gameplay extends JPanel implements Runnable {
 //        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
 //                0, 0, 200, 200,
 //                75, 75, 43, 48, 8);
-        //        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack1.png"),
+//        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
+//                0, 0, 80, 80,
+//                21, 8, 40, 60, 8);
+//        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
+//                800, 0, 200, 200,
+//                75, 53, 115, 70, 2);
+//        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack1.png"),
 //                0, 0, 96, 80,
 //                8, 3, 80, 60, 8);
 //        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack2.png"),
