@@ -63,18 +63,19 @@ public class Gameplay extends JPanel implements Runnable {
     private final List<Item> itemsOnGround = new ArrayList<Item>();
 
     public Gameplay(Game game, int width, int height) {
-        background = new Background(0, "Street",
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Street"), width, height);
+        background = new Background(0, "Scene 1",
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
+        ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, "data/scene_1.txt");
         playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
         int xPosition = playPosition.getXPosition();
         enemySpawnXPosition = xPosition + 1700;
         playerInit(xPosition + 10); // playPosition.getYPosition() - 50
-        diorInit(enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520);
-        diorInit(enemySpawnXPosition, playPosition.getYPosition() + 50);
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520);
+//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + 50);
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -180,10 +181,13 @@ public class Gameplay extends JPanel implements Runnable {
 //                75, 75, 43, 48, 8);
         SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
                 0, 0, 80, 80,
-                10, 8, 40, 60, 8);
-        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
-                800, 0, 200, 200,
-                75, 53, 115, 70, 2);
+                21, 8, 40, 60, 8);
+//        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
+//                800, 0, 200, 200,
+//                75, 53, 115, 70, 2);
+        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack1.png"),
+                0, 0, 96, 80,
+                8, 3, 80, 60, 8);
         SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack2.png"),
                 800, 0, 200, 200,
                 75, 53, 115, 70, 2);
