@@ -173,15 +173,15 @@ public class Gameplay extends JPanel implements Runnable {
 //        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Idle.png"),
 //                0, 0, 200, 200,
 //                75, 70, 38, 53, 8);
-//        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Idle.png"),
-//                0, 0, 64, 80,
-//                21, 8, 36, 60, 4);
+        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Idle.png"),
+                0, 0, 64, 80,
+                21, 8, 36, 60, 4);
 //        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
 //                0, 0, 200, 200,
 //                75, 75, 43, 48, 8);
-//        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
-//                0, 0, 80, 80,
-//                21, 8, 40, 60, 8);
+        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
+                0, 0, 80, 80,
+                21, 8, 40, 60, 8);
 //        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
 //                800, 0, 200, 200,
 //                75, 53, 115, 70, 2);
@@ -216,6 +216,37 @@ public class Gameplay extends JPanel implements Runnable {
 //        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Death.png"),
 //                0, 0, 200, 200,
 //                80, 70, 42, 55, 6);
+        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack1.png"),
+                0, 0, 96, 80,
+                25, 0, 70, 65, 8);
+        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack2.png"),
+                0, 0, 96, 80,
+                25, 0, 70, 65, 8);
+        SpriteSheet playerHitLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/TakeHit.png"),
+                0, 0, 64, 64,
+                5, 0, 54, 64, 4);
+        SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Death.png"),
+                0, 0, 80, 64,
+                10, 0, 64, 64, 8);
+
+        SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Idle.png"),
+                0, 0, 64, 80,
+                10, 8, 36, 60, 4);
+        SpriteSheet playerRunRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Run.png"),
+                0, 0, 80, 80,
+                10, 8, 40, 60, 8);
+        SpriteSheet playerAttack1RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack1.png"),
+                0, 0, 96, 80,
+                10, 0, 65, 65, 8);
+        SpriteSheet playerAttack2RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack2.png"),
+                0, 0, 96, 80,
+                10, 0, 65, 65, 8);
+        SpriteSheet playerHitRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/TakeHit.png"),
+                0, 0, 64, 64,
+                0, 0, 54, 64, 4);
+        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Death.png"),
+                0, 0, 80, 64,
+                10, 0, 64, 64, 8);
         playerIdleSheetRTL.reverseImages();
         playerRunRTL.reverseImages();
         playerAttack1RTL.reverseImages();
