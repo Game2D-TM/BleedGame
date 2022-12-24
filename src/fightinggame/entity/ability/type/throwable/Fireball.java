@@ -91,7 +91,8 @@ public class Fireball extends Throwable {
         super.render(g);
         if (currAnimation != null) {
             if (spawnPosition != null && isThrow) {
-                currAnimation.render(g, spawnPosition.getXPosition(), spawnPosition.getYPosition(),
+                currAnimation.render(g, spawnPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition()
+                        , spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                         spawnPosition.getWidth(), spawnPosition.getHeight());
             }
         }

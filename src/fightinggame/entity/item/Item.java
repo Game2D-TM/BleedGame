@@ -67,7 +67,8 @@ public abstract class Item {
 
     public void render(Graphics g) {
         if (animation != null && spawnDrop) {
-            animation.render(g, position.getXPosition() , position.getYPosition(),
+            animation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition()
+                    , position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                      position.getWidth(), position.getHeight());
         }
         if (abilities.size() > 0) {

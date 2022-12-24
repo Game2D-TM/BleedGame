@@ -1,5 +1,6 @@
 package fightinggame.entity;
 
+import fightinggame.Gameplay;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
@@ -32,14 +33,16 @@ public abstract class Character {
     protected int attackDamage = 10;
     protected int receiveDamage = 0;
     protected int receiveDamageRenderTick = 0;
+    protected Gameplay gameplay;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
-            boolean isLTR) {
+            Gameplay gameplay, boolean isLTR) {
         this.id = id;
         this.name = name;
         this.position = position;
         this.animations = animations;
         this.characterAssets = characterAssets;
+        this.gameplay = gameplay;
         this.isLTR = isLTR;
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
@@ -83,7 +86,8 @@ public abstract class Character {
 
     public void render(Graphics g) {
         if (currAnimation != null) {
-            currAnimation.render(g, position.getXPosition(), position.getYPosition(),
+            currAnimation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                    position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                     position.getWidth(), position.getHeight());
         }
         if (receiveDamage > 0) {
@@ -94,8 +98,8 @@ public abstract class Character {
             }
             g.setColor(Color.red);
             g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
-            g.drawString(receiveDamage + "", position.getXPosition() + position.getWidth() / 2,
-                    position.getYPosition() - 10);
+            g.drawString(receiveDamage + "", position.getXPosition() + position.getWidth() / 2 - gameplay.getCamera().getPosition().getXPosition(),
+                    position.getYPosition() - 10 - gameplay.getCamera().getPosition().getYPosition());
             g.setFont(null);
             g.setColor(null);
         }

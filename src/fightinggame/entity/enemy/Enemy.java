@@ -19,8 +19,6 @@ import fightinggame.resource.SpriteSheet;
 public class Enemy extends Character {
 
     public static Enemy ENEMY_HEALTHBAR_SHOW;
-
-    protected Gameplay gameplay;
     protected int deathCounter = 0;
     protected int isAttackedCounter = 0;
     protected int walkCounter = 0;
@@ -30,8 +28,7 @@ public class Enemy extends Character {
 
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
             Gameplay gameplay, int rangeRandomSpeed) {
-        super(id, name, health, position, animations, characterAssets, false);
-        this.gameplay = gameplay;
+        super(id, name, health, position, animations, characterAssets, gameplay, false);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 10f, 100, 100));
         healthBar.setAppearTimeLimit(1000);
@@ -116,20 +113,20 @@ public class Enemy extends Character {
                         }
                     }
                 }
-                if (!isLTR) {
-                    if (position.getXPosition() >= gameplay.getPlayPosition().getXPosition()) {
-                        position.moveLeft(speed, true);
-                    } else {
-                        isLTR = true;
-                    }
-                } else {
-                    if (position.getXPosition() + position.getWidth() <= gameplay.getPlayPosition().getXPosition()
-                            + gameplay.getPlayPosition().getWidth()) {
-                        position.moveRight(speed, true);
-                    } else {
-                        isLTR = false;
-                    }
-                }
+//                if (!isLTR) {
+//                    if (position.getXPosition() >= gameplay.getPlayPosition().getXPosition()) {
+//                        position.moveLeft(speed, true);
+//                    } else {
+//                        isLTR = true;
+//                    }
+//                } else {
+//                    if (position.getXPosition() + position.getWidth() <= gameplay.getPlayPosition().getXPosition()
+//                            + gameplay.getPlayPosition().getWidth()) {
+//                        position.moveRight(speed, true);
+//                    } else {
+//                        isLTR = false;
+//                    }
+//                }
                 walkCounter = 0;
             }
         }

@@ -1,10 +1,11 @@
 package fightinggame.entity;
 
+import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
+import fightinggame.entity.platform.Platform;
 import fightinggame.input.handler.Handler;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Map;
@@ -13,9 +14,12 @@ public class Player extends Character {
 
     private int isStunCounter = 0;
     private int point = 0;
+    private Platform curPlatform = null;
 
-    public Player(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets) {
-        super(id, name, health, position, animations, characterAssets, true);
+    public Player(int id, String name, int health, GamePosition position, 
+            Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets
+            , Gameplay gameplay) {
+        super(id, name, health, position, animations, characterAssets, gameplay, true);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
         speed = 2;
@@ -84,9 +88,9 @@ public class Player extends Character {
         g.drawString("Score: " + point, getPlayerScorePos().getXPosition(),
                 getPlayerScorePos().getYPosition());
         // hitbox
-        g.setColor(Color.red);
-        g.drawRect(getXHitBox(), getYHitBox(),
-                position.getWidth(), position.getHeight() / 2 - 10);
+//        g.setColor(Color.red);
+//        g.drawRect(getXHitBox(), getYHitBox(),
+//                position.getWidth(), position.getHeight() / 2 - 10);
         //attackhitbox
 //        int attackX;
 //        if(isLTR) {
@@ -118,6 +122,16 @@ public class Player extends Character {
         return getYHitBox() + position.getHeight() / 2 - 10;
     }
 
+    public Platform getCurPlatform() {
+        return curPlatform;
+    }
+
+    public void setCurPlatform(Platform curPlatform) {
+        this.curPlatform = curPlatform;
+    }
+
+    
+    
     @Override
     public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, int attackDmg) {
         int attackMaxY = attackY + attackHeight;

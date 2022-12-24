@@ -27,7 +27,7 @@ public class Game extends JFrame {
     }
 
     public void init() {
-        gameplay = new Gameplay(this, getWidth(), getHeight() - 20);
+        gameplay = new Gameplay(this, getWidth(), getHeight());
         gameplay.setPreferredSize(new Dimension(getWidth(), getHeight()));
         add(gameplay);
         pack();

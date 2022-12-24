@@ -7,10 +7,14 @@ import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
+import fightinggame.entity.platform.Platform;
+import fightinggame.entity.platform.tile.BlankTile;
+import fightinggame.entity.platform.tile.WallTile;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,24 +41,78 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
     public void tick() {
         int curXpos = 0;
         int curYpos = 0;
+        boolean canGoLeft = true, canGoRight = true, canJump = true;
         GamePosition position = player.getPosition();
-        GamePosition playPosition = gameplay.getPlayPosition();
         int speed = player.getSpeed();
-        curYpos = position.getYPosition() - speed + position.getHeight();
-        if (curYpos > playPosition.getYPosition() && curYpos < playPosition.getYPosition() + playPosition.getHeight()) {
-            player.moveUp();
-        }
-        curXpos = position.getXPosition() - speed;
-        if (curXpos > playPosition.getXPosition() && curXpos < playPosition.getXPosition() + playPosition.getWidth()) {
-            player.moveLeft();
-        }
-        curYpos = position.getYPosition() + speed + position.getHeight();
-        if (curYpos > playPosition.getYPosition() && curYpos < playPosition.getYPosition() + playPosition.getHeight()) {
-            player.moveDown();
-        }
-        curXpos = position.getXPosition() + speed + position.getWidth();
-        if (curXpos > playPosition.getXPosition() && curXpos < playPosition.getXPosition() + playPosition.getWidth()) {
-            player.moveRight();
+        if (player.getCurPlatform() != null) {
+            List<List<Platform>> platforms = gameplay.getSurroundPlatform(player.getCurPlatform().getRow(),
+                    player.getCurPlatform().getColumn());
+            if (platforms != null && platforms.size() > 0) {
+                for (int i = 0; i < platforms.size(); i++) {
+                    List<Platform> canStands = platforms.get(i);
+                    if (canStands != null && canStands.size() > 0) {
+                        for (int j = 0; j < canStands.size(); j++) {
+                            Platform platform = canStands.get(i);
+                            if (platform == null) {
+                                break;
+                            }
+                            if (platform.getPosition() == null) {
+                                break;
+                            }
+                            canGoLeft = true;
+                            canGoRight = true;
+//                            curYpos = position.getYPosition() - speed + position.getHeight();
+//                            player.moveUp();
+                            curXpos = position.getXPosition() - speed;
+                            GamePosition positionLeft = new GamePosition(curXpos, position.getYPosition(), position.getWidth(), position.getHeight());
+                            if (platform instanceof WallTile) {
+                                if (platform.checkValidPosition(positionLeft)) {
+                                    continue;
+                                }
+                            }
+                            if (canGoLeft) {
+                                if (platform instanceof BlankTile) {
+                                    if (platform.checkValidPosition(positionLeft)) {
+                                        boolean result = player.moveLeft();
+                                        if (result) {
+                                            player.setCurPlatform(platform);
+                                            System.out.println("go left");
+                                            System.out.println(player.getCurPlatform().getRow() + " "
+                                                    + player.getCurPlatform().getColumn());
+
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+//                        curYpos = position.getYPosition() + speed + position.getHeight();
+//                        player.moveDown();
+                            curXpos = position.getXPosition() + speed; // position.getWidth()
+                            GamePosition positionRight = new GamePosition(curXpos, position.getYPosition(),
+                                    position.getWidth(), position.getHeight());
+                            if (platform instanceof WallTile) {
+                                if (platform.checkValidPosition(positionRight)) {
+                                    continue;
+                                }
+                            }
+                            if (canGoRight) {
+                                if (platform instanceof BlankTile) {
+                                    if (platform.checkValidPosition(positionRight)) {
+                                        boolean result = player.moveRight();
+                                        if (result) {
+                                            player.setCurPlatform(platform);
+                                            System.out.println("go right");
+                                            System.out.println(player.getCurPlatform().getRow() + " "
+                                                    + player.getCurPlatform().getColumn());
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         keyboardCounter++;
         if (keyboardCounter > 8) {
@@ -81,7 +139,7 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                         } else {
                             player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
                         }
-                        player.getPosition().isMoveUp = true;
+//                        player.getPosition().isMoveUp = true;
                         break;
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
@@ -102,7 +160,7 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                         } else {
                             player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
                         }
-                        player.getPosition().isMoveDown = true;
+//                        player.getPosition().isMoveDown = true;
                         break;
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
@@ -133,7 +191,7 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                             player.setCurrAnimation(attack);
                             gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
                             if (player.isLTR()) {
-                                player.getPosition().setWidth(player.getPosition().getWidth() + 120);
+                                player.getPosition().setWidth(player.getPosition().getWidth() + 120); // 120
                             } else {
                                 player.getPosition().setXPosition(player.getPosition().getXPosition() - 120);
                                 player.getPosition().setWidth(player.getPosition().getWidth() + 120);
@@ -217,25 +275,16 @@ public class PlayerMovementHandler extends Handler implements KeyListener {
                 }
             }
             if (player.isAttack()) {
-                if (player.getPosition().getWidth() > 200) {
-                    if (player.isLTR()) {
-                        player.getPosition().setWidth(player.getPosition().getWidth() - 120);
-                    } else {
-                        player.getPosition().setWidth(player.getPosition().getWidth() - 120);
-                        player.getPosition().setXPosition(player.getPosition().getXPosition() + 120);
-                    }
-                    player.getPosition().setYPosition(player.getPosition().getYPosition() + 50);
-                    player.getPosition().setHeight(player.getPosition().getHeight() - 50);
-                    player.setIsAttack(false);
+//                if (player.getPosition().getWidth() > 200) {
+                if (player.isLTR()) {
+                    player.getPosition().setWidth(player.getPosition().getWidth() - 120);
+                } else {
+                    player.getPosition().setWidth(player.getPosition().getWidth() - 120);
+                    player.getPosition().setXPosition(player.getPosition().getXPosition() + 120);
                 }
-//                if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
-//                    for (int i = 0; i < gameplay.getEnemies().size(); i++) {
-//                        Enemy enemy = gameplay.getEnemies().get(i);
-//                        if (enemy.getCurrAnimation() != null
-//                                && enemy.getCurrAnimation() instanceof EnemyHit) {
-//                            enemy.setCurrAnimation(enemy.getAnimations().get(CharacterState.NORMAL));
-//                        }
-//                    }
+                player.getPosition().setYPosition(player.getPosition().getYPosition() + 50);
+                player.getPosition().setHeight(player.getPosition().getHeight() - 50);
+                player.setIsAttack(false);
 //                }
             }
         }

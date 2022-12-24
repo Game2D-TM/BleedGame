@@ -90,26 +90,26 @@ public class DiorEnemy extends Enemy {
                 isAttack = true;
                 gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, attackDamage);
                 int falloutX = gameplay.getPlayer().getPosition().getXPosition() - 100;
-                if (falloutX >= gameplay.getPlayPosition().getXPosition()) {
-                    gameplay.getPlayer().getPosition().setXPosition(falloutX);
-                } else {
-                    int falloutY = gameplay.getPlayer().getPosition().getYPosition() - 5;
-                    if (falloutY > gameplay.getPlayPosition().getYPosition() + 15) {
-                        gameplay.getPlayer().getPosition().setYPosition(
-                                gameplay.getPlayer().getPosition().getYPosition() - 5);
-                    } else {
-                        falloutY = gameplay.getPlayer().getPosition().getMaxY() + 5;
-                        if (falloutY < gameplay.getMaxYPlayArea() - 20) {
-                            gameplay.getPlayer().getPosition().setYPosition(
-                                    gameplay.getPlayer().getPosition().getYPosition() + 5);
-                        } else {
-                            gameplay.getPlayer().getPosition().setXPosition(
-                                    gameplay.getPlayer().getPosition().getXPosition() + 150);
-                            gameplay.getPlayer().getPosition().setYPosition(
-                                    gameplay.getPlayer().getPosition().getYPosition() - 50);
-                        }
-                    }
-                }
+//                if (falloutX >= gameplay.getPlayPosition().getXPosition()) {
+//                    gameplay.getPlayer().getPosition().setXPosition(falloutX);
+//                } else {
+//                    int falloutY = gameplay.getPlayer().getPosition().getYPosition() - 5;
+//                    if (falloutY > gameplay.getPlayPosition().getYPosition() + 15) {
+//                        gameplay.getPlayer().getPosition().setYPosition(
+//                                gameplay.getPlayer().getPosition().getYPosition() - 5);
+//                    } else {
+//                        falloutY = gameplay.getPlayer().getPosition().getMaxY() + 5;
+//                        if (falloutY < gameplay.getMaxYPlayArea() - 20) {
+//                            gameplay.getPlayer().getPosition().setYPosition(
+//                                    gameplay.getPlayer().getPosition().getYPosition() + 5);
+//                        } else {
+//                            gameplay.getPlayer().getPosition().setXPosition(
+//                                    gameplay.getPlayer().getPosition().getXPosition() + 150);
+//                            gameplay.getPlayer().getPosition().setYPosition(
+//                                    gameplay.getPlayer().getPosition().getYPosition() - 50);
+//                        }
+//                    }
+//                }
             }
         }
 
@@ -118,14 +118,25 @@ public class DiorEnemy extends Enemy {
                 Fireball fireBallAbility = ((Fireball) abilities.get(0));
                 if (fireBallAbility.isCanUse()) {
                     int spawnX;
+                    int xChange;
+                    int skillDistance = 1400;
+                    GamePosition endPos;
                     if (!isLTR) {
-                        spawnX = position.getXPosition() - 215;
+                        xChange = 215;
+                        spawnX = position.getXPosition() - xChange;
+                        endPos = new GamePosition(
+                                position.getXPosition() - skillDistance - xChange, 0
+                                , position.getMaxX() + skillDistance, 0);
                     } else {
-                        spawnX = position.getMaxX() + 15;
+                        xChange = 15;
+                        spawnX = position.getMaxX() + xChange;
+                        endPos = new GamePosition(
+                                position.getXPosition() - skillDistance
+                                , 0, position.getMaxX() + skillDistance + xChange, 0);
                     }
                     GamePosition fireBallPos = new GamePosition(spawnX,
                             position.getYPosition() + position.getHeight() / 2 - 10, 200, 100);
-                    boolean result = fireBallAbility.execute(fireBallPos, gameplay.getPlayPosition());
+                    boolean result = fireBallAbility.execute(fireBallPos, endPos);
                     if (result) {
                         if (isLTR) {
                             currAnimation = animations.get(CharacterState.ATTACK_LTR);
