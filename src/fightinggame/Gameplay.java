@@ -21,36 +21,34 @@ import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.ability.Ability;
-import fightinggame.entity.ability.type.healing.GreaterHeal;
-import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.enemy.dior.DiorColor;
 import fightinggame.entity.enemy.dior.DiorEnemy;
-import fightinggame.input.handler.PlayerMovementHandler;
-import fightinggame.input.handler.MouseHandler;
-import fightinggame.input.handler.PlayerAbilityHandler;
 import fightinggame.resource.EnemyAnimationResources;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
+import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
+import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.healing.HealthPotion;
 import fightinggame.entity.platform.Platform;
+import fightinggame.input.handler.EnemyMovementHandler;
+import fightinggame.input.handler.MouseHandler;
+import fightinggame.input.handler.PlayerAbilityHandler;
+import fightinggame.input.handler.PlayerMovementHandler;
 import fightinggame.resource.AudioPlayer;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
-
-    public static int DEF_SURROUND_TILE = 1;
-    
 //    private GamePosition playPosition;
     private Background background;
     private Player player;
@@ -65,10 +63,10 @@ public class Gameplay extends JPanel implements Runnable {
     private AudioPlayer audioPlayer;
     private final List<Item> itemsOnGround = new ArrayList<Item>();
     private Camera camera;
-
+    public int gravity = 5;
     public Gameplay(Game game, int width, int height) {
         setSize(width, height);
-        camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight());
+        camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
         background = new Background(0, "Scene 1",
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
@@ -76,17 +74,20 @@ public class Gameplay extends JPanel implements Runnable {
 //        playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
-        int xPosition = 10;
-        enemySpawnXPosition = xPosition + 1700;
-        playerInit(xPosition + 10); // playPosition.getYPosition() - 50
-//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520);
-//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + 50);
+//        int xPosition = 10;
+//        enemySpawnXPosition = xPosition + 1700;
+        Platform firstPlatform = getPlatforms().get(10).get(3);
+        playerInit(firstPlatform); // playPosition.getYPosition() - 50
+//        firstPlatform = background.getScene().get(10).get(7);
+//        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+//        firstPlatform = background.getScene().get(10).get(8);
+//        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
-    public void diorInit(int xPosition, int yPosition) {
+    public void diorInit(Platform firstPlatform) {
         Random random = new Random();
         int colorChoose = random.nextInt(7);
         String diorColorSheet = "";
@@ -121,8 +122,9 @@ public class Gameplay extends JPanel implements Runnable {
                 diorColor = DiorColor.Yellow;
                 break;
         }
-        GamePosition defEnemyPosition = new GamePosition(xPosition,
-                yPosition, 300, 200);
+        GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
+                firstPlatform.getPosition().getYPosition()
+        - 190, 300, 200);
         SpriteSheet enemyIdleSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 0, 192, 160,
                 23, 55, 160, 90, 4);
@@ -167,16 +169,22 @@ public class Gameplay extends JPanel implements Runnable {
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
                 enemyAnimations, null, this, 200);
+        EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
+        enemy.getController().add(movementHandler);
         abilitiesCharacterInit(enemy.getAbilities(), enemy);
         itemInit(enemy.getInventory(), enemy);
         enemyCount++;
         enemies.add(enemy);
         positions.put(enemy.getName(), enemy.getPosition());
+        enemy.setCurPlatform(firstPlatform);
     }
 
-    public void playerInit(int xPosition) {
-        GamePosition defPlayerPosition = new GamePosition(xPosition + 750,
-                getHeight() / 2 + 735, 200, 290); // 80
+    public void playerInit(Platform firstPlatform) {
+        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
+                firstPlatform.getPosition().getYPosition()
+        - 280 - 500, 200, 290); // 80
+        //xPosition + 750,
+        //        getHeight() / 2 + 735
         // xPosition,
         //        playPosition.getYPosition() - 50, 200, 290
         SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Idle.png"),
@@ -298,7 +306,7 @@ public class Gameplay extends JPanel implements Runnable {
         game.addMouseListener(mouseHandler);
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
-        player.setCurPlatform(getPlatforms().get(9).get(3));
+        player.setCurPlatform(firstPlatform);
     }
 
     public void itemInit(List<List<Item>> inventory, Character character) {
@@ -385,15 +393,24 @@ public class Gameplay extends JPanel implements Runnable {
                             Random random = new Random();
                             int numberOfEnemies = random.nextInt(5);
                             int enemySpawnYPosition = -1;
+                            int platformStandSize = getPlatforms().get(10).size() - 1;
+                            int platformColumn = platformStandSize;
                             for (int i = 0; i < numberOfEnemies; i++) {
+                                Platform platform = getPlatforms().get(10).get(platformColumn);
 //                                enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
-                                while (true) {
+//                                while (true) {
 //                                    enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
 //                                    if (enemySpawnYPosition <= getMaxYPlayArea() - 180) {
 //                                        break;
 //                                    }
-                                }
+//                                }
 //                                diorInit(enemySpawnXPosition, enemySpawnYPosition);
+                                  diorInit(platform);
+                                  if(platformColumn > 0) {
+                                      platformColumn--;
+                                  } else {
+                                      platformColumn = platformStandSize;
+                                  }
                             }
                         } catch (Exception ex) {
 
@@ -413,6 +430,9 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
+        if(background != null) {
+            background.tick();
+        }
         if (camera != null) {
             camera.tick();
         }
@@ -447,11 +467,16 @@ public class Gameplay extends JPanel implements Runnable {
 //            g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
 //                    playPosition.getWidth(), playPosition.getHeight());
         }
+        if(camera != null) {
+            camera.render(g);
+        }
         if (enemies != null) {
             if (enemies.size() > 0) {
                 for (int i = 0; i < enemies.size(); i++) {
                     Enemy enemy = enemies.get(i);
-                    enemy.render(g2);
+                    if(camera.checkPositionRelateToCamera(enemy.getPosition())) {
+                        enemy.render(g2);
+                    }
                 }
             }
         }
@@ -459,7 +484,9 @@ public class Gameplay extends JPanel implements Runnable {
             for (int i = 0; i < itemsOnGround.size(); i++) {
                 Item item = itemsOnGround.get(i);
                 if (item != null) {
-                    item.render(g2);
+                    if(camera.checkPositionRelateToCamera(item.getPosition())) {
+                        item.render(g2);
+                    }
                 }
             }
         }
@@ -483,50 +510,19 @@ public class Gameplay extends JPanel implements Runnable {
         return background.getScene();
     }
     
-    public List<List<Platform>> getSurroundPlatform(int i, int j) {
-        List<List<Platform>> scenePlatforms = getPlatforms();
-        if (scenePlatforms != null && scenePlatforms.size() > 0) {
-            List<List<Platform>> platforms = new ArrayList<List<Platform>>();
-            int left = j, up = i, right = j, down = i;
-            int surroundTile = DEF_SURROUND_TILE;
-            if (left - surroundTile >= 0) {
-                left = left - surroundTile;
-            } else {
-                left = 0;
-            }
-            if (up - surroundTile >= 0) {
-                up = up - surroundTile;
-            } else {
-                up = 0;
-            }
-            if (scenePlatforms.get(i) != null && scenePlatforms.get(i).size() > 2) {
-                if (right + surroundTile < scenePlatforms.get(i).size()) {
-                    right = right + surroundTile;
-                } else {
-                    right = scenePlatforms.get(i).size() - 1;
-                }
-
-                if (down + surroundTile < scenePlatforms.get(i).size()) {
-                    down = down + surroundTile;
-                } else {
-                    down = scenePlatforms.get(i).size() - 1;
-                }
-            }
-            for(int row = up ; row <= down; row++) {
-                List<Platform> list = new ArrayList<Platform>();
-                for(int column = left; column <= right; column++) {
-                    Platform platform = scenePlatforms.get(row).get(column);
-                    if(platform != null) {
-                        list.add(platform);
-                    }
-                }
-                platforms.add(list);
-            }
-            return platforms;
-        }
-        return null;
+    public GamePosition getPositionFromPlatform(Platform platform, int characterWidth, int characterHeight) {
+        return new GamePosition(platform.getPosition().getXPosition() + 5 ,
+                platform.getPosition().getYPosition(), characterWidth, characterHeight);
     }
-
+    
+    public List<List<Platform>> getSurroundPlatform(int i, int j) {
+        return background.getSurroundPlatform(i, j, background.DEF_SURROUND_TILE
+        , 0, 0, 0, 0);
+    }
+    
+    public GamePosition getScenePosition() {
+        return background.getPosition();
+    }
     public Player getPlayer() {
         return player;
     }

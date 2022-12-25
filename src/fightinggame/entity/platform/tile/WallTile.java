@@ -16,12 +16,10 @@ public class WallTile extends Platform{
     public boolean checkValidPosition(GamePosition position) {
         GamePosition tilePos = this.position;
         if(tilePos == null) return false;
-        position.setXPosition(position.getXPosition() - gameplay.getCamera().getPosition().getXPosition());
-        position.setYPosition(position.getYPosition() - gameplay.getCamera().getPosition().getYPosition());
         if(((position.getXPosition() >= tilePos.getXPosition() && position.getXPosition() <= tilePos.getMaxX())
-                || position.getMaxX() >= tilePos.getXPosition() && position.getMaxX() <= tilePos.getMaxX())
+                || (position.getMaxX() >= tilePos.getXPosition() && position.getMaxX() <= tilePos.getMaxX()))
                 && ((position.getYPosition() >= tilePos.getYPosition() && position.getMaxY() <= tilePos.getMaxY())
-                || (position.getYPosition() < tilePos.getYPosition() && position.getMaxY() >= tilePos.getMaxX())
+                || (position.getYPosition() < tilePos.getYPosition() && position.getMaxY() >= tilePos.getMaxY())
                 || (position.getYPosition() >= tilePos.getYPosition() && position.getYPosition() <= tilePos.getMaxY()
                 && position.getMaxY() > tilePos.getMaxY())
                 || (position.getMaxY() >= tilePos.getYPosition() && position.getMaxY() <= tilePos.getMaxY()

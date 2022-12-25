@@ -13,6 +13,9 @@ import fightinggame.entity.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
 import fightinggame.entity.item.Item;
+import fightinggame.entity.platform.Platform;
+import fightinggame.entity.platform.tile.Tile;
+import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 
@@ -113,20 +116,23 @@ public class Enemy extends Character {
                         }
                     }
                 }
-//                if (!isLTR) {
+                if (!isLTR) {
 //                    if (position.getXPosition() >= gameplay.getPlayPosition().getXPosition()) {
 //                        position.moveLeft(speed, true);
 //                    } else {
 //                        isLTR = true;
 //                    }
-//                } else {
+                    position.isMoveLeft = true;
+                } else {
 //                    if (position.getXPosition() + position.getWidth() <= gameplay.getPlayPosition().getXPosition()
 //                            + gameplay.getPlayPosition().getWidth()) {
 //                        position.moveRight(speed, true);
 //                    } else {
 //                        isLTR = false;
 //                    }
-//                }
+                    position.isMoveRight = true;
+                }
+                checkNextToWall();
                 walkCounter = 0;
             }
         }
@@ -151,6 +157,43 @@ public class Enemy extends Character {
 
     public void setDefAttackedCounter() {
         isAttackedCounter = 0;
+    }
+
+    public boolean checkNextToWall() {
+        if (insidePlatform != null) {
+            try {
+                int row = insidePlatform.getRow();
+                int column = insidePlatform.getColumn();
+                if (row >= 0) {
+                    if (!isLTR) {
+                        int nColumn = column - 1;
+                        Platform platform = gameplay.getPlatforms().get(row).get(nColumn);
+                        if (platform != null) {
+                            if (platform instanceof WallTile || platform instanceof Tile) {
+                                isLTR = true;
+                                return true;
+                            }
+                        }
+                    } else {
+                        int nColumn = column + 1;
+                        Platform platform = gameplay.getPlatforms().get(row).get(nColumn);
+                        if (platform != null) {
+                            if (platform instanceof WallTile || platform instanceof Tile) {
+                                isLTR = false;
+                                return true;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                if(!isLTR) {
+                    isLTR = true;
+                } else {
+                    isLTR = false;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

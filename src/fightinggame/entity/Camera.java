@@ -1,19 +1,21 @@
 package fightinggame.entity;
 
+import fightinggame.Gameplay;
+import java.awt.Color;
+import java.awt.Graphics;
+
 public class Camera {
 
     private Player player;
     private GamePosition position;
-    private int windowWidth;
-    private int windowHeight;
+    private Gameplay gameplay;
 
-    public Camera(Player player, GamePosition position, int windowWidth, int windowHeight) {
+    public Camera(Player player, GamePosition position, int windowWidth, int windowHeight, Gameplay gameplay) {
         this.player = player;
         this.position = position;
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
         position.setWidth(windowWidth);
         position.setHeight(windowHeight);
+        this.gameplay = gameplay;
     }
 
     public void tick() {
@@ -21,28 +23,49 @@ public class Camera {
             if (player != null) {
                 if (!player.isAttack) {
 //                if (player.getPosition().getXPosition() <= position.getXPosition() + 300 || player.getPosition().getMaxX() >= position.getMaxX() - 300) {
-                    position.setXPosition(player.getPosition().getXPosition() - windowWidth / 4);
-                    position.setYPosition(player.getPosition().getYPosition() - windowHeight / 2);
+                    int nX = player.getPosition().getXPosition()
+                            - position.getWidth() / 4;
+                    int nY = player.getPosition().getYPosition()
+                            - position.getHeight() / 2;
+                    if (nX >= gameplay.getScenePosition().getXPosition() && nX + position.getWidth() <= gameplay.getScenePosition().getMaxX()) {
+                        position.setXPosition(nX);
+                    }
+                    if (nY >= gameplay.getScenePosition().getYPosition() && nY + position.getHeight() <= gameplay.getScenePosition().getMaxY()) {
+                        position.setYPosition(nY);
+                    }
 //                }
                 }
             }
         }
     }
 
-    public int getWindowWidth() {
-        return windowWidth;
+    public void render(Graphics g) {
+        if (position != null) {
+            g.setColor(Color.red);
+            g.drawRect(position.getXPosition() - position.getXPosition(),
+                    position.getYPosition() - position.getYPosition(),
+                    position.getWidth(), position.getHeight());
+        }
     }
 
-    public void setWindowWidth(int windowWidth) {
-        this.windowWidth = windowWidth;
-    }
-
-    public int getWindowHeight() {
-        return windowHeight;
-    }
-
-    public void setWindowHeight(int windowHeight) {
-        this.windowHeight = windowHeight;
+    public boolean checkPositionRelateToCamera(GamePosition position) {
+        GamePosition cameraPos = this.position;
+        if(cameraPos == null) return false;
+        if (((cameraPos.getXPosition() <= position.getXPosition() && cameraPos.getMaxX() >= position.getMaxX())
+                || (cameraPos.getXPosition() >= position.getXPosition() && cameraPos.getXPosition()
+                <= position.getMaxX() && cameraPos.getMaxX() > position.getMaxX())
+                || (cameraPos.getMaxX() >= position.getXPosition() && cameraPos.getMaxX() <= position.getMaxX()
+                && cameraPos.getXPosition() < position.getXPosition())
+                || (cameraPos.getXPosition() >= position.getXPosition() && cameraPos.getMaxX() <= position.getMaxX()))
+                && ((cameraPos.getYPosition() <= position.getYPosition()
+                && cameraPos.getMaxY() >= position.getMaxY())
+                || (cameraPos.getYPosition() >= position.getYPosition() && cameraPos.getYPosition() <= position.getMaxY()
+                && cameraPos.getMaxY() > position.getMaxY())
+                || (cameraPos.getMaxY() >= position.getYPosition() && cameraPos.getMaxY() <= position.getMaxY()
+                && cameraPos.getYPosition() < position.getYPosition()))) {
+            return true;
+        }
+        return false;
     }
 
     public Player getPlayer() {

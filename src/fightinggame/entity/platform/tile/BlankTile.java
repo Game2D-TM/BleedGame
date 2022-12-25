@@ -17,17 +17,17 @@ public class BlankTile extends Platform {
         if (tilePos == null) {
             return false;
         }
-        position.setXPosition(position.getXPosition() - gameplay.getCamera().getPosition().getXPosition());
-        position.setYPosition(position.getYPosition() - gameplay.getCamera().getPosition().getYPosition());
-                if(((position.getXPosition() >= tilePos.getXPosition() && position.getMaxX() <= tilePos.getMaxX())
+        if(((position.getXPosition() >= tilePos.getXPosition() && position.getMaxX() <= tilePos.getMaxX())
                 || (position.getXPosition() >= tilePos.getXPosition() && position.getXPosition() <= tilePos.getMaxX()
-                && position.getMaxX() >= tilePos.getMaxX())
+                && position.getMaxX() > tilePos.getMaxX())
                 || (position.getMaxX() >= tilePos.getXPosition() && position.getMaxX() <= tilePos.getMaxX()
-                && position.getXPosition() <= tilePos.getXPosition())
-                || (position.getXPosition() < tilePos.getXPosition() && position.getMaxX() > tilePos.getMaxX()))
-                && ((position.getYPosition() < tilePos.getYPosition()
-                && position.getMaxX() <= tilePos.getMaxY())
-                || (position.getYPosition() >= tilePos.getYPosition() && position.getMaxY() <= tilePos.getMaxY()))) {
+                && position.getXPosition() < tilePos.getXPosition())
+                || (position.getXPosition() < tilePos.getXPosition() && position.getMaxX() >= tilePos.getMaxX()))
+                && ((position.getYPosition() >= tilePos.getYPosition() && position.getMaxY() <= tilePos.getMaxY())
+                || (position.getYPosition() >= tilePos.getYPosition() && position.getYPosition() <= tilePos.getMaxY()
+                && position.getMaxY() > tilePos.getMaxY())
+                || (position.getMaxY() >= tilePos.getYPosition() && position.getMaxY() <= tilePos.getMaxY()
+                && position.getYPosition() < tilePos.getYPosition()))) {
             return true;
         }
         return false;

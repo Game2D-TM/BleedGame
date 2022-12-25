@@ -38,24 +38,23 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                     if (!player.getPosition().isMoving() && !player.isDeath()) {
                         int spawnX;
                         int xChange;
-                        int skillDistance = 1400;
                         GamePosition endPos;
                         if (player.isLTR()) {
                             xChange = 15;
                             spawnX = player.getPosition().getMaxX() + xChange;
                             endPos = new GamePosition(
-                                    player.getPosition().getXPosition() - skillDistance, 0,
-                                    player.getPosition().getMaxX() + skillDistance + xChange, 0);
+                                    gameplay.getCamera().getPosition().getXPosition(), 0,
+                                    gameplay.getCamera().getPosition().getMaxX() + xChange, 0);
                         } else {
                             xChange = 215;
                             spawnX = player.getPosition().getXPosition() - xChange;
                             endPos = new GamePosition(
-                                    player.getPosition().getXPosition() - skillDistance - xChange, 0,
-                                    player.getPosition().getMaxX() + skillDistance, 0);
+                                    gameplay.getCamera().getPosition().getXPosition() - xChange, 0,
+                                    gameplay.getCamera().getPosition().getMaxX(), 0);
                         }
                         GamePosition spawnPosition
                                 = new GamePosition(spawnX,
-                                        player.getPosition().getYPosition() + 30, 200, 100);
+                                        player.getPosition().getYPosition() + 70, 200, 100);
                         boolean result = ((Fireball) player.getAbility(1)).execute(spawnPosition, endPos);
                         if (result) {
                             if (player.isLTR()) {

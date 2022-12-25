@@ -2,9 +2,11 @@ package fightinggame.entity.platform;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.GamePosition;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public abstract class Platform {
+
     protected String name;
     protected BufferedImage image;
     protected boolean canStand;
@@ -12,9 +14,10 @@ public abstract class Platform {
     protected Gameplay gameplay;
     protected int row;
     protected int column;
+    protected boolean canRender = false;
 
-    public Platform(String name, BufferedImage image, boolean canStand, GamePosition position, Gameplay gameplay
-    ,int row, int column) {
+    public Platform(String name, BufferedImage image, boolean canStand, GamePosition position, Gameplay gameplay,
+            int row, int column) {
         this.name = name;
         this.image = image;
         this.canStand = canStand;
@@ -25,7 +28,20 @@ public abstract class Platform {
     }
 
     public abstract boolean checkValidPosition(GamePosition position);
-    
+
+    public void tick() {
+        canRender = gameplay.getCamera().checkPositionRelateToCamera(position);
+    }
+
+    public void render(Graphics g) {
+        if (canRender) {
+            g.drawImage(image, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                    position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
+                    position.getHeight(), null);
+            canRender = false;
+        }
+    }
+
     public String getName() {
         return name;
     }
@@ -73,6 +89,5 @@ public abstract class Platform {
     public void setColumn(int column) {
         this.column = column;
     }
-    
-    
+
 }
