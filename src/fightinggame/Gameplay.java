@@ -15,40 +15,41 @@ import fightinggame.animation.player.PlayerIdle;
 import fightinggame.animation.player.PlayerRun;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Background;
+import fightinggame.entity.Camera;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.ability.Ability;
-import fightinggame.entity.ability.type.healing.GreaterHeal;
-import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.enemy.dior.DiorColor;
 import fightinggame.entity.enemy.dior.DiorEnemy;
-import fightinggame.input.handler.PlayerMovementHandler;
-import fightinggame.input.handler.MouseHandler;
-import fightinggame.input.handler.PlayerAbilityHandler;
 import fightinggame.resource.EnemyAnimationResources;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
+import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
+import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.healing.HealthPotion;
+import fightinggame.entity.platform.Platform;
+import fightinggame.input.handler.EnemyMovementHandler;
+import fightinggame.input.handler.MouseHandler;
+import fightinggame.input.handler.PlayerAbilityHandler;
+import fightinggame.input.handler.PlayerMovementHandler;
 import fightinggame.resource.AudioPlayer;
-import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
-
-    private GamePosition playPosition;
+//    private GamePosition playPosition;
     private Background background;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
@@ -61,26 +62,32 @@ public class Gameplay extends JPanel implements Runnable {
     private Thread spawnEnemiesThread;
     private AudioPlayer audioPlayer;
     private final List<Item> itemsOnGround = new ArrayList<Item>();
-
+    private Camera camera;
+    public int gravity = 5;
     public Gameplay(Game game, int width, int height) {
+        setSize(width, height);
+        camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
         background = new Background(0, "Scene 1",
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
                 "data/scene_1.txt");
-        playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
+//        playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
-        int xPosition = playPosition.getXPosition();
-        enemySpawnXPosition = xPosition + 1700;
-        playerInit(xPosition + 10); // playPosition.getYPosition() - 50
-//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520);
-//        diorInit(enemySpawnXPosition, playPosition.getYPosition() + 50);
+//        int xPosition = 10;
+//        enemySpawnXPosition = xPosition + 1700;
+        Platform firstPlatform = getPlatforms().get(10).get(3);
+        playerInit(firstPlatform); // playPosition.getYPosition() - 50
+//        firstPlatform = background.getScene().get(10).get(7);
+//        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+//        firstPlatform = background.getScene().get(10).get(8);
+//        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
-    public void diorInit(int xPosition, int yPosition) {
+    public void diorInit(Platform firstPlatform) {
         Random random = new Random();
         int colorChoose = random.nextInt(7);
         String diorColorSheet = "";
@@ -115,8 +122,9 @@ public class Gameplay extends JPanel implements Runnable {
                 diorColor = DiorColor.Yellow;
                 break;
         }
-        GamePosition defEnemyPosition = new GamePosition(xPosition,
-                yPosition, 300, 200);
+        GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
+                firstPlatform.getPosition().getYPosition()
+        - 190, 300, 200);
         SpriteSheet enemyIdleSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 0, 192, 160,
                 23, 55, 160, 90, 4);
@@ -161,96 +169,98 @@ public class Gameplay extends JPanel implements Runnable {
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
                 enemyAnimations, null, this, 200);
+        EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
+        enemy.getController().add(movementHandler);
         abilitiesCharacterInit(enemy.getAbilities(), enemy);
         itemInit(enemy.getInventory(), enemy);
         enemyCount++;
         enemies.add(enemy);
         positions.put(enemy.getName(), enemy.getPosition());
+        enemy.setCurPlatform(firstPlatform);
     }
 
-    public void playerInit(int xPosition) {
-        GamePosition defPlayerPosition = new GamePosition(xPosition,
-                playPosition.getYPosition() - 50, 200, 290);
-//        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Idle.png"),
-//                0, 0, 200, 200,
-//                75, 70, 38, 53, 8);
-//        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
-//                0, 0, 200, 200,
-//                75, 75, 43, 48, 8);
+    public void playerInit(Platform firstPlatform) {
+        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
+                firstPlatform.getPosition().getYPosition()
+        - 280 - 500, 200, 290); // 80
+        //xPosition + 750,
+        //        getHeight() / 2 + 735
+        // xPosition,
+        //        playPosition.getYPosition() - 50, 200, 290
+        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Idle.png"),
+                0, 0, 200, 200,
+                75, 70, 38, 53, 8);
+        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
+                0, 0, 200, 200,
+                75, 75, 43, 48, 8);
+        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
+                800, 0, 200, 200,
+                75, 53, 115, 70, 2);
+        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack2.png"),
+                800, 0, 200, 200,
+                75, 53, 115, 70, 2);
+        SpriteSheet playerHitLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/TakeHit.png"),
+                0, 0, 200, 200,
+                75, 68, 38, 55, 4);
+        SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Death.png"),
+                0, 0, 200, 200,
+                75, 70, 46, 55, 6);
+
+        SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Idle.png"),
+                0, 0, 200, 200,
+                87, 70, 38, 53, 8);
+        SpriteSheet playerRunRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Run.png"),
+                0, 0, 200, 200,
+                83, 75, 43, 48, 8);
+        SpriteSheet playerAttack1RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Attack1.png"),
+                0, 0, 200, 200,
+                5, 53, 113, 70, 2);
+        SpriteSheet playerAttack2RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Attack2.png"),
+                0, 0, 200, 200,
+                5, 53, 113, 70, 2);
+        SpriteSheet playerHitRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/TakeHit.png"),
+                0, 0, 200, 200,
+                85, 68, 38, 55, 4);
+        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Death.png"),
+                0, 0, 200, 200,
+                80, 70, 42, 55, 6);
+//        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Idle.png"),
+//                0, 0, 64, 80,
+//                21, 15, 36, 49, 4);
 //        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
 //                0, 0, 80, 80,
-//                21, 8, 40, 60, 8);
-//        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
-//                800, 0, 200, 200,
-//                75, 53, 115, 70, 2);
+//                27, 16, 33, 52, 8);
 //        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack1.png"),
 //                0, 0, 96, 80,
-//                8, 3, 80, 60, 8);
-//        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack2.png"),
-//                800, 0, 200, 200,
-//                75, 53, 115, 70, 2);
-//        SpriteSheet playerHitLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/TakeHit.png"),
-//                0, 0, 200, 200,
-//                75, 68, 38, 55, 4);
-//        SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Death.png"),
-//                0, 0, 200, 200,
-//                75, 70, 46, 55, 6);
+//                30, 0, 57, 65, 5);
+//        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack2.png"),
+//                0, 0, 96, 80,
+//                10, 10, 70, 65, 8);
+//        SpriteSheet playerHitLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/TakeHit.png"),
+//                0, 0, 64, 64,
+//                5, 0, 54, 64, 4);
+//        SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Death.png"),
+//                0, 0, 80, 64,
+//                10, 0, 64, 64, 8);
 //
-//        SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Idle.png"),
-//                0, 0, 200, 200,
-//                87, 70, 38, 53, 8);
-//        SpriteSheet playerRunRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Run.png"),
-//                0, 0, 200, 200,
-//                83, 75, 43, 48, 8);
-//        SpriteSheet playerAttack1RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Attack1.png"),
-//                0, 0, 200, 200,
-//                5, 53, 113, 70, 2);
-//        SpriteSheet playerAttack2RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Attack2.png"),
-//                0, 0, 200, 200,
-//                5, 53, 113, 70, 2);
-//        SpriteSheet playerHitRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/TakeHit.png"),
-//                0, 0, 200, 200,
-//                85, 68, 38, 55, 4);
-//        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Death.png"),
-//                0, 0, 200, 200,
-//                80, 70, 42, 55, 6);
-        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Idle.png"),
-                0, 0, 64, 80,
-                21, 8, 36, 60, 4);
-        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
-                0, 0, 80, 80,
-                30, 8, 40, 60, 8);
-        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack1.png"),
-                0, 0, 96, 80,
-                25, 0, 70, 65, 8);
-        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack2.png"),
-                0, 0, 96, 80,
-                25, 0, 70, 65, 8);
-        SpriteSheet playerHitLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/TakeHit.png"),
-                0, 0, 64, 64,
-                5, 0, 54, 64, 4);
-        SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Death.png"),
-                0, 0, 80, 64,
-                10, 0, 64, 64, 8);
-
-        SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Idle.png"),
-                0, 0, 64, 80,
-                10, 8, 36, 60, 4);
-        SpriteSheet playerRunRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Run.png"),
-                0, 0, 80, 80,
-                10, 8, 40, 60, 8);
-        SpriteSheet playerAttack1RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack1.png"),
-                0, 0, 96, 80,
-                10, 0, 65, 65, 8);
-        SpriteSheet playerAttack2RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack2.png"),
-                0, 0, 96, 80,
-                10, 0, 65, 65, 8);
-        SpriteSheet playerHitRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/TakeHit.png"),
-                0, 0, 64, 64,
-                0, 0, 54, 64, 4);
-        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Death.png"),
-                0, 0, 80, 64,
-                10, 0, 64, 64, 8);
+//        SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Idle.png"),
+//                0, 0, 64, 80,
+//                8, 15, 35, 49, 4);
+//        SpriteSheet playerRunRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Run.png"),
+//                0, 0, 80, 80,
+//                20, 16, 33, 52, 8);
+//        SpriteSheet playerAttack1RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack1.png"),
+//                0, 0, 95, 77,
+//                12, 0, 57, 65, 5);
+//        SpriteSheet playerAttack2RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack2.png"),
+//                0, 0, 96, 80,
+//                10, 0, 65, 65, 8);
+//        SpriteSheet playerHitRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/TakeHit.png"),
+//                0, 0, 64, 64,
+//                0, 0, 54, 64, 4);
+//        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Death.png"),
+//                0, 0, 80, 64,
+//                24, 20, 40, 44, 8);
         playerIdleSheetRTL.reverseImages();
         playerRunRTL.reverseImages();
         playerAttack1RTL.reverseImages();
@@ -281,7 +291,7 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
-                playerAnimations, null);
+                playerAnimations, null, this);
         abilitiesCharacterInit(player.getAbilities(), player);
         itemInit(player.getInventory(), player);
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
@@ -295,6 +305,8 @@ public class Gameplay extends JPanel implements Runnable {
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
         positions.put(player.getName(), player.getPosition());
+        camera.setPlayer(player);
+        player.setCurPlatform(firstPlatform);
     }
 
     public void itemInit(List<List<Item>> inventory, Character character) {
@@ -302,7 +314,7 @@ public class Gameplay extends JPanel implements Runnable {
         healthPotionSheet.add("assets/res/item/s_potion.png");
         HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
         HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character,
-                 new GamePosition(0, 0, 50, 50), this, 1);
+                new GamePosition(0, 0, 50, 50), this, 1);
         abilitiesItemInit(healthPotion.getAbilities(), character);
         List<Item> items = new ArrayList<Item>();
         items.add(healthPotion);
@@ -338,7 +350,7 @@ public class Gameplay extends JPanel implements Runnable {
             sheetRTL.setImages(fireBallsRTL);
             Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
             Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
-            Fireball fireball = new Fireball(150, 30, 2, 5000, fireballIcon,
+            Fireball fireball = new Fireball(150, 30, 2, 500, fireballIcon,
                     new GamePosition(firstSkillPosition.getMaxX() + 15,
                             firstSkillPosition.getYPosition(), firstSkillPosition.getWidth(), firstSkillPosition.getHeight()),
                     fireBallAnimationLTR, fireBallAnimationRTL, redBorder, this, character);
@@ -381,15 +393,24 @@ public class Gameplay extends JPanel implements Runnable {
                             Random random = new Random();
                             int numberOfEnemies = random.nextInt(5);
                             int enemySpawnYPosition = -1;
+                            int platformStandSize = getPlatforms().get(10).size() - 1;
+                            int platformColumn = platformStandSize;
                             for (int i = 0; i < numberOfEnemies; i++) {
-                                enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
-                                while (true) {
-                                    enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
-                                    if (enemySpawnYPosition <= getMaxYPlayArea() - 180) {
-                                        break;
-                                    }
-                                }
-                                diorInit(enemySpawnXPosition, enemySpawnYPosition);
+                                Platform platform = getPlatforms().get(10).get(platformColumn);
+//                                enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
+//                                while (true) {
+//                                    enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
+//                                    if (enemySpawnYPosition <= getMaxYPlayArea() - 180) {
+//                                        break;
+//                                    }
+//                                }
+//                                diorInit(enemySpawnXPosition, enemySpawnYPosition);
+                                  diorInit(platform);
+                                  if(platformColumn > 0) {
+                                      platformColumn--;
+                                  } else {
+                                      platformColumn = platformStandSize;
+                                  }
                             }
                         } catch (Exception ex) {
 
@@ -409,6 +430,12 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
+        if(background != null) {
+            background.tick();
+        }
+        if (camera != null) {
+            camera.tick();
+        }
         if (enemies != null) {
             if (enemies.size() > 0) {
                 for (int i = 0; i < enemies.size(); i++) {
@@ -436,15 +463,20 @@ public class Gameplay extends JPanel implements Runnable {
         if (background != null) {
             background.render(g2);
             // rectangle
-            g.setColor(Color.red);
-            g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
-                    playPosition.getWidth(), playPosition.getHeight());
+//            g.setColor(Color.red);
+//            g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
+//                    playPosition.getWidth(), playPosition.getHeight());
+        }
+        if(camera != null) {
+            camera.render(g);
         }
         if (enemies != null) {
             if (enemies.size() > 0) {
                 for (int i = 0; i < enemies.size(); i++) {
                     Enemy enemy = enemies.get(i);
-                    enemy.render(g2);
+                    if(camera.checkPositionRelateToCamera(enemy.getPosition())) {
+                        enemy.render(g2);
+                    }
                 }
             }
         }
@@ -452,7 +484,9 @@ public class Gameplay extends JPanel implements Runnable {
             for (int i = 0; i < itemsOnGround.size(); i++) {
                 Item item = itemsOnGround.get(i);
                 if (item != null) {
-                    item.render(g2);
+                    if(camera.checkPositionRelateToCamera(item.getPosition())) {
+                        item.render(g2);
+                    }
                 }
             }
         }
@@ -461,14 +495,34 @@ public class Gameplay extends JPanel implements Runnable {
         }
     }
 
-    public GamePosition getPlayPosition() {
-        return playPosition;
+    public Camera getCamera() {
+        return camera;
     }
 
-    public void setPlayPosition(GamePosition playPosition) {
-        this.playPosition = playPosition;
+//    public GamePosition getPlayPosition() {
+//        return playPosition;
+//    }
+//
+//    public void setPlayPosition(GamePosition playPosition) {
+//        this.playPosition = playPosition;
+//    }
+    public List<List<Platform>> getPlatforms() {
+        return background.getScene();
     }
-
+    
+    public GamePosition getPositionFromPlatform(Platform platform, int characterWidth, int characterHeight) {
+        return new GamePosition(platform.getPosition().getXPosition() + 5 ,
+                platform.getPosition().getYPosition(), characterWidth, characterHeight);
+    }
+    
+    public List<List<Platform>> getSurroundPlatform(int i, int j) {
+        return background.getSurroundPlatform(i, j, background.DEF_SURROUND_TILE
+        , 0, 0, 0, 0);
+    }
+    
+    public GamePosition getScenePosition() {
+        return background.getPosition();
+    }
     public Player getPlayer() {
         return player;
     }
@@ -493,14 +547,13 @@ public class Gameplay extends JPanel implements Runnable {
         this.game = game;
     }
 
-    public int getMaxYPlayArea() {
-        return playPosition.getMaxY();
-    }
-
-    public int getMaxXPlayArea() {
-        return playPosition.getMaxX();
-    }
-
+//    public int getMaxYPlayArea() {
+//        return playPosition.getMaxY();
+//    }
+//
+//    public int getMaxXPlayArea() {
+//        return playPosition.getMaxX();
+//    }
     public Thread getThread() {
         return spawnEnemiesThread;
     }

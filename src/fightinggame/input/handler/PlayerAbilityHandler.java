@@ -37,15 +37,25 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                 case KeyEvent.VK_2:
                     if (!player.getPosition().isMoving() && !player.isDeath()) {
                         int spawnX;
+                        int xChange;
+                        GamePosition endPos;
                         if (player.isLTR()) {
-                            spawnX = player.getPosition().getMaxX() + 15;
+                            xChange = 15;
+                            spawnX = player.getPosition().getMaxX() + xChange;
+                            endPos = new GamePosition(
+                                    gameplay.getCamera().getPosition().getXPosition(), 0,
+                                    gameplay.getCamera().getPosition().getMaxX() + xChange, 0);
                         } else {
-                            spawnX = player.getPosition().getXPosition() - 215;
+                            xChange = 215;
+                            spawnX = player.getPosition().getXPosition() - xChange;
+                            endPos = new GamePosition(
+                                    gameplay.getCamera().getPosition().getXPosition() - xChange, 0,
+                                    gameplay.getCamera().getPosition().getMaxX(), 0);
                         }
                         GamePosition spawnPosition
                                 = new GamePosition(spawnX,
-                                        player.getPosition().getYPosition() + 30, 200, 100);
-                        boolean result = ((Fireball) player.getAbility(1)).execute(spawnPosition, gameplay.getPlayPosition());
+                                        player.getPosition().getYPosition() + 70, 200, 100);
+                        boolean result = ((Fireball) player.getAbility(1)).execute(spawnPosition, endPos);
                         if (result) {
                             if (player.isLTR()) {
                                 player.setCurrAnimation(player.getAnimations().get(CharacterState.ATTACK_LTR));
@@ -78,7 +88,7 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                             break;
                         }
                         if (firstItem.use()) {
-                            
+
                         } else {
                             System.out.println("Is Cooldown.");
                         }

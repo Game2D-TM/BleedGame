@@ -1,7 +1,7 @@
 package fightinggame.entity;
 
+import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
-import fightinggame.input.handler.Handler;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 import java.awt.Color;
@@ -14,8 +14,10 @@ public class Player extends Character {
     private int isStunCounter = 0;
     private int point = 0;
 
-    public Player(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets) {
-        super(id, name, health, position, animations, characterAssets, true);
+    public Player(int id, String name, int health, GamePosition position,
+            Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
+            Gameplay gameplay) {
+        super(id, name, health, position, animations, characterAssets, gameplay, true);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
         speed = 2;
@@ -23,6 +25,8 @@ public class Player extends Character {
         healthBar.getPositions().put("player_score",
                 new GamePosition(healthBar.getNamePos().getXPosition(),
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
+        jumpSpeed = 300;
+        fallDown = true;
     }
 
     @Override
@@ -39,22 +43,6 @@ public class Player extends Character {
 
     }
 
-    public boolean moveRight() {
-        return position.moveRight(speed);
-    }
-
-    public boolean moveLeft() {
-        return position.moveLeft(speed);
-    }
-
-    public boolean moveUp() {
-        return position.moveUp(speed);
-    }
-
-    public boolean moveDown() {
-        return position.moveDown(speed);
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -64,15 +52,29 @@ public class Player extends Character {
             if (isStunCounter > 50) {
                 isAttacked = false;
                 isStunCounter = 0;
-                if(isLTR) {
+                if (isLTR) {
                     currAnimation = animations.get(CharacterState.IDLE_LTR);
-                } else currAnimation = animations.get(CharacterState.IDLE_RTL);
+                } else {
+                    currAnimation = animations.get(CharacterState.IDLE_RTL);
+                }
             }
         }
-        if (controller.size() > 0) {
-            for (int i = 0; i < controller.size(); i++) {
-                Handler handler = controller.get(i);
-                handler.tick();
+        if (!isAttack && fallDown) {
+            if (vely < gameplay.gravity) {
+                vely += 0.05;
+            }
+            double nY = vely + position.getYPosition();
+            if (nY < 1510) {
+                position.setYPosition((int) vely + position.getYPosition());
+                if(position.isMoveRight) {
+                    position.setXPosition((int) vely + position.getXPosition());
+                } else if(position.isMoveLeft) {
+                    position.setXPosition(position.getXPosition() - (int)vely);
+                }
+            } else {
+                vely = 0;
+                inAir = false;
+                fallDown = false;
             }
         }
     }
@@ -83,10 +85,11 @@ public class Player extends Character {
         healthBar.render(g);
         g.drawString("Score: " + point, getPlayerScorePos().getXPosition(),
                 getPlayerScorePos().getYPosition());
-        // hitbox
         g.setColor(Color.red);
-        g.drawRect(getXHitBox(), getYHitBox(),
-                position.getWidth(), position.getHeight() / 2 - 10);
+        // hitbox
+//        g.setColor(Color.red);
+//        g.drawRect(getXHitBox(), getYHitBox(),
+//                position.getWidth(), position.getHeight() / 2 - 10);
         //attackhitbox
 //        int attackX;
 //        if(isLTR) {
@@ -143,19 +146,25 @@ public class Player extends Character {
                         && attackMaxY > getYMaxHitBox())
                         || (attackMaxY > getYHitBox() && attackMaxY <= getYMaxHitBox()
                         && attackY < getYHitBox())))) {
-                    if(isLTR) {
+                    if (isLTR) {
                         currAnimation = animations.get(CharacterState.GET_HIT_LTR);
-                    } else currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                    } else {
+                        currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                    }
                     isAttacked = true;
                     int health = healthBar.getHealth() - attackDmg;
-                    if(health < 0) health = 0;
+                    if (health < 0) {
+                        health = 0;
+                    }
                     receiveDamage = attackDmg;
                     healthBar.setHealth(health);
                     if (health <= 0) {
                         isDeath = true;
-                        if(isLTR) {
+                        if (isLTR) {
                             currAnimation = animations.get(CharacterState.DEATH_LTR);
-                        } else currAnimation = animations.get(CharacterState.DEATH_RTL);
+                        } else {
+                            currAnimation = animations.get(CharacterState.DEATH_RTL);
+                        }
                     }
                     return true;
                 }

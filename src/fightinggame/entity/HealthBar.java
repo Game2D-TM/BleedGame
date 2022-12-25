@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HealthBar {
-    
+
     private int maxHealth;
     private int health;
     private BufferedImage avatar;
@@ -33,40 +33,40 @@ public class HealthBar {
         this.maxHealth = maxHealth;
         positions.put("health_bar_pos", healthBarPos);
         positions.put("avatar_pos", avatarPos);
-        positions.put("character_name", new GamePosition(healthBarPos.getXPosition()
-                , healthBarPos.getMaxY() + 25, 0, 0));
-        positions.put("character_health", new GamePosition(healthBarPos.getXPosition() + healthBarPos.getWidth() / 2 - 50
-                , healthBarPos.getYPosition() + healthBarPos.getHeight() / 2 + 8, 0, 0));
+        positions.put("character_name", new GamePosition(healthBarPos.getXPosition(),
+                 healthBarPos.getMaxY() + 25, 0, 0));
+        positions.put("character_health", new GamePosition(healthBarPos.getXPosition() + healthBarPos.getWidth() / 2 - 50,
+                 healthBarPos.getYPosition() + healthBarPos.getHeight() / 2 + 8, 0, 0));
     }
-    
+
     public void tick() {
         character.healthBarTick();
-        if(appearTimeLimit > 0 && canShow) {
+        if (appearTimeLimit > 0 && canShow) {
             healthBarShowCounter++;
-            if(healthBarShowCounter > appearTimeLimit) {
+            if (healthBarShowCounter > appearTimeLimit) {
                 canShow = false;
                 healthBarShowCounter = 0;
             }
         }
-        if(maxHealth == health) {
+        if (maxHealth == health) {
             state = HealthBarState.MAX;
-        } else if(health > maxHealth * 90/100 && health <= maxHealth) {
+        } else if (health > maxHealth * 90 / 100 && health <= maxHealth) {
             state = HealthBarState.H_90;
-        } else if(health > maxHealth * 80/100 && health <= maxHealth * 90/100) {
+        } else if (health > maxHealth * 80 / 100 && health <= maxHealth * 90 / 100) {
             state = HealthBarState.H_80;
-        } else if(health > maxHealth * 70/100 && health <= maxHealth * 80/100) {
+        } else if (health > maxHealth * 70 / 100 && health <= maxHealth * 80 / 100) {
             state = HealthBarState.H_70;
-        } else if(health > maxHealth * 60/100 && health <= maxHealth * 70/100) {
+        } else if (health > maxHealth * 60 / 100 && health <= maxHealth * 70 / 100) {
             state = HealthBarState.H_60;
-        } else if(health > maxHealth * 50/100 && health <= maxHealth * 60/100) {
+        } else if (health > maxHealth * 50 / 100 && health <= maxHealth * 60 / 100) {
             state = HealthBarState.H_50;
-        } else if(health > maxHealth * 40/100 && health <= maxHealth * 50/100) {
+        } else if (health > maxHealth * 40 / 100 && health <= maxHealth * 50 / 100) {
             state = HealthBarState.H_40;
-        } else if(health > maxHealth * 30/100 && health <= maxHealth * 40/100) {
+        } else if (health > maxHealth * 30 / 100 && health <= maxHealth * 40 / 100) {
             state = HealthBarState.H_30;
-        } else if(health > maxHealth * 20/100 && health <= maxHealth * 30/100) {
+        } else if (health > maxHealth * 20 / 100 && health <= maxHealth * 30 / 100) {
             state = HealthBarState.H_20;
-        } else if(health > 0 && health <= maxHealth * 20/100) {
+        } else if (health > 0 && health <= maxHealth * 20 / 100) {
             state = HealthBarState.H_10;
         } else {
             state = HealthBarState.H_0;
@@ -110,40 +110,42 @@ public class HealthBar {
 
     public void render(Graphics g) {
         g.setColor(Color.red);
-        g.drawImage(curHealthImage, getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition()
-                , getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);
+        g.drawImage(curHealthImage, getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition(),
+                 getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);
 //      rectangle
-        g.drawRect(getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition()
-                , getHealthBarPos().getWidth(), getHealthBarPos().getHeight());
+//        g.drawRect(getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition(),
+//                 getHealthBarPos().getWidth(), getHealthBarPos().getHeight());
         g.setClip(ovalImage);
-        g.drawImage(avatar, getAvatarPos().getXPosition(), getAvatarPos().getYPosition(), 
+        g.drawImage(avatar, getAvatarPos().getXPosition(), getAvatarPos().getYPosition(),
                 getAvatarPos().getWidth(), getAvatarPos().getHeight(), null);
         g.setClip(null);
-        g.setColor(Color.white);
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 25));
-        g.drawString(character.getName(), getNamePos().getXPosition(), getNamePos().getYPosition());
-        g.drawString(health + "/" + maxHealth, 
+        g.setColor(Color.white);
+        g.drawString(health + "/" + maxHealth,
                 getHealthPointPos().getXPosition(), getHealthPointPos().getYPosition());
+        g.setColor(Color.black);
+        g.drawString(character.getName(), getNamePos().getXPosition(), getNamePos().getYPosition());
         g.setFont(null);
         g.setColor(null);
     }
-    
+
     public void resetShowCounter() {
         healthBarShowCounter = 0;
         canShow = false;
     }
-    
+
     public GamePosition getHealthBarPos() {
         return positions.get("health_bar_pos");
     }
+
     public GamePosition getAvatarPos() {
         return positions.get("avatar_pos");
     }
-    
+
     public GamePosition getNamePos() {
         return positions.get("character_name");
     }
-    
+
     public GamePosition getHealthPointPos() {
         return positions.get("character_health");
     }
@@ -234,7 +236,5 @@ public class HealthBar {
     public void setCanShow(boolean canShow) {
         this.canShow = canShow;
     }
-    
-    
-    
+
 }

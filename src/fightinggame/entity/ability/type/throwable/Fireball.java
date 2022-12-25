@@ -15,14 +15,14 @@ import java.util.List;
 public class Fireball extends Throwable {
 
     public Fireball(int attackDamage, int speed, int id, long resetTime,
-            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
-            , Gameplay gameplay, Character character) {
+            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL,
+             Gameplay gameplay, Character character) {
         super(attackDamage, speed, id, "Fire Ball", resetTime, skillIcon, position, animationLTR, animationRTL, gameplay, character);
     }
 
     public Fireball(int attackDamage, int speed, int id, long resetTime, SpriteSheet skillIcon,
-            GamePosition position, Animation animationLTR, Animation animationRTL
-            , BufferedImage border, Gameplay gameplay, Character character) {
+            GamePosition position, Animation animationLTR, Animation animationRTL,
+             BufferedImage border, Gameplay gameplay, Character character) {
         super(attackDamage, speed, id, "Fire Ball", resetTime, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
     }
 
@@ -91,8 +91,11 @@ public class Fireball extends Throwable {
         super.render(g);
         if (currAnimation != null) {
             if (spawnPosition != null && isThrow) {
-                currAnimation.render(g, spawnPosition.getXPosition(), spawnPosition.getYPosition(),
-                        spawnPosition.getWidth(), spawnPosition.getHeight());
+                if (gameplay.getCamera().checkPositionRelateToCamera(spawnPosition)) {
+                    currAnimation.render(g, spawnPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                             spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                            spawnPosition.getWidth(), spawnPosition.getHeight());
+                }
             }
         }
         // attack hitbox
@@ -112,12 +115,11 @@ public class Fireball extends Throwable {
         if (canUse) {
             this.spawnPosition = spawnPosition;
             this.endPosition = endPosition;
-            if(character != null) {
-                if(character.isLTR()) {
+            if (character != null) {
+                if (character.isLTR()) {
                     isLTR = true;
                     currAnimation = animationLTR;
-                }
-                else {
+                } else {
                     isLTR = false;
                     currAnimation = animationRTL;
                 }
@@ -137,7 +139,7 @@ public class Fireball extends Throwable {
 
     @Override
     public boolean execute(Character character) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

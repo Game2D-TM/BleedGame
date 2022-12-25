@@ -16,7 +16,7 @@ public class Game extends JFrame {
         setSize(width, height);
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setResizable(false);
+//        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -27,7 +27,7 @@ public class Game extends JFrame {
     }
 
     public void init() {
-        gameplay = new Gameplay(this, getWidth(), getHeight() - 20);
+        gameplay = new Gameplay(this, getWidth(), getHeight());
         gameplay.setPreferredSize(new Dimension(getWidth(), getHeight()));
         add(gameplay);
         pack();
