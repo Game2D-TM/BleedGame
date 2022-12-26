@@ -12,12 +12,14 @@ import fightinggame.entity.Character;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
+import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
+import java.util.List;
 
 public class Enemy extends Character {
 
@@ -30,8 +32,8 @@ public class Enemy extends Character {
     protected int stunTime = 300;
 
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
-            Gameplay gameplay, int rangeRandomSpeed) {
-        super(id, name, health, position, animations, characterAssets, gameplay, false);
+            Gameplay gameplay, int rangeRandomSpeed, SpriteSheet inventorySheet) {
+        super(id, name, health, position, animations, characterAssets, gameplay, false, inventorySheet);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 10f, 100, 100));
         healthBar.setAppearTimeLimit(1000);
@@ -50,9 +52,6 @@ public class Enemy extends Character {
                 maxHealth);
     }
 
-    public Enemy() {
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -60,19 +59,25 @@ public class Enemy extends Character {
         if (isDeath) {
             deathCounter++;
             if (deathCounter >= 1500) {
-                if (inventory.size() > 0) {
-                    for (int i = 0; i < inventory.size(); i++) {
-                        if (inventory.get(i) != null && inventory.get(i).size() > 0) {
-                            for (int j = 0; j < inventory.get(i).size(); j++) {
-                                Item item = inventory.get(i).get(j);
-                                GamePosition itemPos = item.getPosition();
-                                itemPos.setXPosition(position.getXPosition() + position.getWidth() / 2 - 20);
-                                itemPos.setYPosition(position.getMaxY() - itemPos.getHeight());
-                                gameplay.getItemsOnGround().add(item);
-                                item.setSpawnDrop(true);
-                                inventory.get(i).remove(item);
-                            }
+                List<Item> itemsInInventory = inventory.getAllItemsFromInventory();
+                if (itemsInInventory != null && itemsInInventory.size() > 0) {
+                    for (int i = 0; i < itemsInInventory.size(); i++) {
+                        Item item = itemsInInventory.get(i);
+                        if (item == null) {
+                            continue;
                         }
+                        GamePosition itemPos = item.getPosition();
+                        if (itemPos == null) {
+                            itemPos = new GamePosition(0, 0, Inventory.ITEM_WIDTH, Inventory.ITEM_HEIGHT);
+                            itemPos.setXPosition(position.getXPosition() + position.getWidth() / 2 - 20);
+                            itemPos.setYPosition(position.getMaxY() - itemPos.getHeight());
+                            item.setPosition(itemPos);
+                        } else {
+                            itemPos.setXPosition(position.getXPosition() + position.getWidth() / 2 - 20);
+                            itemPos.setYPosition(position.getMaxY() - itemPos.getHeight());
+                        }
+                        gameplay.getItemsOnGround().add(item);
+                        item.setSpawnDrop(true);
                     }
                 }
                 gameplay.getPlayer().addPoint(point);
@@ -186,7 +191,7 @@ public class Enemy extends Character {
                     }
                 }
             } catch (Exception ex) {
-                if(!isLTR) {
+                if (!isLTR) {
                     isLTR = true;
                 } else {
                     isLTR = false;
