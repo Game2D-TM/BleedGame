@@ -298,8 +298,8 @@ public void playerInit(Platform firstPlatform) {
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
-        //player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
-              //  playerAnimations, null);
+        player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
+               playerAnimations, null, this);
         abilitiesCharacterInit(player.getAbilities(), player);
         itemInit(player.getInventory(), player);
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
@@ -313,6 +313,8 @@ public void playerInit(Platform firstPlatform) {
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
         positions.put(player.getName(), player.getPosition());
+        camera.setPlayer(player);
+        player.setCurPlatform(firstPlatform);
     }
 
     public void itemInit(List<List<Item>> inventory, Character character) {
