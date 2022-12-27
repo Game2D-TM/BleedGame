@@ -180,7 +180,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemy.setCurPlatform(firstPlatform);
     }
 
-public void playerInit(Platform firstPlatform) {
+    public void playerInit(Platform firstPlatform) {
         GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition()
         - 280 - 500, 200, 290); // 80
@@ -286,7 +286,6 @@ public void playerInit(Platform firstPlatform) {
         PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01"), 0);
         PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01"), 35);
-
         Map<CharacterState, Animation> playerAnimations = new HashMap();
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
         playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
@@ -298,8 +297,10 @@ public void playerInit(Platform firstPlatform) {
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
+        SpriteSheet inventorySheet = new SpriteSheet();
+        inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
-               playerAnimations, null, this);
+                playerAnimations, null, this, inventorySheet);
         abilitiesCharacterInit(player.getAbilities(), player);
         itemInit(player.getInventory(), player);
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
