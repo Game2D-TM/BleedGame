@@ -314,6 +314,14 @@ public class Enemy extends Character {
         return getYHitBox() + position.getHeight() / 2 - 10;
     }
 
+    public int getWidthHitBox() {
+        return position.getWidth() / 3;
+    }
+    
+    public int getHeightHitBox() {
+        return position.getHeight() - 48;
+    }
+    
     public int getPoint() {
         return point;
     }

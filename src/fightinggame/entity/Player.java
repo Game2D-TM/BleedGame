@@ -1,6 +1,8 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
+import fightinggame.animation.player.PlayerAttack;
+import fightinggame.animation.player.PlayerRun;
 import fightinggame.entity.ability.Ability;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
@@ -13,7 +15,7 @@ public class Player extends Character {
 
     private int isStunCounter = 0;
     private int point = 0;
-    
+
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
             Gameplay gameplay, SpriteSheet inventorySheet) {
@@ -30,6 +32,11 @@ public class Player extends Character {
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
         jumpSpeed = 300;
         fallDown = true;
+        if (isLTR) {
+            currAnimation = animations.get(CharacterState.FALLDOWN_LTR);
+        } else {
+            currAnimation = animations.get(CharacterState.FALLDOWN_LTR);
+        }
     }
 
     @Override
@@ -58,24 +65,6 @@ public class Player extends Character {
                 }
             }
         }
-        if (!isAttack && fallDown) {
-            if (vely < gameplay.gravity) {
-                vely += 0.05;
-            }
-            double nY = vely + position.getYPosition();
-            if (nY < 1510) {
-                position.setYPosition((int) vely + position.getYPosition());
-                if(position.isMoveRight) {
-                    position.setXPosition((int) vely + position.getXPosition());
-                } else if(position.isMoveLeft) {
-                    position.setXPosition(position.getXPosition() - (int)vely);
-                }
-            } else {
-                vely = 0;
-                inAir = false;
-                fallDown = false;
-            }
-        }
     }
 
     @Override
@@ -87,8 +76,9 @@ public class Player extends Character {
         g.setColor(Color.red);
         // hitbox
 //        g.setColor(Color.red);
-//        g.drawRect(getXHitBox(), getYHitBox(),
-//                position.getWidth(), position.getHeight() / 2 - 10);
+//        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                 getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+//                getWidthHitBox(), getHeightHitBox());
         //attackhitbox
 //        int attackX;
 //        if(isLTR) {
@@ -96,7 +86,8 @@ public class Player extends Character {
 //        } else attackX = position.getXPosition() - 20;
 //        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
 //        int attackHeight = position.getHeight() / 2 - 10;
-//        g.fillRect(attackX, attackY, 20, attackHeight);
+//        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition()
+//                , attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
     }
 
     @Override
@@ -105,21 +96,41 @@ public class Player extends Character {
     }
 
     public int getXHitBox() {
-        return position.getXPosition();
+        if (currAnimation != null) {
+            if (currAnimation instanceof PlayerAttack) {
+                return position.getXPosition() + 110;
+            }
+        }
+        return position.getXPosition() + 118;
+    }
+
+    public int getWidthHitBox() {
+        if (currAnimation != null) {
+            if (currAnimation instanceof PlayerRun) {
+                return position.getWidth() / 3 + 15;
+            } else if (currAnimation instanceof PlayerAttack) {
+                return position.getWidth() / 3 + 30;
+            }
+        }
+        return position.getWidth() / 3;
+    }
+
+    public int getHeightHitBox() {
+        return position.getHeight() - 48;
     }
 
     public int getXMaxHitBox() {
-        return position.getMaxX();
+        return getXHitBox() + getWidthHitBox();
     }
 
     public int getYHitBox() {
-        return position.getYPosition() + position.getHeight() / 3 - 10;
+        return position.getYPosition() + position.getHeight() / 3 - 46;
     }
 
     public int getYMaxHitBox() {
-        return getYHitBox() + position.getHeight() / 2 - 10;
+        return getYHitBox() + getHeightHitBox();
     }
-    
+
     @Override
     public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage) {
         int attackMaxY = attackY + attackHeight;
@@ -151,7 +162,7 @@ public class Player extends Character {
                         currAnimation = animations.get(CharacterState.GET_HIT_RTL);
                     }
                     isAttacked = true;
-                    if(attackDamage == -1) {
+                    if (attackDamage == -1) {
                         receiveDamage = stats.getHit(attackerStats);
                     } else {
                         receiveDamage = stats.getHit(attackerStats, attackDamage);

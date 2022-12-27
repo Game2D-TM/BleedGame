@@ -35,14 +35,15 @@ public class MouseHandler extends Handler implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() >= 1 && !isClicked && !player.isDeath()) {
+        if (e.getClickCount() >= 1 && !isClicked) {
             isClicked = true;
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (isClicked && !player.isDeath()) {
+        if (isClicked && !player.isDeath() && !player.isInAir()
+                && !player.isFallDown()) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (canClick) {
                     if (!player.isAttack() && !player.getPosition().isMoving() && !player.isAttacked()) {
@@ -59,13 +60,13 @@ public class MouseHandler extends Handler implements MouseListener {
                         }
                         if (!player.isAttack()) {
                             if (player.isLTR()) {
-                                player.getPosition().setWidth(player.getPosition().getWidth() + 120);
+                                player.getPosition().setWidth(player.getPosition().getWidth() + 20);
                             } else {
-                                player.getPosition().setXPosition(player.getPosition().getXPosition() - 120);
-                                player.getPosition().setWidth(player.getPosition().getWidth() + 120);
+                                player.getPosition().setXPosition(player.getPosition().getXPosition() - 20);
+                                player.getPosition().setWidth(player.getPosition().getWidth() + 20);
                             }
-                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
-                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
+//                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
+//                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
                             player.setIsAttack(true);
                             gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
                             if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
@@ -94,7 +95,7 @@ public class MouseHandler extends Handler implements MouseListener {
                         }
                         player.setCurrAnimation(attack);
                         try {
-                            Thread.sleep(200);
+                            Thread.sleep(500);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(PlayerMovementHandler.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -118,13 +119,13 @@ public class MouseHandler extends Handler implements MouseListener {
                     }
                     if (player.getPosition().getWidth() > 200) {
                         if (player.isLTR()) {
-                            player.getPosition().setWidth(player.getPosition().getWidth() - 120);
+                            player.getPosition().setWidth(player.getPosition().getWidth() - 20);
                         } else {
-                            player.getPosition().setWidth(player.getPosition().getWidth() - 120);
-                            player.getPosition().setXPosition(player.getPosition().getXPosition() + 120);
+                            player.getPosition().setWidth(player.getPosition().getWidth() - 20);
+                            player.getPosition().setXPosition(player.getPosition().getXPosition() + 20);
                         }
-                        player.getPosition().setYPosition(player.getPosition().getYPosition() + 50);
-                        player.getPosition().setHeight(player.getPosition().getHeight() - 50);
+//                        player.getPosition().setYPosition(player.getPosition().getYPosition() + 50);
+//                        player.getPosition().setHeight(player.getPosition().getHeight() - 50);
                         player.setIsAttack(false);
                     }
 //                    if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {

@@ -10,6 +10,7 @@ import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.animation.item.HealthPotionAnimation;
 import fightinggame.animation.player.PlayerAttack;
 import fightinggame.animation.player.PlayerDeath;
+import fightinggame.animation.player.PlayerFallDown;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.animation.player.PlayerIdle;
 import fightinggame.animation.player.PlayerJump;
@@ -49,10 +50,6 @@ import fightinggame.input.handler.PlayerMovementHandler;
 import fightinggame.resource.AudioPlayer;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
@@ -83,7 +80,7 @@ public class Gameplay extends JPanel implements Runnable {
         audioPlayer = new AudioPlayer("assets/res/sound");
 //        int xPosition = 10;
 //        enemySpawnXPosition = xPosition + 1700;
-        Platform firstPlatform = getPlatforms().get(10).get(3);
+        Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
         firstPlatform = background.getScene().get(10).get(7);
         diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
@@ -278,16 +275,17 @@ public class Gameplay extends JPanel implements Runnable {
 //        playerAttack1RTL.getImages().addAll(playerAttack2RTL.getImages());
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle01"));
-        PlayerRun runLTR = new PlayerRun(1,spriteSheetMap.get("Run01") , 5);
-        PlayerAttack attackLTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 10);
-        PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 35);
+        PlayerRun runLTR = new PlayerRun(1,spriteSheetMap.get("Run01") , 0);
+        PlayerAttack attackLTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
+        PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
         PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
         PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
-        PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 10);
-        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 35);
-        PlayerJump jumpLTR = new PlayerJump(5, spriteSheetMap.get("Jump02"),15);
-        PlayerSpellCast spellCastLTR = new PlayerSpellCast(6, spriteSheetMap.get("Spellcast01"),40);
+        PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
+        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
+        PlayerJump jumpLTR = new PlayerJump(5, spriteSheetMap.get("Jump02"), 50);
+        PlayerFallDown fallDownLTR = new PlayerFallDown(6, spriteSheetMap.get("FallAnim01"), 50);
+        PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), 40);
         Map<CharacterState, Animation> playerAnimations = new HashMap();
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
         playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
@@ -299,7 +297,8 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
-        playerAnimations.put(CharacterState.JUMP, jumpLTR);
+        playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
+        playerAnimations.put(CharacterState.FALLDOWN_LTR, fallDownLTR);
         playerAnimations.put(CharacterState.SPELLCAST_LTR, spellCastLTR);
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
@@ -425,7 +424,7 @@ public class Gameplay extends JPanel implements Runnable {
                                   }
                             }
                         } catch (Exception ex) {
-
+                            System.out.println(ex.toString());
                         }
                         spawnCounter = 0;
                     }
