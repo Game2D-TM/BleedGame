@@ -89,6 +89,7 @@ public abstract class Character {
         if (inventory != null) {
             inventory.tick();
         }
+        checkStandPlatform();
     }
 
     public void checkPlatForm(List<List<Platform>> scene) {
@@ -100,10 +101,12 @@ public abstract class Character {
                     for (int j = 0; j < platforms.size(); j++) {
                         Platform platform = platforms.get(j);
                         if (platform != null) {
-                            GamePosition playerPos = new GamePosition(
-                                    position.getXPosition(),
-                                    position.getYPosition() + position.getHeight() / 2,
-                                    position.getWidth(), position.getHeight() / 2);
+//                            GamePosition playerPos = new GamePosition(
+//                                    position.getXPosition(),
+//                                    position.getYPosition() + position.getHeight() / 2,
+//                                    position.getWidth(), position.getHeight() / 2);
+                            GamePosition playerPos = new GamePosition(getXHitBox(), getYHitBox() + 50,
+                                     getWidthHitBox(), getHeightHitBox() / 2);
                             if (platform.checkValidPosition(playerPos)) {
                                 insidePlatform = platform;
                                 isSet = true;
@@ -116,6 +119,19 @@ public abstract class Character {
                     }
                 }
             }
+        }
+    }
+
+    public void checkStandPlatform() {
+        try {
+            if (insidePlatform != null) {
+                Platform platform = gameplay.getPlatforms().get(insidePlatform.getRow() + 1).get(insidePlatform.getColumn());
+                if (platform != null) {
+                    standPlatform = platform;
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
         }
     }
 
@@ -153,11 +169,11 @@ public abstract class Character {
     }
 
     public abstract boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage);
-    
+
     public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats) {
         return checkHit(attackX, attackY, attackHeight, isAttack, attackerStats, -1);
     }
-    
+
     public boolean moveRight() {
         return position.moveRight(stats.getSpeed());
     }
@@ -173,6 +189,18 @@ public abstract class Character {
         }
         return false;
     }
+
+    public abstract int getXHitBox();
+
+    public abstract int getWidthHitBox();
+
+    public abstract int getHeightHitBox();
+
+    public abstract int getXMaxHitBox();
+
+    public abstract int getYHitBox();
+
+    public abstract int getYMaxHitBox();
 
     public boolean moveDown() {
         return position.moveDown(stats.getSpeed());

@@ -43,7 +43,7 @@ public abstract class MovementHandler extends Handler {
         List<List<Platform>> surroundPlatforms;
         surroundPlatforms = gameplay.getSurroundPlatform(character.getCurPlatform().getRow(),
                 character.getCurPlatform().getColumn());
-        GamePosition position = character.getPosition();
+//        GamePosition position = character.getPosition();
         int speed = character.getStats().getSpeed();
         if (surroundPlatforms != null && surroundPlatforms.size() > 0) {
             for (int i = 0; i < surroundPlatforms.size(); i++) {
@@ -57,10 +57,12 @@ public abstract class MovementHandler extends Handler {
                         if (platform.getPosition() == null) {
                             break;
                         }
-                        GamePosition checkPos = new GamePosition(
-                                position.getXPosition(),
-                                position.getYPosition(), // position.getYPosition() + position.getHeight() / 2
-                                position.getWidth(), position.getHeight()); // position.getHeight() / 2
+//                        GamePosition checkPos = new GamePosition(
+//                                position.getXPosition(),
+//                                position.getYPosition(), // position.getYPosition() + position.getHeight() / 2
+//                                position.getWidth(), position.getHeight()); // position.getHeight() / 2
+                        GamePosition checkPos = new GamePosition(character.getXHitBox(), character.getYHitBox(),
+                                character.getWidthHitBox(), character.getHeightHitBox());
                         switch (state) {
                             case RIGHT:
                                 if (j >= Background.DEF_SURROUND_TILE) {
@@ -148,14 +150,52 @@ public abstract class MovementHandler extends Handler {
                     }
                 }
             }
-            if(canMove && isMove) {
-                switch(state) {
+            if (canMove && isMove) {
+                switch (state) {
                     case RIGHT:
-                        character.moveRight();
-                        break;
+                    try {
+                        Platform insidePlatform = character.getInsidePlatform();
+                        if (insidePlatform == null) {
+                            break;
+                        }
+                        Platform nextPlatform = gameplay.getPlatforms().get(insidePlatform.getRow()).get(insidePlatform.getColumn() + 1);
+                        if (nextPlatform != null) {
+                            GamePosition checkPos = new GamePosition(character.getXHitBox(), character.getYHitBox(),
+                                    character.getWidthHitBox(), character.getHeightHitBox());
+                            checkPos.setXPosition(checkPos.getXPosition() + speed);
+                            if (nextPlatform instanceof Tile || nextPlatform instanceof WallTile) {
+                                if (nextPlatform.checkValidPosition(checkPos)) {
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+
+                    }
+                    character.moveRight();
+                    break;
                     case LEFT:
-                        character.moveLeft();
-                        break;
+                        try {
+                        Platform insidePlatform = character.getInsidePlatform();
+                        if (insidePlatform == null) {
+                            break;
+                        }
+                        Platform nextPlatform = gameplay.getPlatforms().get(insidePlatform.getRow()).get(insidePlatform.getColumn() - 1);
+                        if (nextPlatform != null) {
+                            GamePosition checkPos = new GamePosition(character.getXHitBox(), character.getYHitBox(),
+                                    character.getWidthHitBox(), character.getHeightHitBox());
+                            checkPos.setXPosition(checkPos.getXPosition() - speed);
+                            if (nextPlatform instanceof Tile || nextPlatform instanceof WallTile) {
+                                if (nextPlatform.checkValidPosition(checkPos)) {
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+
+                    }
+                    character.moveLeft();
+                    break;
                     case UP:
                         character.moveUp();
                         break;

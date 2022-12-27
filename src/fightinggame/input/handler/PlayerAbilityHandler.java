@@ -8,6 +8,8 @@ import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PlayerAbilityHandler extends Handler implements KeyListener {
 
@@ -44,7 +46,7 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                             endPos = new GamePosition(
                                     gameplay.getCamera().getPosition().getXPosition(), 0,
                                     gameplay.getCamera().getPosition().getMaxX() + xChange, 0);
-                            
+
                         } else {
                             xChange = 215;
                             spawnX = player.getPosition().getXPosition() - xChange;
@@ -63,12 +65,19 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                                 player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCAST_LTR));
                             }
                         }
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(PlayerAbilityHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                     break;
                 case KeyEvent.VK_3:
                     if (!player.isDeath()) {
                         Item item = player.getInventory().getItemAscending();
-                        if(item == null) break;
+                        if (item == null) {
+                            break;
+                        }
                         if (item.use()) {
 
                         } else {
@@ -77,7 +86,7 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_I:
-                    if(!player.isDeath() && !player.isAttack() && !player.getPosition().isMoving()) {
+                    if (!player.isDeath() && !player.isAttack() && !player.getPosition().isMoving()) {
                         player.getInventory().open();
                     }
                     break;

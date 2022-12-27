@@ -122,7 +122,6 @@ public class Background {
 //                    2, 3, 0, 0));
 //        }
 //    }
-
     public void loadImagesToScene() {
         if (!fileNameScene.isBlank()) {
             Path path = Paths.get(fileNameScene);
@@ -147,11 +146,11 @@ public class Background {
                                                     tiles.get(key), null, gameplay, row, col));
                                         } else {
                                             if (row < NUMBER_SKY_ROW) {
-                                                if (key.equals("0")) {
-                                                    platforms.add(new Tile("Tile " + (row + col),
+                                                if (key.equals("-1")) {
+                                                    platforms.add(new BlankTile("Blank " + (row + col),
                                                             tiles.get(key), null, gameplay, row, col));
                                                 } else {
-                                                    platforms.add(new BlankTile("Blank " + (row + col),
+                                                    platforms.add(new Tile("Tile " + (row + col),
                                                             tiles.get(key), null, gameplay, row, col));
                                                 }
                                             } else {
@@ -194,8 +193,8 @@ public class Background {
         if (backgrounds != null && backgrounds.values().size() > 0) {
             for (BufferedImage image : backgrounds.values()) {
                 g.drawImage(image, 0 - gameplay.getCamera().getPosition().getXPosition(),
-                        0 - gameplay.getCamera().getPosition().getYPosition(), position.getWidth()
-                        , position.getHeight(), null);
+                        0 - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
+                        position.getHeight(), null);
             }
         }
         if (scene != null && scene.size() > 0) {
@@ -214,7 +213,7 @@ public class Background {
     }
 
     public List<List<Platform>> getSurroundPlatform(int i, int j, int surroundTile,
-             int minusDown, int minusLeft, int minusUp, int minusRight) {
+            int minusDown, int minusLeft, int minusUp, int minusRight) {
         List<List<Platform>> scenePlatforms = scene;
         if (scenePlatforms != null && scenePlatforms.size() > 0) {
             List<List<Platform>> platforms = new ArrayList<List<Platform>>();
@@ -314,6 +313,5 @@ public class Background {
     public void setPosition(GamePosition position) {
         this.position = position;
     }
-    
-    
+
 }

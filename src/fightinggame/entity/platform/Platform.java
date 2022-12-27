@@ -38,6 +38,10 @@ public abstract class Platform {
             g.drawImage(image, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
                     position.getHeight(), null);
+//            g.setColor(Color.red);
+//            g.drawRect(position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+//                    position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
+//                    position.getHeight());
             canRender = false;
         }
     }

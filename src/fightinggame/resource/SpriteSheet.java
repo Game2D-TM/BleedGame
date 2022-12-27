@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,7 +52,7 @@ public class SpriteSheet {
             g.drawImage(image, x, y, width, height, null);
             g.setColor(Color.red);
             //rectangle
-            g.drawRect(x, y, width, height);
+//            g.drawRect(x, y, width, height);
         }
     }
 
@@ -108,17 +106,20 @@ public class SpriteSheet {
     public static Map<String, SpriteSheet> loadSpriteSheetFromFolder(String folderPath) {
         try {
             File[] directories = new File(folderPath).listFiles(File::isDirectory);
-
+            if(directories == null) return null;
+            if(directories.length == 0) return null;
             Map<String, SpriteSheet> spriteSheetMap = new HashMap<>();
-
             for (File dir : directories) {
                 SpriteSheet a = new SpriteSheet();
-                for (File f : dir.listFiles()) {
+                if(dir.listFiles().length == 0) {
+                    continue;
+                }
+                for (int i = dir.listFiles().length - 1; i >= 0 ; i--) {
+                    File f = dir.listFiles()[i];
                     a.add(f.getAbsolutePath());
                 }
                 spriteSheetMap.put(dir.getName(), a);
             }
-
             return spriteSheetMap;
         } catch (Exception e) {
             System.out.println("Assets not found in path " + folderPath + ".");
