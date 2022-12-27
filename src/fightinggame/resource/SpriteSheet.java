@@ -3,13 +3,20 @@ package fightinggame.resource;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SpriteSheet {
 
+  
     private BufferedImage sprite;
     private List<BufferedImage> images;
     private int spriteCounter = 0;
@@ -24,7 +31,8 @@ public class SpriteSheet {
         this.sprite = sprite;
         getImages(cutX, cutY, cutWidth, cutHeight, x, y, width, height, imageNum);
     }
-
+   
+    
     public void tick(int tickToExecute) {
         if (tickToExecute < 0) {
             return;
@@ -46,7 +54,7 @@ public class SpriteSheet {
             g.drawImage(image, x, y, width, height, null);
             g.setColor(Color.red);
             //rectangle
-//            g.drawRect(x, y, width, height);
+            g.drawRect(x, y, width, height);
         }
     }
 
@@ -96,7 +104,43 @@ public class SpriteSheet {
         }
         return images.get(index);
     }
+    
+    public static Map<String, SpriteSheet> loadSpriteSheetFromFolder(String folderPath) {
+        try {
+            File[] directories = new File(folderPath).listFiles(File::isDirectory);
 
+            Map<String, SpriteSheet> spriteSheetMap = new HashMap<>();
+
+            for (File dir : directories) {
+                SpriteSheet a = new SpriteSheet();
+                for (File f : dir.listFiles()) {
+                    a.add(f.getAbsolutePath());
+                }
+                spriteSheetMap.put(dir.getName(), a);
+            }
+
+            return spriteSheetMap;
+        } catch (Exception e) {
+            System.out.println("Assets not found in path " + folderPath + ".");
+        }
+        return null;
+
+    }
+    
+    public SpriteSheet convertRTL() {
+        List<BufferedImage> flipped = new ArrayList<>();
+        for(int i = 0; i < this.images.size(); i++) {
+            BufferedImage sprite = images.get(i);
+            // Flip the image horizontally
+            AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+            tx.translate(-sprite.getWidth(null), 0);
+            flipped.add(sprite);
+        }
+        this.setImages(flipped);
+        this.reverseImages();
+        return this;
+    }
+    
     public int getSpriteCounter() {
         return spriteCounter;
     }

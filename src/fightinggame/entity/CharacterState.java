@@ -15,4 +15,6 @@ public enum CharacterState {
     GET_HIT_RTL,
     DEATH_LTR,
     DEATH_RTL,
+    SPELLCAST_LTR,
+    SPELLCAST_RTL,
 }

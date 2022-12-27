@@ -44,6 +44,7 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                             endPos = new GamePosition(
                                     gameplay.getCamera().getPosition().getXPosition(), 0,
                                     gameplay.getCamera().getPosition().getMaxX() + xChange, 0);
+                            
                         } else {
                             xChange = 215;
                             spawnX = player.getPosition().getXPosition() - xChange;
@@ -57,9 +58,9 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                         boolean result = ((Fireball) player.getAbility(1)).execute(spawnPosition, endPos);
                         if (result) {
                             if (player.isLTR()) {
-                                player.setCurrAnimation(player.getAnimations().get(CharacterState.ATTACK_LTR));
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCAST_LTR));
                             } else {
-                                player.setCurrAnimation(player.getAnimations().get(CharacterState.ATTACK_RTL));
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCAST_LTR));
                             }
                         }
                     }

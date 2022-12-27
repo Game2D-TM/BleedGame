@@ -86,12 +86,13 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             break;
                         }
                         if (player.isLTR()) {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP));
                         } else {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP));
                         }
                         player.getPosition().isMoveUp = true;
                         break;
+                    
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
                         if (player.isAttack()) {

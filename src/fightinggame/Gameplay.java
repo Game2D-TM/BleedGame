@@ -12,7 +12,9 @@ import fightinggame.animation.player.PlayerAttack;
 import fightinggame.animation.player.PlayerDeath;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.animation.player.PlayerIdle;
+import fightinggame.animation.player.PlayerJump;
 import fightinggame.animation.player.PlayerRun;
+import fightinggame.animation.player.PlayerSpellCast;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Background;
 import fightinggame.entity.Camera;
@@ -48,6 +50,9 @@ import fightinggame.resource.AudioPlayer;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
@@ -80,12 +85,12 @@ public class Gameplay extends JPanel implements Runnable {
 //        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(10).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
-//        firstPlatform = background.getScene().get(10).get(7);
-//        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
-//        firstPlatform = background.getScene().get(10).get(8);
-//        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
-//        spawnEnemiesThread = new Thread(spawnEnemies());
-//        spawnEnemiesThread.start();
+        firstPlatform = background.getScene().get(10).get(7);
+        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+        firstPlatform = background.getScene().get(10).get(8);
+        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
+        spawnEnemiesThread = new Thread(spawnEnemies());
+        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -182,22 +187,15 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void playerInit(Platform firstPlatform) {
-        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
+        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition()+50,
                 firstPlatform.getPosition().getYPosition()
-        - 280 - 500, 200, 290); // 80
+        - 280 - 500, 350, 259); // 80
         //xPosition + 750,
         //        getHeight() / 2 + 735
         // xPosition,
         //        playPosition.getYPosition() - 50, 200, 290
-        File[] directories = new File("assets/res/player/").listFiles(File::isDirectory);
-        Map<String, SpriteSheet> spriteSheetMap = new HashMap<>();
-        for(File dir : directories) {
-            SpriteSheet a = new SpriteSheet();
-            for(File f : dir.listFiles()) {
-                a.add(f.getAbsolutePath());
-            }
-            spriteSheetMap.put(dir.getName(), a);
-        }
+          Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
+
 //        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
 //                0, 0, 200, 200,
 //                75, 75, 43, 48, 8);
@@ -278,15 +276,17 @@ public class Gameplay extends JPanel implements Runnable {
 //        playerAttack1LTR.getImages().addAll(playerAttack2LTR.getImages());
 //        playerAttack1RTL.getImages().addAll(playerAttack2RTL.getImages());
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
-        PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
+        PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle01"));
         PlayerRun runLTR = new PlayerRun(1,spriteSheetMap.get("Run01") , 5);
-        PlayerAttack attackLTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 15);
+        PlayerAttack attackLTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 10);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 35);
-        PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
-        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
-        PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01"), 0);
-        PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 10);
-        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01"), 35);
+        PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
+        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
+        PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
+        PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 10);
+        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 35);
+        PlayerJump jumpLTR = new PlayerJump(5, spriteSheetMap.get("Jump02"),15);
+        PlayerSpellCast spellCastLTR = new PlayerSpellCast(6, spriteSheetMap.get("Spellcast01"),40);
         Map<CharacterState, Animation> playerAnimations = new HashMap();
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
         playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
@@ -298,6 +298,8 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
+        playerAnimations.put(CharacterState.JUMP, jumpLTR);
+        playerAnimations.put(CharacterState.SPELLCAST_LTR, spellCastLTR);
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
