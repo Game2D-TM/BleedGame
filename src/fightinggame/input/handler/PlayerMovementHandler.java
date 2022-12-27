@@ -44,7 +44,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
         }
         if (!player.isInAir()) {
             if (canMoveCheck(MoveState.UP, player)) {
-                yAfterJump = player.getPosition().getYPosition() - (player.getSpeed() + player.getJumpSpeed());
+                yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getJumpSpeed());
             }
         } else {
             if (yAfterJump != 0) {
@@ -163,9 +163,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                 attackHeight = player.getPosition().getHeight() / 2 - 10;
                                 for (int i = 0; i < gameplay.getEnemies().size(); i++) {
                                     Enemy enemy = gameplay.getEnemies().get(i);
-                                    if (enemy.checkHit(attackX, attackY, attackHeight, true, player.getAttackDamage())) {
+                                    if (enemy.checkHit(attackX, attackY, attackHeight, true, player.getStats())) {
                                         enemy.setStunTime(50);
-                                        if (enemy.getHealthBar().getHealth() <= 0) {
+                                        if (enemy.getStats().getHealth() <= 0) {
                                             gameplay.getAudioPlayer().startThread("kill_sound", false, 0.8f);
                                         } else {
                                             gameplay.getAudioPlayer().startThread("hit_dior_firror", false, 0.8f);

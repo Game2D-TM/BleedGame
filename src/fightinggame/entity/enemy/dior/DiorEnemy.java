@@ -25,45 +25,52 @@ public class DiorEnemy extends Enemy {
         switch (color) {
             case Red:
                 point += 10;
-                attackDamage += 20;
-                speed -= 15;
-                healthBar.setHealth(healthBar.getHealth() - 200);
+                experience = 500;
+                stats.setAttackDamage(stats.getAttackDamage() + 20);
+                stats.setSpeed(stats.getSpeed() - 15);
+                stats.setHealth(stats.getHealth() - 200);
                 break;
             case Blue:
-                attackDamage += 5;
-                speed += 10;
-                healthBar.setHealth(healthBar.getHealth() - 150);
+                experience = 70;
+                stats.setAttackDamage(stats.getAttackDamage() + 5);
+                stats.setSpeed(stats.getSpeed() + 10);
+                stats.setHealth(stats.getHealth() - 150);
                 break;
             case Green:
                 point += 5;
-                attackDamage += 10;
-                speed -= 5;
-                healthBar.setHealth(healthBar.getHealth() - 100);
+                experience = 70;
+                stats.setAttackDamage(stats.getAttackDamage() + 10);
+                stats.setSpeed(stats.getSpeed() - 5);
+                stats.setHealth(stats.getHealth() - 100);
                 break;
             case Orange:
-                attackDamage -= 5;
-                speed += 20;
-                healthBar.setHealth(healthBar.getHealth() + 100);
+                experience = 60;
+                stats.setAttackDamage(stats.getAttackDamage() - 5);
+                stats.setSpeed(stats.getSpeed() + 20);
+                stats.setHealth(stats.getHealth() + 100);
                 break;
             case Purple:
-                speed -= 10;
-                healthBar.setHealth(healthBar.getHealth() + 200);
+                experience = 50;
+                stats.setSpeed(stats.getSpeed() - 10);
+                stats.setHealth(stats.getHealth() + 200);
                 break;
             case White:
+                experience = 80;
                 point += 5;
-                attackDamage -= 8;
-                speed -= 10;
-                healthBar.setHealth(healthBar.getHealth() + 400);
+                stats.setAttackDamage(stats.getAttackDamage() - 8);
+                stats.setSpeed(stats.getSpeed() - 10);
+                stats.setHealth(stats.getHealth() + 400);
                 break;
             case Yellow:
-                speed += 40;
-                attackDamage -= 5;
-                healthBar.setHealth(healthBar.getHealth() + 50);
+                experience = 80;
+                stats.setAttackDamage(stats.getAttackDamage() - 5);
+                stats.setSpeed(stats.getSpeed() + 40);
+                stats.setHealth(stats.getHealth() + 50);
                 break;
         }
-        healthBar.setMaxHealth(healthBar.getHealth());
-        if (speed <= 0) {
-            speed = 1;
+        healthBar.setMaxHealth(stats.getHealth());
+        if (stats.getSpeed() <= 0) {
+            stats.setSpeed(1);
         }
     }
     @Override
@@ -78,14 +85,14 @@ public class DiorEnemy extends Enemy {
             } else {
                 xAttack = position.getMaxX();
             }
-            if (gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, false, -1)) {
+            if (gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, false, null)) {
                 if (isLTR) {
                     currAnimation = animations.get(CharacterState.ATTACK_LTR);
                 } else {
                     currAnimation = animations.get(CharacterState.ATTACK_RTL);
                 }
                 isAttack = true;
-                gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, attackDamage);
+                gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, stats);
                 int falloutX = gameplay.getPlayer().getPosition().getXPosition() - 100;
 //                if (falloutX >= gameplay.getPlayPosition().getXPosition()) {
 //                    gameplay.getPlayer().getPosition().setXPosition(falloutX);
@@ -192,11 +199,6 @@ public class DiorEnemy extends Enemy {
 
     public void setColor(DiorColor color) {
         this.color = color;
-    }
-
-    @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, int attackDmg) {
-        return super.checkHit(attackX, attackY, attackHeight, isAttack, attackDmg);
     }
 
 }

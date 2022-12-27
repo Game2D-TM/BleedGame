@@ -184,6 +184,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemies.add(enemy);
         positions.put(enemy.getName(), enemy.getPosition());
         enemy.setCurPlatform(firstPlatform);
+        enemy.getStats().addExperience(50000);
     }
 
     public void playerInit(Platform firstPlatform) {
@@ -319,6 +320,7 @@ public class Gameplay extends JPanel implements Runnable {
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
         player.setCurPlatform(firstPlatform);
+        player.getStats().addExperience(50000);
     }
 
     public void itemInit(Inventory inventory, Character character) {

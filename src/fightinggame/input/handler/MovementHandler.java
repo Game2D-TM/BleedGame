@@ -44,7 +44,7 @@ public abstract class MovementHandler extends Handler {
         surroundPlatforms = gameplay.getSurroundPlatform(character.getCurPlatform().getRow(),
                 character.getCurPlatform().getColumn());
         GamePosition position = character.getPosition();
-        int speed = character.getSpeed();
+        int speed = character.getStats().getSpeed();
         if (surroundPlatforms != null && surroundPlatforms.size() > 0) {
             for (int i = 0; i < surroundPlatforms.size(); i++) {
                 List<Platform> platforms = surroundPlatforms.get(i);

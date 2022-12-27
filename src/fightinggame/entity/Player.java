@@ -20,8 +20,11 @@ public class Player extends Character {
         super(id, name, health, position, animations, characterAssets, gameplay, true, inventorySheet);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
-        speed = 2;
-        attackDamage = 50;
+        stats.setSpeed(2);
+        stats.setHealth(health);
+        stats.setAttackDamage(50);
+        stats.setCritChange(0.5f);
+        stats.setCritDamage(10);
         healthBar.getPositions().put("player_score",
                 new GamePosition(healthBar.getNamePos().getXPosition(),
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
@@ -116,9 +119,9 @@ public class Player extends Character {
     public int getYMaxHitBox() {
         return getYHitBox() + position.getHeight() / 2 - 10;
     }
-
+    
     @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, int attackDmg) {
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage) {
         int attackMaxY = attackY + attackHeight;
         if (!isAttack && !isDeath) {
             if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
@@ -148,13 +151,12 @@ public class Player extends Character {
                         currAnimation = animations.get(CharacterState.GET_HIT_RTL);
                     }
                     isAttacked = true;
-                    int health = healthBar.getHealth() - attackDmg;
-                    if (health < 0) {
-                        health = 0;
+                    if(attackDamage == -1) {
+                        receiveDamage = stats.getHit(attackerStats);
+                    } else {
+                        receiveDamage = stats.getHit(attackerStats, attackDamage);
                     }
-                    receiveDamage = attackDmg;
-                    healthBar.setHealth(health);
-                    if (health <= 0) {
+                    if (stats.getHealth() <= 0) {
                         isDeath = true;
                         if (isLTR) {
                             currAnimation = animations.get(CharacterState.DEATH_LTR);

@@ -12,7 +12,6 @@ import java.util.Map;
 public class HealthBar {
 
     private int maxHealth;
-    private int health;
     private BufferedImage avatar;
     private SpriteSheet sheet;
     private BufferedImage curHealthImage;
@@ -29,14 +28,13 @@ public class HealthBar {
         this.avatar = avatar;
         this.sheet = healthBar;
         this.character = character;
-        this.health = maxHealth;
         this.maxHealth = maxHealth;
         positions.put("health_bar_pos", healthBarPos);
         positions.put("avatar_pos", avatarPos);
         positions.put("character_name", new GamePosition(healthBarPos.getXPosition(),
-                 healthBarPos.getMaxY() + 25, 0, 0));
+                healthBarPos.getMaxY() + 25, 0, 0));
         positions.put("character_health", new GamePosition(healthBarPos.getXPosition() + healthBarPos.getWidth() / 2 - 50,
-                 healthBarPos.getYPosition() + healthBarPos.getHeight() / 2 + 8, 0, 0));
+                healthBarPos.getYPosition() + healthBarPos.getHeight() / 2 + 8, 0, 0));
     }
 
     public void tick() {
@@ -48,6 +46,7 @@ public class HealthBar {
                 healthBarShowCounter = 0;
             }
         }
+        int health = character.getStats().getHealth();
         if (maxHealth == health) {
             state = HealthBarState.MAX;
         } else if (health > maxHealth * 90 / 100 && health <= maxHealth) {
@@ -111,7 +110,7 @@ public class HealthBar {
     public void render(Graphics g) {
         g.setColor(Color.red);
         g.drawImage(curHealthImage, getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition(),
-                 getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);
+                getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);
 //      rectangle
 //        g.drawRect(getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition(),
 //                 getHealthBarPos().getWidth(), getHealthBarPos().getHeight());
@@ -121,10 +120,14 @@ public class HealthBar {
         g.setClip(null);
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 25));
         g.setColor(Color.white);
-        g.drawString(health + "/" + maxHealth,
+        g.drawString(character.getStats().getHealth() + "/" + maxHealth,
                 getHealthPointPos().getXPosition(), getHealthPointPos().getYPosition());
         g.setColor(Color.black);
         g.drawString(character.getName(), getNamePos().getXPosition(), getNamePos().getYPosition());
+        g.drawString("Level: " + character.getStats().getLevel(), getNamePos().getXPosition() + 300, getNamePos().getYPosition());
+        if (getPlayerScore() != null) {
+            g.drawString("Experience: " + character.getStats().getLevelExperience(), getPlayerScore().getXPosition() + 300, getPlayerScore().getYPosition());
+        }
         g.setFont(null);
         g.setColor(null);
     }
@@ -132,6 +135,10 @@ public class HealthBar {
     public void resetShowCounter() {
         healthBarShowCounter = 0;
         canShow = false;
+    }
+
+    public GamePosition getPlayerScore() {
+        return positions.get("player_score");
     }
 
     public GamePosition getHealthBarPos() {
@@ -151,14 +158,6 @@ public class HealthBar {
     }
 
     public HealthBar() {
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
     }
 
     public BufferedImage getAvatar() {
