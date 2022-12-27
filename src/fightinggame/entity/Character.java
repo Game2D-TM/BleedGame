@@ -1,10 +1,11 @@
 package fightinggame.entity;
 
+import fightinggame.entity.inventory.Inventory;
 import fightinggame.Gameplay;
-import fightinggame.entity.item.Item;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.platform.Platform;
 import fightinggame.input.handler.Handler;
+import fightinggame.resource.SpriteSheet;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -23,7 +24,7 @@ public abstract class Character {
     protected Map<CharacterState, Animation> animations;
     protected List<Handler> controller = new ArrayList<>();
     protected Map<String, BufferedImage> characterAssets;
-    protected final List<List<Item>> inventory = new ArrayList<>();
+    protected final Inventory inventory;
     protected final List<Ability> abilities = new ArrayList<>();
     protected BufferedImage avatar;
     protected HealthBar healthBar;
@@ -44,7 +45,7 @@ public abstract class Character {
     protected boolean fallDown = false;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
-            Gameplay gameplay, boolean isLTR) {
+            Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
         this.id = id;
         this.name = name;
         this.position = position;
@@ -52,6 +53,7 @@ public abstract class Character {
         this.characterAssets = characterAssets;
         this.gameplay = gameplay;
         this.isLTR = isLTR;
+        inventory = new Inventory(this, inventorySheet, gameplay);
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
             avatar = animations.get(CharacterState.IDLE_LTR).getSheet().getImage(0);
@@ -59,9 +61,6 @@ public abstract class Character {
             currAnimation = animations.get(CharacterState.IDLE_RTL);
             avatar = animations.get(CharacterState.IDLE_RTL).getSheet().getImage(0);
         }
-    }
-
-    public Character() {
     }
 
     protected abstract void healthBarInit(int maxHealth);
@@ -87,17 +86,8 @@ public abstract class Character {
                 ablity.tick();
             }
         }
-        if (inventory.size() > 0) {
-            for (int i = 0; i < inventory.size(); i++) {
-                if (inventory.get(i) != null && inventory.get(i).size() > 0) {
-                    for (int j = 0; j < inventory.get(i).size(); j++) {
-                        Item item = inventory.get(i).get(j);
-                        if (item != null) {
-                            item.tick();
-                        }
-                    }
-                }
-            }
+        if (inventory != null) {
+            inventory.tick();
         }
     }
 
@@ -153,20 +143,15 @@ public abstract class Character {
                 abilities.get(i).render(g);
             }
         }
-//        if (inventory.size() > 0) {
-//            for (int i = 0; i < inventory.size(); i++) {
-//                if (inventory.get(i) != null && inventory.get(i).size() > 0) {
-//                    for (int j = 0; j < inventory.get(i).size(); j++) {
-//                        Item item = inventory.get(i).get(j);
-//                        if (item != null) {
-//                            item.render(g);
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        if(inventory != null) {
+            inventory.render(g);
+        }
     }
 
+    public Inventory getInventory() {
+        return inventory;
+    }
+    
     public abstract boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, int attackDmg);
 
     public boolean moveRight() {
@@ -299,10 +284,6 @@ public abstract class Character {
 
     public void setCharacterAssets(Map<String, BufferedImage> characterAssets) {
         this.characterAssets = characterAssets;
-    }
-
-    public List<List<Item>> getInventory() {
-        return inventory;
     }
 
     public List<Handler> getController() {

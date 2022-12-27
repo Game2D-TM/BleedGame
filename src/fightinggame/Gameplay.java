@@ -36,6 +36,7 @@ import fightinggame.entity.Character;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.throwable.Fireball;
+import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.healing.HealthPotion;
 import fightinggame.entity.platform.Platform;
@@ -169,7 +170,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.ATTACK_LTR, attack);
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
-                enemyAnimations, null, this, 200);
+                enemyAnimations, null, this, 200, null);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
         enemy.getController().add(movementHandler);
         abilitiesCharacterInit(enemy.getAbilities(), enemy);
@@ -318,16 +319,14 @@ public class Gameplay extends JPanel implements Runnable {
         player.setCurPlatform(firstPlatform);
     }
 
-    public void itemInit(List<List<Item>> inventory, Character character) {
+    public void itemInit(Inventory inventory, Character character) {
         SpriteSheet healthPotionSheet = new SpriteSheet();
         healthPotionSheet.add("assets/res/item/s_potion.png");
         HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
-        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character,
-                new GamePosition(0, 0, 50, 50), this, 1);
+        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character
+                , this, 1);
         abilitiesItemInit(healthPotion.getAbilities(), character);
-        List<Item> items = new ArrayList<Item>();
-        items.add(healthPotion);
-        inventory.add(items);
+        inventory.addItemToInventory(healthPotion);
         itemCount++;
     }
 
