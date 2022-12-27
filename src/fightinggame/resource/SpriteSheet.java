@@ -46,7 +46,7 @@ public class SpriteSheet {
             g.drawImage(image, x, y, width, height, null);
             g.setColor(Color.red);
             //rectangle
-//            g.drawRect(x, y, width, height);
+            g.drawRect(x, y, width, height);
         }
     }
 

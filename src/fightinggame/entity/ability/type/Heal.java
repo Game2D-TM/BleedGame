@@ -34,7 +34,7 @@ public abstract class Heal extends Ability {
     public boolean healing(Character character) {
         if (canUse) {
             int maxHealth = character.getHealthBar().getMaxHealth();
-            int health = character.getHealthBar().getHealth();
+            int health = character.getStats().getHealth();
             if (health == maxHealth) {
                 return false;
             }
@@ -43,7 +43,7 @@ public abstract class Heal extends Ability {
                 afterHeal = maxHealth;
             }
             if (afterHeal > health) {
-                character.getHealthBar().setHealth(afterHeal);
+                character.getStats().setHealth(afterHeal);
                 gameplay.getAudioPlayer().startThread("heal_sound", false, 0.8f);
                 canUse = false;
                 return true;

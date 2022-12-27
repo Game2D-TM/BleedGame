@@ -12,6 +12,7 @@ import fightinggame.entity.Character;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
+import fightinggame.entity.Stats;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.platform.Platform;
@@ -29,6 +30,7 @@ public class Enemy extends Character {
     protected int walkCounter = 0;
     protected boolean animateChange = false;
     protected int point = 10;
+    protected double experience = 0;
     protected int stunTime = 300;
 
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
@@ -39,7 +41,8 @@ public class Enemy extends Character {
         healthBar.setAppearTimeLimit(1000);
         Random rand = new Random();
         int range = rand.nextInt(rangeRandomSpeed);
-        speed = rand.nextInt(range);
+        stats.setHealth(health);
+        stats.setSpeed(rand.nextInt(range));
     }
 
     @Override
@@ -80,6 +83,7 @@ public class Enemy extends Character {
                         item.setSpawnDrop(true);
                     }
                 }
+                gameplay.getPlayer().getStats().addExperience(experience);
                 gameplay.getPlayer().addPoint(point);
                 gameplay.getEnemies().remove(this);
                 gameplay.getPositions().remove(name);
@@ -207,7 +211,7 @@ public class Enemy extends Character {
     }
 
     @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, int attackDmg) {
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats) {
         int attackMaxY = attackY + attackHeight;
         if (isAttack && !isDeath) {
             if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
@@ -229,13 +233,50 @@ public class Enemy extends Character {
                     currAnimation = animations.get(CharacterState.GET_HIT_RTL);
                 }
                 isAttacked = true;
-                int health = healthBar.getHealth() - attackDmg;
-                if (health < 0) {
-                    health = 0;
+                receiveDamage = stats.getHit(attackerStats);
+                if (stats.getHealth() <= 0) {
+                    isDeath = true;
+                    if (isLTR) {
+                        currAnimation = animations.get(CharacterState.DEATH_LTR);
+                    } else {
+                        currAnimation = animations.get(CharacterState.DEATH_RTL);
+                    }
                 }
-                receiveDamage = attackDmg;
-                healthBar.setHealth(health);
-                if (health <= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage) {
+        int attackMaxY = attackY + attackHeight;
+        if (isAttack && !isDeath) {
+            if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
+                    && ((attackY <= getYHitBox() && attackMaxY >= getYMaxHitBox()
+                    || (attackY >= getYHitBox() && attackMaxY <= getYMaxHitBox())
+                    || (attackY > getYHitBox() && attackY <= getYMaxHitBox()
+                    && attackMaxY > getYMaxHitBox())
+                    || (attackMaxY > getYHitBox() && attackMaxY <= getYMaxHitBox()
+                    && attackY < getYHitBox())))) {
+                setDefAttackedCounter();
+                if (ENEMY_HEALTHBAR_SHOW != null) {
+                    ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
+                }
+                ENEMY_HEALTHBAR_SHOW = this;
+                healthBar.setCanShow(true);
+                if (isLTR) {
+                    currAnimation = animations.get(CharacterState.GET_HIT_LTR);
+                } else {
+                    currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                }
+                isAttacked = true;
+                if(attackDamage == -1) {
+                    receiveDamage = stats.getHit(attackerStats);
+                } else {
+                    receiveDamage = stats.getHit(attackerStats, attackDamage);
+                }
+                if (stats.getHealth() <= 0) {
                     isDeath = true;
                     if (isLTR) {
                         currAnimation = animations.get(CharacterState.DEATH_LTR);
@@ -249,6 +290,14 @@ public class Enemy extends Character {
         return false;
     }
 
+    public double getExperience() {
+        return experience;
+    }
+
+    public void addExperience(double experience) {
+        this.experience += experience;
+    }
+    
     public int getXHitBox() {
         return position.getXPosition();
     }
@@ -269,8 +318,8 @@ public class Enemy extends Character {
         return point;
     }
 
-    public void setPoint(int point) {
-        this.point = point;
+    public void addPoint(int point) {
+        this.point += point;
     }
 
     public int getStunTime() {

@@ -80,12 +80,12 @@ public class Gameplay extends JPanel implements Runnable {
 //        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(10).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
-//        firstPlatform = background.getScene().get(10).get(7);
-//        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
-//        firstPlatform = background.getScene().get(10).get(8);
-//        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
-//        spawnEnemiesThread = new Thread(spawnEnemies());
-//        spawnEnemiesThread.start();
+        firstPlatform = background.getScene().get(10).get(7);
+        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+        firstPlatform = background.getScene().get(10).get(8);
+        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
+        spawnEnemiesThread = new Thread(spawnEnemies());
+        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -179,6 +179,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemies.add(enemy);
         positions.put(enemy.getName(), enemy.getPosition());
         enemy.setCurPlatform(firstPlatform);
+        enemy.getStats().addExperience(50000);
     }
 
     public void playerInit(Platform firstPlatform) {
@@ -317,6 +318,7 @@ public class Gameplay extends JPanel implements Runnable {
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
         player.setCurPlatform(firstPlatform);
+        player.getStats().addExperience(50000);
     }
 
     public void itemInit(Inventory inventory, Character character) {

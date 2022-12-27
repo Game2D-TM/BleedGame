@@ -31,8 +31,6 @@ public abstract class Character {
     protected boolean isAttacked = false;
     protected boolean isAttack = false;
     protected boolean isDeath = false;
-    protected int speed = 30;
-    protected int attackDamage = 10;
     protected int receiveDamage = 0;
     protected int receiveDamageRenderTick = 0;
     protected Gameplay gameplay;
@@ -43,6 +41,7 @@ public abstract class Character {
     protected int jumpFlySpeed = 4;
     protected boolean inAir = false;
     protected boolean fallDown = false;
+    protected Stats stats;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
             Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
@@ -53,6 +52,7 @@ public abstract class Character {
         this.characterAssets = characterAssets;
         this.gameplay = gameplay;
         this.isLTR = isLTR;
+        stats = new Stats(this, 1, 0, 10, 5, 100, 30, 0, 0, 0);
         inventory = new Inventory(this, inventorySheet, gameplay);
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
@@ -143,7 +143,7 @@ public abstract class Character {
                 abilities.get(i).render(g);
             }
         }
-        if(inventory != null) {
+        if (inventory != null) {
             inventory.render(g);
         }
     }
@@ -151,15 +151,19 @@ public abstract class Character {
     public Inventory getInventory() {
         return inventory;
     }
-    
-    public abstract boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, int attackDmg);
 
+    public abstract boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage);
+    
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats) {
+        return checkHit(attackX, attackY, attackHeight, isAttack, attackerStats, -1);
+    }
+    
     public boolean moveRight() {
-        return position.moveRight(speed);
+        return position.moveRight(stats.getSpeed());
     }
 
     public boolean moveLeft() {
-        return position.moveLeft(speed);
+        return position.moveLeft(stats.getSpeed());
     }
 
     public boolean moveUp() {
@@ -171,7 +175,7 @@ public abstract class Character {
     }
 
     public boolean moveDown() {
-        return position.moveDown(speed);
+        return position.moveDown(stats.getSpeed());
     }
 
     public int getJumpFlySpeed() {
@@ -306,14 +310,6 @@ public abstract class Character {
         this.currAnimation = currAnimation;
     }
 
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
     public BufferedImage getAvatar() {
         return avatar;
     }
@@ -334,16 +330,16 @@ public abstract class Character {
         return isAttacked;
     }
 
+    public Stats getStats() {
+        return stats;
+    }
+
+    public void setStats(Stats stats) {
+        this.stats = stats;
+    }
+
     public void setIsAttacked(boolean isAttacked) {
         this.isAttacked = isAttacked;
-    }
-
-    public int getAttackDamage() {
-        return attackDamage;
-    }
-
-    public void setAttackDamage(int attackDamage) {
-        this.attackDamage = attackDamage;
     }
 
     public boolean isAttack() {
@@ -359,7 +355,7 @@ public abstract class Character {
     }
 
     public boolean isDeath() {
-        if (healthBar.getHealth() > 0) {
+        if (stats.getHealth() > 0) {
             return false;
         } else {
             return isDeath;

@@ -25,7 +25,7 @@ public abstract class Item {
     protected Gameplay gameplay;
     protected boolean spawnDrop;
     protected int dropExpireCounter = 0;
-    protected int timeExpire = 1500;
+    protected int timeExpire = 2000;
 
     public Item(int id, String name, Animation animation, Character character,
             Gameplay gameplay, int amount) {
