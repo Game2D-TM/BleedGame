@@ -7,6 +7,7 @@ import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.throwable.Fireball;
+import fightinggame.resource.SpriteSheet;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Map;
@@ -18,8 +19,8 @@ public class DiorEnemy extends Enemy {
     public DiorEnemy(DiorColor color, int id, String name, int health,
             GamePosition position, Map<CharacterState, Animation> animations,
             Map<String, BufferedImage> characterAssets,
-            Gameplay gameplay, int rangeRandomSpeed) {
-        super(id, name, health, position, animations, characterAssets, gameplay, rangeRandomSpeed);
+            Gameplay gameplay, int rangeRandomSpeed, SpriteSheet inventorySheet) {
+        super(id, name, health, position, animations, characterAssets, gameplay, rangeRandomSpeed, inventorySheet);
         this.color = color;
         switch (color) {
             case Red:
@@ -65,10 +66,6 @@ public class DiorEnemy extends Enemy {
             speed = 1;
         }
     }
-
-    public DiorEnemy() {
-    }
-
     @Override
     public void tick() {
         super.tick();

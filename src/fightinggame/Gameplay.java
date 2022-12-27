@@ -36,6 +36,7 @@ import fightinggame.entity.Character;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.throwable.Fireball;
+import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.healing.HealthPotion;
 import fightinggame.entity.platform.Platform;
@@ -169,7 +170,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.ATTACK_LTR, attack);
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
-                enemyAnimations, null, this, 200);
+                enemyAnimations, null, this, 200, null);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
         enemy.getController().add(movementHandler);
         abilitiesCharacterInit(enemy.getAbilities(), enemy);
@@ -180,7 +181,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemy.setCurPlatform(firstPlatform);
     }
 
-public void playerInit(Platform firstPlatform) {
+    public void playerInit(Platform firstPlatform) {
         GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition()
         - 280 - 500, 200, 290); // 80
@@ -286,7 +287,6 @@ public void playerInit(Platform firstPlatform) {
         PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01"), 0);
         PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01"), 35);
-
         Map<CharacterState, Animation> playerAnimations = new HashMap();
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
         playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
@@ -298,8 +298,10 @@ public void playerInit(Platform firstPlatform) {
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
+        SpriteSheet inventorySheet = new SpriteSheet();
+        inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
-               playerAnimations, null, this);
+                playerAnimations, null, this, inventorySheet);
         abilitiesCharacterInit(player.getAbilities(), player);
         itemInit(player.getInventory(), player);
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
@@ -317,16 +319,14 @@ public void playerInit(Platform firstPlatform) {
         player.setCurPlatform(firstPlatform);
     }
 
-    public void itemInit(List<List<Item>> inventory, Character character) {
+    public void itemInit(Inventory inventory, Character character) {
         SpriteSheet healthPotionSheet = new SpriteSheet();
         healthPotionSheet.add("assets/res/item/s_potion.png");
         HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
-        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character,
-                new GamePosition(0, 0, 50, 50), this, 1);
+        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character
+                , this, 1);
         abilitiesItemInit(healthPotion.getAbilities(), character);
-        List<Item> items = new ArrayList<Item>();
-        items.add(healthPotion);
-        inventory.add(items);
+        inventory.addItemToInventory(healthPotion);
         itemCount++;
     }
 

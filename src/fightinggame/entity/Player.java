@@ -13,11 +13,11 @@ public class Player extends Character {
 
     private int isStunCounter = 0;
     private int point = 0;
-
+    
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
-            Gameplay gameplay) {
-        super(id, name, health, position, animations, characterAssets, gameplay, true);
+            Gameplay gameplay, SpriteSheet inventorySheet) {
+        super(id, name, health, position, animations, characterAssets, gameplay, true, inventorySheet);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
         speed = 2;
@@ -37,10 +37,6 @@ public class Player extends Character {
         healthBar = new HealthBar(avatar, healthBarSheet, this,
                 new GamePosition(120, 20, 550, 80), new GamePosition(15, 8, 100, 110),
                 maxHealth);
-    }
-
-    public Player() {
-
     }
 
     @Override

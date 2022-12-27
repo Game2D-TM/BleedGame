@@ -6,6 +6,7 @@ import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
 import fightinggame.entity.Character;
+import fightinggame.entity.inventory.Inventory;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -26,13 +27,12 @@ public abstract class Item {
     protected int dropExpireCounter = 0;
     protected int timeExpire = 1500;
 
-    public Item(int id, String name, Animation animation, Character character, GamePosition position,
+    public Item(int id, String name, Animation animation, Character character,
             Gameplay gameplay, int amount) {
         this.id = id;
         this.name = name;
         this.animation = animation;
         this.character = character;
-        this.position = position;
         this.amount = amount;
         this.gameplay = gameplay;
     }
@@ -53,9 +53,9 @@ public abstract class Item {
                 ability.tick();
             }
         }
-        if(spawnDrop) {
+        if (spawnDrop) {
             dropExpireCounter++;
-            if(dropExpireCounter > timeExpire) {
+            if (dropExpireCounter > timeExpire) {
                 gameplay.getItemsOnGround().remove(this);
                 spawnDrop = false;
                 dropExpireCounter = 0;
@@ -67,9 +67,9 @@ public abstract class Item {
 
     public void render(Graphics g) {
         if (animation != null && spawnDrop) {
-            animation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition()
-                    , position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
-                     position.getWidth(), position.getHeight());
+            animation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                    position.getWidth(), position.getHeight());
         }
         if (abilities.size() > 0) {
             for (int i = 0; i < abilities.size(); i++) {
@@ -78,12 +78,22 @@ public abstract class Item {
             }
         }
     }
-    
+
+    public void renderInventory(Graphics g) {
+        if (animation != null) {
+            if (position != null) {
+                animation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                         position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                        position.getWidth(), position.getHeight());
+            }
+        }
+    }
+
     public void checkHit(Character character) {
-        if(spawnDrop && dropExpireCounter <= 1500 && !character.isAttack()) {
+        if (spawnDrop && dropExpireCounter <= 1500 && !character.isAttack()) {
             GamePosition charPostion = character.getPosition();
-            if(((charPostion.getXPosition() < position.getXPosition() && charPostion.getMaxX() > position.getMaxX())
-                    ||(charPostion.getXPosition() > position.getXPosition() && charPostion.getMaxX() < position.getMaxX())
+            if (((charPostion.getXPosition() < position.getXPosition() && charPostion.getMaxX() > position.getMaxX())
+                    || (charPostion.getXPosition() > position.getXPosition() && charPostion.getMaxX() < position.getMaxX())
                     || (charPostion.getXPosition() >= position.getXPosition() && charPostion.getXPosition() <= position.getMaxX()
                     && charPostion.getMaxX() > position.getMaxX())
                     || (charPostion.getMaxX() >= position.getXPosition() && charPostion.getMaxX() <= position.getMaxX()
@@ -95,55 +105,51 @@ public abstract class Item {
                     || (charPostion.getMaxY() > position.getYPosition() && charPostion.getMaxY() <= position.getMaxY()
                     && charPostion.getYPosition() < position.getYPosition())))) {
                 List<Item> itemsOnGround = gameplay.getItemsOnGround();
-                if(itemsOnGround.size() > 0) {
-                    if(itemsOnGround.contains(this)) {
+                if (itemsOnGround.size() > 0) {
+                    if (itemsOnGround.contains(this)) {
                         this.character = character;
-                        if(abilities.size() > 0) {
-                            for(int i = 0 ; i < abilities.size(); i++) {
+                        if (abilities.size() > 0) {
+                            for (int i = 0; i < abilities.size(); i++) {
                                 Ability ability = abilities.get(i);
-                                if(ability != null) {
+                                if (ability != null) {
                                     ability.setCharacter(character);
                                 }
                             }
                         }
                         gameplay.getAudioPlayer().startThread("health_pickup", false, 0.8f);
                         itemsOnGround.remove(this);
-                        List<List<Item>> inventory = character.getInventory();
-                        if(inventory.size() > 0) {
-                            for(int i = 0 ; i < inventory.size(); i++) {
-                                List<Item> items = inventory.get(i);
-                                if(items == null) {
-                                    items = new ArrayList();
-                                    items.add(this);
-                                    inventory.add(i, items);
-                                }
-                                items.add(this);
-                                spawnDrop = false;
-                                dropExpireCounter = 0;
-                                break;
-                            }
-                        }
+                        Inventory inventory = character.getInventory();
+                        inventory.addItemToInventory(this);
+                        spawnDrop = false;
+                        dropExpireCounter = 0;
                     }
                 }
             }
         }
     }
-    
+
     public abstract boolean use();
 
     public Animation getAnimation() {
         return animation;
     }
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        return name.equalsIgnoreCase(((Item) obj).getName());
+    }
+
     public BufferedImage getIcon() {
-        if(animation != null) {
-            if(animation.getSheet().getImages().size() > 0) 
+        if (animation != null) {
+            if (animation.getSheet().getImages().size() > 0) {
                 return animation.getSheet().getImage(0);
-            else return null;
+            } else {
+                return null;
+            }
         }
         return null;
     }
-    
+
     public void setAnimation(Animation animation) {
         this.animation = animation;
     }
@@ -179,7 +185,7 @@ public abstract class Item {
     public List<Handler> getHandlers() {
         return handlers;
     }
-    
+
     public GamePosition getPosition() {
         return position;
     }
@@ -195,6 +201,5 @@ public abstract class Item {
     public void setSpawnDrop(boolean spawnDrop) {
         this.spawnDrop = spawnDrop;
     }
-    
-    
+
 }

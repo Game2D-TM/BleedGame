@@ -3,16 +3,15 @@ package fightinggame.entity.item.healing;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.Heal;
+import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
-import java.util.List;
 
 public class HealthPotion extends Item {
 
-    public HealthPotion(int id, String name, Animation animation, Character character, GamePosition position,
+    public HealthPotion(int id, String name, Animation animation, Character character,
             Gameplay gameplay, int amount) {
-        super(id, name, animation, character, position, gameplay, amount);
+        super(id, name, animation, character, gameplay, amount);
     }
 
     @Override
@@ -29,22 +28,8 @@ public class HealthPotion extends Item {
                         + " " + nAmount + " Left"
                         + " Wait for " + abilities.get(0).getCoolDownTime());
                 if (nAmount == 0) {
-                    boolean isRemove = false;
-                    List<List<Item>> items = character.getInventory();
-                    if (items != null && items.size() > 0) {
-                        for (int i = 0; i < items.size(); i++) {
-                            List<Item> list = items.get(i);
-                            if (list != null && list.size() > 0) {
-                                if (list.contains(this)) {
-                                    list.remove(this);
-                                    isRemove = true;
-                                    System.out.println(isRemove);
-                                    break;
-                                }
-                            }
-                            if(isRemove) break;
-                        }
-                    }
+                    Inventory inventory = character.getInventory();
+                    inventory.removeItemFromInventory(this);
                 } else {
                     amount = nAmount;
                 }
