@@ -286,26 +286,26 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerSlide slideLTR = new PlayerSlide(10,spriteSheetMap.get("Slide01"), 20);
         PlayerAirAttack airAttack01LTR = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01"), 20);
         
-        //RTL
+         //RTL
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
         PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
         PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL());
-        PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
+        PlayerRunRTL runRTL = new PlayerRunRTL(1, spriteSheetMap.get("Run01").convertRTL(), 0);
         PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
         PlayerAttack attack03RTL = new PlayerAttack(2, spriteSheetMap.get("Attack03").convertRTL(), 12);
         PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), 12);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
-        PlayerJump jumpRTL = new PlayerJump(5, spriteSheetMap.get("Jump02").convertRTL(), 50);
-        PlayerFallDown fallDownRTL = new PlayerFallDown(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
+        PlayerJumpRTL jumpRTL = new PlayerJumpRTL(5, spriteSheetMap.get("Jump02").convertRTL(), 30);
+        PlayerFallDownRTL fallDownRTL = new PlayerFallDownRTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
         PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), 40);
         PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), 15);
-        PlayerSlide slideRTL = new PlayerSlide(10,spriteSheetMap.get("Slide01").convertRTL(), 20);
+        PlayerSlide slideRTL = new PlayerSlide(10, spriteSheetMap.get("Slide01").convertRTL(), 20);
         PlayerAirAttack airAttack01RTL = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
-
-
-        
+        // reverse arrays animations
+        jumpLTR.getSheet().reverseImages();
+        jumpRTL.getSheet().reverseImages();
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
         
