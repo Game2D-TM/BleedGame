@@ -126,19 +126,8 @@ public class Enemy extends Character {
                     }
                 }
                 if (!isLTR) {
-//                    if (position.getXPosition() >= gameplay.getPlayPosition().getXPosition()) {
-//                        position.moveLeft(speed, true);
-//                    } else {
-//                        isLTR = true;
-//                    }
                     position.isMoveLeft = true;
                 } else {
-//                    if (position.getXPosition() + position.getWidth() <= gameplay.getPlayPosition().getXPosition()
-//                            + gameplay.getPlayPosition().getWidth()) {
-//                        position.moveRight(speed, true);
-//                    } else {
-//                        isLTR = false;
-//                    }
                     position.isMoveRight = true;
                 }
                 checkNextToWall();

@@ -183,7 +183,7 @@ public abstract class Character {
     }
 
     public boolean moveUp() {
-        if (position.isMoveUp) {
+        if (position.isJump) {
             inAir = true;
             return true;
         }

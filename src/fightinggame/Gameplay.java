@@ -75,9 +75,9 @@ public class Gameplay extends JPanel implements Runnable {
 //        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
-        firstPlatform = background.getScene().get(10).get(7);
+        firstPlatform = background.getScene().get(9).get(7);
         diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
-        firstPlatform = background.getScene().get(10).get(8);
+        firstPlatform = background.getScene().get(9).get(8);
         diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
         spawnEnemiesThread = new Thread(spawnEnemies());
         spawnEnemiesThread.start();

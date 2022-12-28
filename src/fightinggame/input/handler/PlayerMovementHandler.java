@@ -46,7 +46,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             canMoveCheck(MoveState.RIGHT, player);
         }
         if (!player.isInAir()) {
-            if (canMoveCheck(MoveState.UP, player)) {
+            if (canMoveCheck(MoveState.JUMP, player)) {
                 yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getJumpSpeed());
             }
         } else {
@@ -56,7 +56,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 } else {
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_LTR));
                 }
-                player.getPosition().isMoveUp = false;
+                player.getPosition().isJump = false;
                 System.out.println("is in air");
                 System.out.println(yAfterJump);
                 System.out.println(player.getPosition().getYPosition());
@@ -76,7 +76,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     } else {
                         player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_LTR));
                     }
-                    player.getPosition().isMoveUp = false;
+                    player.getPosition().isJump = false;
                 }
             }
         }
@@ -149,7 +149,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         if (player.isAttack() || player.isInAir() || player.isFallDown()) {
                             break;
                         }
-                        player.getPosition().isMoveUp = true;
+                        player.getPosition().isJump = true;
                         break;
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
