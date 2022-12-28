@@ -4,8 +4,16 @@ package fightinggame.entity;
 public enum CharacterState {
     IDLE_LTR,
     IDLE_RTL,
-    ATTACK_LTR,
-    ATTACK_RTL,
+    ATTACK01_LTR,
+    ATTACK01_RTL,
+    ATTACK02_LTR,
+    ATTACK02_RTL,
+    ATTACK03_LTR,
+    ATTACK03_RTL,
+    AIRATTACK01_LTR,
+    AIRATTACK01_RTL,
+    CROUCH_LTR,
+    CROUCH_RTL,
     JUMP_LTR,
     JUMP_RTL,
     FALLDOWN_LTR,
@@ -20,4 +28,8 @@ public enum CharacterState {
     DEATH_RTL,
     SPELLCAST_LTR,
     SPELLCAST_RTL,
+    SPELLCASTLOOP_LTR,
+    SPELLCASTLOOP_RTL,
+    SLIDE_LTR,
+    SLIDE_RTL
 }

@@ -8,14 +8,7 @@ import fightinggame.animation.enemy.EnemyIdle;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.animation.item.HealthPotionAnimation;
-import fightinggame.animation.player.PlayerAttack;
-import fightinggame.animation.player.PlayerDeath;
-import fightinggame.animation.player.PlayerFallDown;
-import fightinggame.animation.player.PlayerHit;
-import fightinggame.animation.player.PlayerIdle;
-import fightinggame.animation.player.PlayerJump;
-import fightinggame.animation.player.PlayerRun;
-import fightinggame.animation.player.PlayerSpellCast;
+import fightinggame.animation.player.*;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Background;
 import fightinggame.entity.Camera;
@@ -168,8 +161,8 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.DEATH_LTR, death);
         enemyAnimations.put(CharacterState.RUNFORWARD, runForward);
         enemyAnimations.put(CharacterState.RUNBACK, runBack);
-        enemyAnimations.put(CharacterState.ATTACK_RTL, attack);
-        enemyAnimations.put(CharacterState.ATTACK_LTR, attack);
+        enemyAnimations.put(CharacterState.ATTACK01_RTL, attack);
+        enemyAnimations.put(CharacterState.ATTACK01_LTR, attack);
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
                 enemyAnimations, null, this, 200, null);
@@ -273,42 +266,109 @@ public class Gameplay extends JPanel implements Runnable {
 //        playerDeathRTL.reverseImages();
 //        playerAttack1LTR.getImages().addAll(playerAttack2LTR.getImages());
 //        playerAttack1RTL.getImages().addAll(playerAttack2RTL.getImages());
+
+        //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
-        PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle01"));
+        PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
         PlayerRun runLTR = new PlayerRun(1,spriteSheetMap.get("Run01") , 0);
-        PlayerAttack attackLTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
+        PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
+        PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12);
+        PlayerAttack attack03LTR = new PlayerAttack(2, spriteSheetMap.get("Attack03"), 12);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
-        PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
-        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
-        PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
-        PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
-        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
         PlayerJump jumpLTR = new PlayerJump(5, spriteSheetMap.get("Jump02"), 50);
         PlayerFallDown fallDownLTR = new PlayerFallDown(6, spriteSheetMap.get("FallAnim01"), 50);
         PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), 40);
+        PlayerCrouch crouchLTR = new PlayerCrouch(8, spriteSheetMap.get("Crouch01"), 10);
+        PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop"), 15);
+        PlayerSlide slideLTR = new PlayerSlide(10,spriteSheetMap.get("Slide01"), 20);
+        PlayerAirAttack airAttack01LTR = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01"), 20);
+        
+        //RTL
+        PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
+        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
+        PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
+        PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
+        PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
+        PlayerAttack attack03RTL = new PlayerAttack(2, spriteSheetMap.get("Attack03").convertRTL(), 12);
+        PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
+        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
+        PlayerJump jumpRTL = new PlayerJump(5, spriteSheetMap.get("Jump02").convertRTL(), 50);
+        PlayerFallDown fallDownRTL = new PlayerFallDown(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
+        PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), 40);
+        PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), 15);
+        PlayerSlide slideRTL = new PlayerSlide(10,spriteSheetMap.get("Slide01").convertRTL(), 20);
+        PlayerAirAttack airAttack01RTL = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
+
+
+        
+        //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
-        playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
-        playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
+        
+        //Run directions
         playerAnimations.put(CharacterState.RUNFORWARD, runLTR);
         playerAnimations.put(CharacterState.RUNBACK, runRTL);
-        playerAnimations.put(CharacterState.ATTACK_LTR, attackLTR);
-        playerAnimations.put(CharacterState.ATTACK_RTL, attackRTL);
+        
+        //Idle
+        playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
+        playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
+        
+        //Attacks
+        playerAnimations.put(CharacterState.ATTACK01_LTR, attack01LTR);
+        playerAnimations.put(CharacterState.ATTACK01_RTL, attack01RTL);
+        playerAnimations.put(CharacterState.ATTACK02_LTR, attack02LTR);
+        playerAnimations.put(CharacterState.ATTACK02_RTL, attack02RTL);
+        playerAnimations.put(CharacterState.ATTACK03_LTR, attack03LTR);
+        playerAnimations.put(CharacterState.ATTACK03_RTL, attack03RTL);
+        playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR);
+        playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);
+        
+        //Get Hit
         playerAnimations.put(CharacterState.GET_HIT_LTR, hitLTR);
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
+        
+        //Death Animation
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
+        
+        //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
+        playerAnimations.put(CharacterState.JUMP_RTL, jumpLTR);
+        
+        //Crouch Animation
+        playerAnimations.put(CharacterState.CROUCH_LTR, crouchLTR);
+        playerAnimations.put(CharacterState.CROUCH_RTL, crouchRTL);
+        
+        //Slide Animation
+        playerAnimations.put(CharacterState.SLIDE_LTR, slideLTR);
+        playerAnimations.put(CharacterState.SLIDE_RTL, slideRTL);
+        
+        //Falldown
         playerAnimations.put(CharacterState.FALLDOWN_LTR, fallDownLTR);
+        playerAnimations.put(CharacterState.FALLDOWN_RTL, fallDownLTR);
+        
+        //SpellCast
         playerAnimations.put(CharacterState.SPELLCAST_LTR, spellCastLTR);
+        playerAnimations.put(CharacterState.SPELLCAST_RTL, spellCastLTR);
+        playerAnimations.put(CharacterState.SPELLCASTLOOP_LTR, spellCastLoopLTR);
+        playerAnimations.put(CharacterState.SPELLCASTLOOP_RTL, spellCastLoopLTR);
+        
+        
+        //Init Inventory
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
+        
+        //Init Player
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
                 playerAnimations, null, this, inventorySheet);
+        
+        //Init Ability
         abilitiesCharacterInit(player.getAbilities(), player);
         itemInit(player.getInventory(), player);
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
         player.getAbility(0).getHandlers().add(abilityHandler);
         player.getAbility(1).getHandlers().add(abilityHandler);
+        
+        //Init Handler
         game.addKeyListener(abilityHandler);
         PlayerMovementHandler keyBoardHandler = new PlayerMovementHandler(player, "player_movement", this);
         MouseHandler mouseHandler = new MouseHandler(player, "player_mouse", this);
@@ -316,6 +376,8 @@ public class Gameplay extends JPanel implements Runnable {
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
+        
+        //Init platforms
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
         player.setCurPlatform(firstPlatform);

@@ -54,9 +54,9 @@ public class MouseHandler extends Handler implements MouseListener {
                         }
                         Animation attack = null;
                         if (player.isLTR()) {
-                            attack = player.getAnimations().get(CharacterState.ATTACK_LTR);
+                            attack = player.getAnimations().get(CharacterState.ATTACK01_LTR);
                         } else {
-                            attack = player.getAnimations().get(CharacterState.ATTACK_RTL);
+                            attack = player.getAnimations().get(CharacterState.ATTACK01_RTL);
                         }
                         if (!player.isAttack()) {
                             if (player.isLTR()) {

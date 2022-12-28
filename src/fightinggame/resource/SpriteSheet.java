@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -130,16 +131,19 @@ public class SpriteSheet {
     
     public SpriteSheet convertRTL() {
         List<BufferedImage> flipped = new ArrayList<>();
+        SpriteSheet result = new SpriteSheet();
         for(int i = 0; i < this.images.size(); i++) {
             BufferedImage sprite = images.get(i);
             // Flip the image horizontally
             AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
             tx.translate(-sprite.getWidth(null), 0);
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            sprite = op.filter(sprite, null);
             flipped.add(sprite);
         }
-        this.setImages(flipped);
-        this.reverseImages();
-        return this;
+        result.setImages(flipped);
+        result.reverseImages();
+        return result;
     }
     
     public int getSpriteCounter() {

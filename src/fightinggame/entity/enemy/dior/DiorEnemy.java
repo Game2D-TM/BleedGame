@@ -87,9 +87,9 @@ public class DiorEnemy extends Enemy {
             }
             if (gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, false, null)) {
                 if (isLTR) {
-                    currAnimation = animations.get(CharacterState.ATTACK_LTR);
+                    currAnimation = animations.get(CharacterState.ATTACK01_LTR);
                 } else {
-                    currAnimation = animations.get(CharacterState.ATTACK_RTL);
+                    currAnimation = animations.get(CharacterState.ATTACK01_RTL);
                 }
                 isAttack = true;
                 gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, stats);
@@ -143,9 +143,9 @@ public class DiorEnemy extends Enemy {
                     boolean result = fireBallAbility.execute(fireBallPos, endPos);
                     if (result) {
                         if (isLTR) {
-                            currAnimation = animations.get(CharacterState.ATTACK_LTR);
+                            currAnimation = animations.get(CharacterState.ATTACK01_LTR);
                         } else {
-                            currAnimation = animations.get(CharacterState.ATTACK_RTL);
+                            currAnimation = animations.get(CharacterState.ATTACK01_RTL);
                         }
                         isAttack = true;
                     }

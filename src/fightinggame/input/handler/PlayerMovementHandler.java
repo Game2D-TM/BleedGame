@@ -193,9 +193,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             }
                             Animation attack = null;
                             if (player.isLTR()) {
-                                attack = player.getAnimations().get(CharacterState.ATTACK_LTR);
+                                attack = player.getAnimations().get(CharacterState.ATTACK01_LTR);
                             } else {
-                                attack = player.getAnimations().get(CharacterState.ATTACK_RTL);
+                                attack = player.getAnimations().get(CharacterState.ATTACK01_RTL);
                             }
                             player.setIsAttack(true);
                             player.setCurrAnimation(attack);
