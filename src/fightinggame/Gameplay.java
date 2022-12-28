@@ -285,7 +285,7 @@ public class Gameplay extends JPanel implements Runnable {
         
         //RTL
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
-        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle01").convertRTL());
+        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
         PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
         PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
