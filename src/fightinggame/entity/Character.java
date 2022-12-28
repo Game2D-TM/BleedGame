@@ -5,11 +5,13 @@ import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.platform.Platform;
 import fightinggame.input.handler.Handler;
+import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +58,10 @@ public abstract class Character {
         inventory = new Inventory(this, inventorySheet, gameplay);
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
-            avatar = animations.get(CharacterState.IDLE_LTR).getSheet().getImage(0);
+            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
         } else {
             currAnimation = animations.get(CharacterState.IDLE_RTL);
-            avatar = animations.get(CharacterState.IDLE_RTL).getSheet().getImage(0);
+            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
         }
     }
 
