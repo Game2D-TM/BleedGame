@@ -340,7 +340,7 @@ public class Gameplay extends JPanel implements Runnable {
         
         //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
-        playerAnimations.put(CharacterState.JUMP_RTL, jumpLTR);
+        playerAnimations.put(CharacterState.JUMP_RTL, jumpRTL);
         
         //Crouch Animation
         playerAnimations.put(CharacterState.CROUCH_LTR, crouchLTR);
@@ -352,13 +352,13 @@ public class Gameplay extends JPanel implements Runnable {
         
         //Falldown
         playerAnimations.put(CharacterState.FALLDOWN_LTR, fallDownLTR);
-        playerAnimations.put(CharacterState.FALLDOWN_RTL, fallDownLTR);
+        playerAnimations.put(CharacterState.FALLDOWN_RTL, fallDownRTL);
         
         //SpellCast
         playerAnimations.put(CharacterState.SPELLCAST_LTR, spellCastLTR);
-        playerAnimations.put(CharacterState.SPELLCAST_RTL, spellCastLTR);
+        playerAnimations.put(CharacterState.SPELLCAST_RTL, spellCastRTL);
         playerAnimations.put(CharacterState.SPELLCASTLOOP_LTR, spellCastLoopLTR);
-        playerAnimations.put(CharacterState.SPELLCASTLOOP_RTL, spellCastLoopLTR);
+        playerAnimations.put(CharacterState.SPELLCASTLOOP_RTL, spellCastLoopRTL);
         
         
         //Init Inventory
