@@ -5,7 +5,7 @@ import fightinggame.entity.enemy.Enemy;
 
 public class EnemyMovementHandler extends MovementHandler{
     
-    private Enemy enemy;
+    private final Enemy enemy;
     
     public EnemyMovementHandler(String name, Gameplay gameplay, Enemy enemy) {
         super(gameplay, name);
@@ -26,6 +26,7 @@ public class EnemyMovementHandler extends MovementHandler{
         if(canMoveCheck(MoveState.DOWN, enemy)) {
             enemy.getPosition().isMoveDown = false;
         }
+        applyGravityCharacter(enemy);
     }
     
 }
