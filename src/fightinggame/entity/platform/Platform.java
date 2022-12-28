@@ -15,6 +15,7 @@ public abstract class Platform {
     protected int row;
     protected int column;
     protected boolean canRender = false;
+    protected boolean isMapRender = false;
 
     public Platform(String name, BufferedImage image, boolean canStand, GamePosition position, Gameplay gameplay,
             int row, int column) {
@@ -34,7 +35,7 @@ public abstract class Platform {
     }
 
     public void render(Graphics g) {
-        if (canRender) {
+        if (canRender || isMapRender) {
             g.drawImage(image, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
                     position.getHeight(), null);
@@ -94,4 +95,13 @@ public abstract class Platform {
         this.column = column;
     }
 
+    public boolean isMapRender() {
+        return isMapRender;
+    }
+
+    public void setIsMapRender(boolean isMapRender) {
+        this.isMapRender = isMapRender;
+    }
+    
+    
 }

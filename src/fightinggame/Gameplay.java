@@ -46,8 +46,11 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
+
 //    private GamePosition playPosition;
     private Background background;
+    private Background map;
+    private boolean renderMap = true;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
     private final Map<String, GamePosition> positions = new HashMap<String, GamePosition>();
@@ -61,13 +64,21 @@ public class Gameplay extends JPanel implements Runnable {
     private final List<Item> itemsOnGround = new ArrayList<Item>();
     private Camera camera;
     public int gravity = 5;
+
     public Gameplay(Game game, int width, int height) {
         setSize(width, height);
         camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
         background = new Background(0, "Scene 1",
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
-                "data/scene_1.txt");
+                "data/scene_1.txt", 250, 180);
+        map = new Background(1, "Map", this,
+                new GamePosition(getCamera().getPosition().getXPosition()
+                        + getCamera().getPosition().getWidth() / 2 + 400,
+                        getCamera().getPosition().getYPosition(), 0, 0),
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"),
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
+                "data/scene_1.txt", 15, 15);
 //        playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
@@ -75,12 +86,12 @@ public class Gameplay extends JPanel implements Runnable {
 //        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
-        firstPlatform = background.getScene().get(9).get(7);
-        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
-        firstPlatform = background.getScene().get(9).get(8);
-        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+//        firstPlatform = background.getScene().get(9).get(8);
+//        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+//        firstPlatform = background.getScene().get(9).get(9);
+//        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -120,8 +131,7 @@ public class Gameplay extends JPanel implements Runnable {
                 break;
         }
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
-                firstPlatform.getPosition().getYPosition()
-        - 190, 300, 200);
+                firstPlatform.getPosition().getYPosition(), 250, 150);
         SpriteSheet enemyIdleSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 0, 192, 160,
                 23, 55, 160, 90, 4);
@@ -393,8 +403,8 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet healthPotionSheet = new SpriteSheet();
         healthPotionSheet.add("assets/res/item/s_potion.png");
         HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
-        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character
-                , this, 1);
+        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character,
+                this, 1);
         abilitiesItemInit(healthPotion.getAbilities(), character);
         inventory.addItemToInventory(healthPotion);
         itemCount++;
@@ -471,10 +481,10 @@ public class Gameplay extends JPanel implements Runnable {
                             Random random = new Random();
                             int numberOfEnemies = random.nextInt(5);
                             int enemySpawnYPosition = -1;
-                            int platformStandSize = getPlatforms().get(10).size() - 1;
+                            int platformStandSize = getPlatforms().get(9).size() - 1;
                             int platformColumn = platformStandSize;
                             for (int i = 0; i < numberOfEnemies; i++) {
-                                Platform platform = getPlatforms().get(10).get(platformColumn);
+                                Platform platform = getPlatforms().get(9).get(platformColumn);
 //                                enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
 //                                while (true) {
 //                                    enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
@@ -483,12 +493,12 @@ public class Gameplay extends JPanel implements Runnable {
 //                                    }
 //                                }
 //                                diorInit(enemySpawnXPosition, enemySpawnYPosition);
-                                  diorInit(platform);
-                                  if(platformColumn > 0) {
-                                      platformColumn--;
-                                  } else {
-                                      platformColumn = platformStandSize;
-                                  }
+                                diorInit(platform);
+                                if (platformColumn > 0) {
+                                    platformColumn--;
+                                } else {
+                                    platformColumn = platformStandSize;
+                                }
                             }
                         } catch (Exception ex) {
                             System.out.println(ex.toString());
@@ -508,8 +518,13 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
-        if(background != null) {
+        if (background != null) {
             background.tick();
+        }
+        if (renderMap) {
+            if (map != null) {
+                map.tick();
+            }
         }
         if (camera != null) {
             camera.tick();
@@ -545,14 +560,19 @@ public class Gameplay extends JPanel implements Runnable {
 //            g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
 //                    playPosition.getWidth(), playPosition.getHeight());
         }
-        if(camera != null) {
-            camera.render(g);
+        if (renderMap) {
+            if (map != null) {
+                map.render(g2);
+            }
+        }
+        if (camera != null) {
+            camera.render(g2);
         }
         if (enemies != null) {
             if (enemies.size() > 0) {
                 for (int i = 0; i < enemies.size(); i++) {
                     Enemy enemy = enemies.get(i);
-                    if(camera.checkPositionRelateToCamera(enemy.getPosition())) {
+                    if (camera.checkPositionRelateToCamera(enemy.getPosition())) {
                         enemy.render(g2);
                     }
                 }
@@ -562,7 +582,7 @@ public class Gameplay extends JPanel implements Runnable {
             for (int i = 0; i < itemsOnGround.size(); i++) {
                 Item item = itemsOnGround.get(i);
                 if (item != null) {
-                    if(camera.checkPositionRelateToCamera(item.getPosition())) {
+                    if (camera.checkPositionRelateToCamera(item.getPosition())) {
                         item.render(g2);
                     }
                 }
@@ -587,20 +607,21 @@ public class Gameplay extends JPanel implements Runnable {
     public List<List<Platform>> getPlatforms() {
         return background.getScene();
     }
-    
+
     public GamePosition getPositionFromPlatform(Platform platform, int characterWidth, int characterHeight) {
-        return new GamePosition(platform.getPosition().getXPosition() + 5 ,
+        return new GamePosition(platform.getPosition().getXPosition() + 5,
                 platform.getPosition().getYPosition(), characterWidth, characterHeight);
     }
-    
+
     public List<List<Platform>> getSurroundPlatform(int i, int j) {
-        return background.getSurroundPlatform(i, j, background.DEF_SURROUND_TILE
-        , 0, 0, 0, 0);
+        return background.getSurroundPlatform(i, j, background.DEF_SURROUND_TILE,
+                0, 0, 0, 0);
     }
-    
+
     public GamePosition getScenePosition() {
         return background.getPosition();
     }
+
     public Player getPlayer() {
         return player;
     }
@@ -623,6 +644,14 @@ public class Gameplay extends JPanel implements Runnable {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public boolean isRenderMap() {
+        return renderMap;
+    }
+
+    public void setRenderMap(boolean renderMap) {
+        this.renderMap = renderMap;
     }
 
 //    public int getMaxYPlayArea() {

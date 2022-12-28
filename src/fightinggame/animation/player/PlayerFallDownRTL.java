@@ -3,9 +3,9 @@ package fightinggame.animation.player;
 import fightinggame.entity.Animation;
 import fightinggame.resource.SpriteSheet;
 
-public class PlayerFallDown extends Animation{
+public class PlayerFallDownRTL extends Animation{
     
-    public PlayerFallDown(int id, SpriteSheet sheet, int tickToExecute) {
+    public PlayerFallDownRTL(int id, SpriteSheet sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
     

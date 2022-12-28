@@ -4,15 +4,15 @@ import fightinggame.entity.Animation;
 import fightinggame.resource.SpriteSheet;
 
 
-public class PlayerRun extends Animation{
+public class PlayerRunLTR extends Animation{
     
-    public PlayerRun(int id, SpriteSheet sheet, int tickToExecute) {
+    public PlayerRunLTR(int id, SpriteSheet sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
 
-    public PlayerRun(int id, SpriteSheet sheet) {
+    public PlayerRunLTR(int id, SpriteSheet sheet) {
         super(id, sheet);
     }
-    
+
     
 }

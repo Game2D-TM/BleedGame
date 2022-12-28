@@ -8,6 +8,7 @@ import fightinggame.entity.platform.tile.WallTile;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,8 +16,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Background {
 
@@ -34,6 +33,8 @@ public class Background {
     private Map<String, BufferedImage> objects;
     private final List<List<Platform>> scene = new ArrayList<>();
     private String fileNameScene;
+    private int tileWidth;
+    private int tileHeight;
 
     public Background(int id, String name, Map<String, BufferedImage> backgrounds, int width, int height, Gameplay gameplay) {
         this.id = id;
@@ -45,7 +46,8 @@ public class Background {
 
     public Background(int id, String name, Map<String, BufferedImage> backgrounds,
             int width, int height, Map<String, BufferedImage> tiles,
-            Map<String, BufferedImage> objects, Gameplay gameplay, String fileNameScene) {
+            Map<String, BufferedImage> objects, Gameplay gameplay, String fileNameScene,
+            int tileWidth, int tileHeight) {
         this.id = id;
         this.name = name;
         this.backgrounds = backgrounds;
@@ -53,9 +55,30 @@ public class Background {
         this.objects = objects;
         this.fileNameScene = fileNameScene;
         this.gameplay = gameplay;
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
         this.position = new GamePosition(-15, 0, width, height);
         loadImagesToScene();
-        initScene(-15, 0, 250, 180);
+        initScene(position.getXPosition(), position.getYPosition(),tileWidth, tileHeight);
+    }
+
+    public Background(int id, String name, Gameplay gameplay,
+            GamePosition position,
+            Map<String, BufferedImage> backgrounds,
+            Map<String, BufferedImage> tiles, Map<String, BufferedImage> objects, String fileNameScene,
+            int tileWidth, int tileHeight) {
+        this.id = id;
+        this.name = name;
+        this.gameplay = gameplay;
+        this.position = position;
+        this.backgrounds = backgrounds;
+        this.tiles = tiles;
+        this.objects = objects;
+        this.fileNameScene = fileNameScene;
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
+        loadImagesToScene();
+        initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
     }
 
     public void initScene(int x, int y, int width, int height) {
@@ -125,8 +148,10 @@ public class Background {
     public void loadImagesToScene() {
         if (!fileNameScene.isBlank()) {
             Path path = Paths.get(fileNameScene);
+
+            List<String> allLines;
             try {
-                List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+                allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
                 if (allLines != null && allLines.size() > 0) {
                     int row = 0;
                     for (String line : allLines) {
@@ -137,28 +162,33 @@ public class Background {
                             for (int i = 0; i < tilesStr.length; i++) {
                                 if (!tilesStr[i].isBlank()) {
                                     String key = tilesStr[i];
+                                    Platform nPlatform;
                                     if (key.equals("-1")) {
-                                        platforms.add(new BlankTile("Blank " + (row + col),
-                                                tiles.get(key), null, gameplay, row, col));
+                                        nPlatform = new BlankTile("Blank " + (row + col),
+                                                tiles.get(key), null, gameplay, row, col);
                                     } else {
                                         if (col < NUMBER_WALL_COL) {
-                                            platforms.add(new WallTile("Wall " + (row + col),
-                                                    tiles.get(key), null, gameplay, row, col));
+                                            nPlatform = new WallTile("Wall " + (row + col),
+                                                    tiles.get(key), null, gameplay, row, col);
                                         } else {
                                             if (row < NUMBER_SKY_ROW) {
                                                 if (key.equals("-1")) {
-                                                    platforms.add(new BlankTile("Blank " + (row + col),
-                                                            tiles.get(key), null, gameplay, row, col));
+                                                    nPlatform = new BlankTile("Blank " + (row + col),
+                                                            tiles.get(key), null, gameplay, row, col);
                                                 } else {
-                                                    platforms.add(new Tile("Tile " + (row + col),
-                                                            tiles.get(key), null, gameplay, row, col));
+                                                    nPlatform = new Tile("Tile " + (row + col),
+                                                            tiles.get(key), null, gameplay, row, col);
                                                 }
                                             } else {
-                                                platforms.add(new Tile("Tile " + (row + col),
-                                                        tiles.get(key), null, gameplay, row, col));
+                                                nPlatform = new Tile("Tile " + (row + col),
+                                                        tiles.get(key), null, gameplay, row, col);
                                             }
                                         }
                                     }
+                                    if(name.equalsIgnoreCase("map")) {
+                                        nPlatform.setIsMapRender(true);
+                                    }
+                                    platforms.add(nPlatform);
                                 }
                                 col++;
                             }
@@ -167,13 +197,21 @@ public class Background {
                         row++;
                     }
                 }
-            } catch (Exception ex) {
-                Logger.getLogger(Background.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(Background.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
         }
     }
 
     public void tick() {
+        if(name != null) {
+            if(name.equalsIgnoreCase("map")) {
+                position.setXPosition(gameplay.getCamera().getPosition().getMaxX() - position.getWidth());
+                position.setYPosition(gameplay.getCamera().getPosition().getYPosition());
+                initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
+                return;
+            }
+        }
         if (scene != null && scene.size() > 0) {
             for (int i = 0; i < scene.size(); i++) {
                 List<Platform> platforms = scene.get(i);
@@ -192,8 +230,8 @@ public class Background {
     public void render(Graphics g) {
         if (backgrounds != null && backgrounds.values().size() > 0) {
             for (BufferedImage image : backgrounds.values()) {
-                g.drawImage(image, 0 - gameplay.getCamera().getPosition().getXPosition(),
-                        0 - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
+                g.drawImage(image, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                        position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
                         position.getHeight(), null);
             }
         }

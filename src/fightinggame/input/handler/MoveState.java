@@ -1,7 +1,7 @@
 package fightinggame.input.handler;
 
 public enum MoveState {
-    DOWN,
+    CROUCH,
     LEFT,
     RIGHT,
     JUMP

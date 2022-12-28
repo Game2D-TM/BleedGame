@@ -2,6 +2,7 @@ package fightinggame.entity.enemy.dior;
 
 import fightinggame.Gameplay;
 import fightinggame.animation.enemy.EnemyAttack;
+import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.entity.Animation;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
@@ -189,7 +190,7 @@ public class DiorEnemy extends Enemy {
         g.setColor(Color.red);
         g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition()
                 , getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
-                position.getWidth(), position.getHeight() / 2 - 10);
+                getWidthHitBox(), getHeightHitBox());
         // attack hitbox
 //        int attackX = position.getXPosition();
 //        if(isLTR) {
@@ -202,6 +203,11 @@ public class DiorEnemy extends Enemy {
 
     @Override
     public int getXHitBox() {
+        if(currAnimation != null) {
+            if(currAnimation instanceof EnemyRunBack) {
+                return position.getXPosition() + 30;
+            }
+        }
         return position.getXPosition();
     }
 
@@ -212,22 +218,22 @@ public class DiorEnemy extends Enemy {
 
     @Override
     public int getYHitBox() {
-        return position.getYPosition() + position.getHeight() / 3 - 10;
+        return position.getYPosition();
     }
 
     @Override
     public int getYMaxHitBox() {
-        return getYHitBox() + position.getHeight() / 2 - 10;
+        return position.getMaxY();
     }
 
     @Override
     public int getWidthHitBox() {
-        return position.getWidth() / 3;
+        return position.getWidth() - 30;
     }
 
     @Override
     public int getHeightHitBox() {
-        return position.getHeight() - 48;
+        return position.getHeight();
     }
 
     public DiorColor getColor() {

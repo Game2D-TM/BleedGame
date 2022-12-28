@@ -36,7 +36,7 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_2:
-                    if (!player.getPosition().isMoving() && !player.isDeath()) {
+                    if (!player.isAttack() && !player.getPosition().isMoving() && !player.isDeath()) {
                         int spawnX;
                         int xChange;
                         GamePosition endPos;
@@ -59,10 +59,11 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                                         player.getPosition().getYPosition() + 70, 200, 100);
                         boolean result = ((Fireball) player.getAbility(1)).execute(spawnPosition, endPos);
                         if (result) {
+                            player.setIsAttack(true);
                             if (player.isLTR()) {
                                 player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCAST_LTR));
                             } else {
-                                player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCAST_LTR));
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCASTLOOP_RTL));
                             }
                         }
                         try {
@@ -96,6 +97,13 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        switch(e.getKeyCode()) {
+            case KeyEvent.VK_2:
+                if(player.isAttack()) {
+                    player.setIsAttack(false);
+                }
+                break;
+        }
     }
 
     @Override

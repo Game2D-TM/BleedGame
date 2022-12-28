@@ -117,7 +117,7 @@ public class SpriteSheet {
                 if (dir.listFiles().length == 0) {
                     continue;
                 }
-                for (int i = dir.listFiles().length - 1; i >= 0; i--) {
+                for (int i = 0; i < dir.listFiles().length; i++) {
                     File f = dir.listFiles()[i];
                     a.add(f.getAbsolutePath());
                 }
@@ -128,13 +128,12 @@ public class SpriteSheet {
             System.out.println("Assets not found in path " + folderPath + ".");
         }
         return null;
-
     }
 
     public SpriteSheet convertRTL() {
         List<BufferedImage> flipped = new ArrayList<>();
         SpriteSheet result = new SpriteSheet();
-        for(int i = 0; i < this.images.size(); i++) {
+        for(int i = 0; i < this.images.size() ; i++) {
             BufferedImage sprite = images.get(i);
             // Flip the image horizontally
             AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
@@ -145,7 +144,6 @@ public class SpriteSheet {
             flipped.add(sprite);
         }
         result.setImages(flipped);
-        result.reverseImages();
         return result;
     }
 
