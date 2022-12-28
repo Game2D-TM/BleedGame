@@ -134,7 +134,7 @@ public class SpriteSheet {
     public SpriteSheet convertRTL() {
         List<BufferedImage> flipped = new ArrayList<>();
         SpriteSheet result = new SpriteSheet();
-        for (int i = 0; i < this.images.size(); i++) {
+        for(int i = 0; i < this.images.size(); i++) {
             BufferedImage sprite = images.get(i);
             // Flip the image horizontally
             AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
