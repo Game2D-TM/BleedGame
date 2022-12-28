@@ -82,9 +82,9 @@ public class Gameplay extends JPanel implements Runnable {
 //        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
-        firstPlatform = background.getScene().get(10).get(7);
+        firstPlatform = background.getScene().get(9).get(7);
         diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
-        firstPlatform = background.getScene().get(10).get(8);
+        firstPlatform = background.getScene().get(9).get(8);
         diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
         spawnEnemiesThread = new Thread(spawnEnemies());
         spawnEnemiesThread.start();
@@ -279,7 +279,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerAttack attackLTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
-        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
+        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle01").convertRTL());
         PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
         PlayerAttack attackRTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);

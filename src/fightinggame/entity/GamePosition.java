@@ -2,7 +2,7 @@ package fightinggame.entity;
 
 public class GamePosition {
 
-    public boolean isMoveUp = false;
+    public boolean isJump = false;
     public boolean isMoveDown = false;
     public boolean isMoveRight = false;
     public boolean isMoveLeft = false;
@@ -19,31 +19,31 @@ public class GamePosition {
     }
     
     public boolean isPressKeys() {
-        if(isMoveUp && isMoveRight || isMoveUp && isMoveLeft ||
+        if(isJump && isMoveRight || isJump && isMoveLeft ||
                 isMoveDown && isMoveRight || isMoveDown && isMoveLeft ||
-                isMoveUp && isMoveDown || isMoveUp && isMoveLeft && isMoveRight ||
+                isJump && isMoveDown || isJump && isMoveLeft && isMoveRight ||
                 isMoveDown && isMoveLeft && isMoveRight ||
-                isMoveUp && isMoveLeft && isMoveRight && isMoveDown) {
+                isJump && isMoveLeft && isMoveRight && isMoveDown) {
             return true;
         }
         return false;
     }
     public boolean isNotPressKey() {
-        if(!isMoveDown && !isMoveUp && !isMoveLeft && !isMoveRight) {
+        if(!isMoveDown && !isJump && !isMoveLeft && !isMoveRight) {
             return true;
         }
         return false;
     }
     
     public boolean isMoving() {
-        if(isMoveUp || isMoveDown || isMoveLeft || isMoveRight) {
+        if(isJump || isMoveDown || isMoveLeft || isMoveRight) {
             return true;
         }
         return false;
     }
     
     public boolean moveUp(int speed) {
-        if (isMoveUp) {
+        if (isJump) {
             yPosition = yPosition - speed;
             return true;
         }

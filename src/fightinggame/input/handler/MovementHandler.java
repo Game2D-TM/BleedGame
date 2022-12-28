@@ -106,7 +106,7 @@ public abstract class MovementHandler extends Handler {
                                     }
                                 }
                                 break;
-                            case UP:
+                            case JUMP:
                                 if (canMove) {
                                     checkPos.setYPosition(checkPos.getYPosition() - speed - checkPos.getHeight());
                                     if (platform instanceof WallTile || platform instanceof Tile) {
@@ -196,7 +196,7 @@ public abstract class MovementHandler extends Handler {
                     }
                     character.moveLeft();
                     break;
-                    case UP:
+                    case JUMP:
                         character.moveUp();
                         break;
                     case DOWN:

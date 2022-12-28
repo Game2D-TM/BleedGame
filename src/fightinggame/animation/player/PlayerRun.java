@@ -13,6 +13,6 @@ public class PlayerRun extends Animation{
     public PlayerRun(int id, SpriteSheet sheet) {
         super(id, sheet);
     }
-   
+    
     
 }
