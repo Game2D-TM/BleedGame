@@ -270,10 +270,12 @@ public class Gameplay extends JPanel implements Runnable {
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
+        PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"));
         PlayerRun runLTR = new PlayerRun(1,spriteSheetMap.get("Run01") , 0);
         PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
         PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12);
         PlayerAttack attack03LTR = new PlayerAttack(2, spriteSheetMap.get("Attack03"), 12);
+        PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), 12);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
         PlayerJump jumpLTR = new PlayerJump(5, spriteSheetMap.get("Jump02"), 50);
         PlayerFallDown fallDownLTR = new PlayerFallDown(6, spriteSheetMap.get("FallAnim01"), 50);
@@ -286,10 +288,12 @@ public class Gameplay extends JPanel implements Runnable {
         //RTL
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
         PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
+        PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL());
         PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
         PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
         PlayerAttack attack03RTL = new PlayerAttack(2, spriteSheetMap.get("Attack03").convertRTL(), 12);
+        PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), 12);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
         PlayerJump jumpRTL = new PlayerJump(5, spriteSheetMap.get("Jump02").convertRTL(), 50);
@@ -311,6 +315,8 @@ public class Gameplay extends JPanel implements Runnable {
         //Idle
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
         playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
+        playerAnimations.put(CharacterState.FIREIDLE_LTR, fireIdleLTR);
+        playerAnimations.put(CharacterState.FIREIDLE_RTL, fireIdleRTL);
         
         //Attacks
         playerAnimations.put(CharacterState.ATTACK01_LTR, attack01LTR);
@@ -319,6 +325,8 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.ATTACK02_RTL, attack02RTL);
         playerAnimations.put(CharacterState.ATTACK03_LTR, attack03LTR);
         playerAnimations.put(CharacterState.ATTACK03_RTL, attack03RTL);
+        playerAnimations.put(CharacterState.FIREATTACK01_LTR, fireAttack01LTR);
+        playerAnimations.put(CharacterState.FIREATTACK01_RTL, fireAttack01RTL);
         playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR);
         playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);
         
