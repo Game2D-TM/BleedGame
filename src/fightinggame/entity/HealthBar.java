@@ -124,7 +124,7 @@ public class HealthBar {
         }
     }
 
-    public void render(Graphics g) throws FontFormatException, IOException {
+    public void render(Graphics g){
         g.setColor(Color.red);
         g.drawImage(curHealthImage, getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition(),
                 getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);

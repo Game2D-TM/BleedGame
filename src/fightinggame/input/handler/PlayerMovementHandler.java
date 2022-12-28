@@ -53,9 +53,6 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_RTL));
                 }
                 player.getPosition().isJump = false;
-                System.out.println("is in air");
-                System.out.println(yAfterJump);
-                System.out.println(player.getPosition().getYPosition());
                 if (player.getPosition().getYPosition() - player.getJumpFlySpeed() > yAfterJump) {
                     player.getPosition().setYPosition(player.getPosition().getYPosition() - player.getJumpFlySpeed());
                     if (player.getPosition().isMoveRight) {
