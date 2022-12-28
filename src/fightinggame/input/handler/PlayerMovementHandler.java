@@ -1,14 +1,11 @@
 package fightinggame.input.handler;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.player.PlayerFallDown;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.entity.Animation;
 import fightinggame.entity.CharacterState;
-import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.enemy.Enemy;
-import fightinggame.entity.platform.tile.BlankTile;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
@@ -54,7 +51,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 if (player.isLTR()) {
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_LTR));
                 } else {
-                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_LTR));
+                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_RTL));
                 }
                 player.getPosition().isJump = false;
                 System.out.println("is in air");
@@ -74,61 +71,13 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     if (player.isLTR()) {
                         player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_LTR));
                     } else {
-                        player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_LTR));
+                        player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_RTL));
                     }
                     player.getPosition().isJump = false;
                 }
             }
         }
-        if (player.getStandPlatform() != null) {
-            if (!player.isAttack() && !player.isInAir()) {
-                if (player.getVely() < gameplay.gravity) {
-                    player.setVely(player.getVely() + 0.05f);
-                }
-                float vely = player.getVely();
-                GamePosition position = player.getPosition();
-                double nY = vely + player.getYMaxHitBox();
-                if (player.getStandPlatform().isCanStand()) {
-                    if (nY <= player.getStandPlatform().getPosition().getYPosition()) {
-                        position.setYPosition((int) vely + position.getYPosition());
-                        if (player.getPosition().isMoveRight) {
-                            canMoveCheck(MoveState.RIGHT, player);
-                        } else if (player.getPosition().isMoveLeft) {
-                            canMoveCheck(MoveState.LEFT, player);
-                        }
-                    } else {
-                        if (player.isFallDown()) {
-                            if (player.getCurrAnimation() != null) {
-                                if (player.getCurrAnimation() instanceof PlayerFallDown) {
-                                    if (player.getPosition().isMoveRight) {
-                                        player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
-                                    } else if (player.getPosition().isMoveLeft) {
-                                        player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
-                                    } else {
-                                        if (player.isLTR()) {
-                                            player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_LTR));
-                                        } else {
-                                            player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_RTL));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        player.setVely(0);
-                        player.setFallDown(false);
-                    }
-                } else {
-                    if (player.getStandPlatform() instanceof BlankTile) {
-                        position.setYPosition((int) vely + position.getYPosition());
-                        if (player.getPosition().isMoveRight) {
-                            canMoveCheck(MoveState.RIGHT, player);
-                        } else if (player.getPosition().isMoveLeft) {
-                            canMoveCheck(MoveState.LEFT, player);
-                        }
-                    }
-                }
-            }
-        }
+        applyGravityCharacter(player);
         keyboardCounter++;
         if (keyboardCounter > 8) {
             canAttack = true;

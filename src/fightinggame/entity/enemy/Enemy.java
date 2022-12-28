@@ -22,7 +22,7 @@ import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 import java.util.List;
 
-public class Enemy extends Character {
+public abstract class Enemy extends Character {
 
     public static Enemy ENEMY_HEALTHBAR_SHOW;
     protected int deathCounter = 0;
@@ -126,9 +126,9 @@ public class Enemy extends Character {
                     }
                 }
                 if (!isLTR) {
-                    position.isMoveLeft = true;
+//                    position.isMoveLeft = true;
                 } else {
-                    position.isMoveRight = true;
+//                    position.isMoveRight = true;
                 }
                 checkNextToWall();
                 walkCounter = 0;
@@ -147,10 +147,6 @@ public class Enemy extends Character {
 //                position.getXPosition() + position.getWidth(),
 //                position.getHeight() + 200);
 
-        //hitbox
-//        g.setColor(Color.red);
-//        g.drawRect(getXHitBox(), getYHitBox(),
-//                position.getWidth(), position.getHeight() / 2 - 10);
     }
 
     public void setDefAttackedCounter() {
@@ -287,30 +283,6 @@ public class Enemy extends Character {
         this.experience += experience;
     }
     
-    public int getXHitBox() {
-        return position.getXPosition();
-    }
-
-    public int getXMaxHitBox() {
-        return position.getMaxX();
-    }
-
-    public int getYHitBox() {
-        return position.getYPosition() + position.getHeight() / 3 - 10;
-    }
-
-    public int getYMaxHitBox() {
-        return getYHitBox() + position.getHeight() / 2 - 10;
-    }
-
-    public int getWidthHitBox() {
-        return position.getWidth() / 3;
-    }
-    
-    public int getHeightHitBox() {
-        return position.getHeight() - 48;
-    }
-    
     public int getPoint() {
         return point;
     }
@@ -326,5 +298,23 @@ public class Enemy extends Character {
     public void setStunTime(int stunTime) {
         this.stunTime = stunTime;
     }
+
+    @Override
+    public abstract int getXHitBox();
+
+    @Override
+    public abstract int getWidthHitBox();
+
+    @Override
+    public abstract int getHeightHitBox();
+
+    @Override
+    public abstract int getXMaxHitBox();
+
+    @Override
+    public abstract int getYHitBox();
+
+    @Override
+    public abstract int getYMaxHitBox();
 
 }

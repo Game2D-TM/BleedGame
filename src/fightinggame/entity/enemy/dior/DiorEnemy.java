@@ -8,6 +8,7 @@ import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.resource.SpriteSheet;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Map;
@@ -73,6 +74,7 @@ public class DiorEnemy extends Enemy {
             stats.setSpeed(1);
         }
     }
+
     @Override
     public void tick() {
         super.tick();
@@ -129,14 +131,14 @@ public class DiorEnemy extends Enemy {
                         xChange = 215;
                         spawnX = position.getXPosition() - xChange;
                         endPos = new GamePosition(
-                                position.getXPosition() - skillDistance - xChange, 0
-                                , position.getMaxX() + skillDistance, 0);
+                                position.getXPosition() - skillDistance - xChange, 0,
+                                 position.getMaxX() + skillDistance, 0);
                     } else {
                         xChange = 15;
                         spawnX = position.getMaxX() + xChange;
                         endPos = new GamePosition(
-                                position.getXPosition() - skillDistance
-                                , 0, position.getMaxX() + skillDistance + xChange, 0);
+                                position.getXPosition() - skillDistance,
+                                 0, position.getMaxX() + skillDistance + xChange, 0);
                     }
                     GamePosition fireBallPos = new GamePosition(spawnX,
                             position.getYPosition() + position.getHeight() / 2 - 10, 200, 100);
@@ -183,6 +185,11 @@ public class DiorEnemy extends Enemy {
     @Override
     public void render(Graphics g) {
         super.render(g);
+        //hitbox
+        g.setColor(Color.red);
+        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition()
+                , getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+                position.getWidth(), position.getHeight() / 2 - 10);
         // attack hitbox
 //        int attackX = position.getXPosition();
 //        if(isLTR) {
@@ -191,6 +198,36 @@ public class DiorEnemy extends Enemy {
 //        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
 //        int attackHeight = position.getHeight() / 2 - 10;
 //        g.fillRect(attackX, attackY, 20, attackHeight);
+    }
+
+    @Override
+    public int getXHitBox() {
+        return position.getXPosition();
+    }
+
+    @Override
+    public int getXMaxHitBox() {
+        return position.getMaxX();
+    }
+
+    @Override
+    public int getYHitBox() {
+        return position.getYPosition() + position.getHeight() / 3 - 10;
+    }
+
+    @Override
+    public int getYMaxHitBox() {
+        return getYHitBox() + position.getHeight() / 2 - 10;
+    }
+
+    @Override
+    public int getWidthHitBox() {
+        return position.getWidth() / 3;
+    }
+
+    @Override
+    public int getHeightHitBox() {
+        return position.getHeight() - 48;
     }
 
     public DiorColor getColor() {

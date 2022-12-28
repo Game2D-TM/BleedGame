@@ -1,6 +1,7 @@
 package fightinggame.input.handler;
 
 import fightinggame.Gameplay;
+import fightinggame.animation.player.PlayerFallDown;
 import fightinggame.entity.Background;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.platform.Platform;
@@ -9,6 +10,7 @@ import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import java.util.List;
 import fightinggame.entity.Character;
+import fightinggame.entity.CharacterState;
 
 public abstract class MovementHandler extends Handler {
 
@@ -17,6 +19,58 @@ public abstract class MovementHandler extends Handler {
     public MovementHandler(Gameplay gameplay, String name) {
         super(name);
         this.gameplay = gameplay;
+    }
+
+    public void applyGravityCharacter(Character character) {
+        if (character.getStandPlatform() != null) {
+            if (!character.isAttack() && !character.isInAir()) {
+                if (character.getVely() < gameplay.gravity) {
+                    character.setVely(character.getVely() + 0.05f);
+                }
+                float vely = character.getVely();
+                GamePosition position = character.getPosition();
+                double nY = vely + character.getYMaxHitBox();
+                if (character.getStandPlatform().isCanStand()) {
+                    if (nY <= character.getStandPlatform().getPosition().getYPosition()) {
+                        position.setYPosition((int) vely + position.getYPosition());
+                        if (character.getPosition().isMoveRight) {
+                            canMoveCheck(MoveState.RIGHT, character);
+                        } else if (character.getPosition().isMoveLeft) {
+                            canMoveCheck(MoveState.LEFT, character);
+                        }
+                    } else {
+                        if (character.isFallDown()) {
+                            if (character.getCurrAnimation() != null) {
+                                if (character.getCurrAnimation() instanceof PlayerFallDown) {
+                                    if (character.getPosition().isMoveRight) {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNFORWARD));
+                                    } else if (character.getPosition().isMoveLeft) {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNBACK));
+                                    } else {
+                                        if (character.isLTR()) {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.IDLE_LTR));
+                                        } else {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.IDLE_RTL));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        character.setVely(0);
+                        character.setFallDown(false);
+                    }
+                } else {
+                    if (character.getStandPlatform() instanceof BlankTile) {
+                        position.setYPosition((int) vely + position.getYPosition());
+                        if (character.getPosition().isMoveRight) {
+                            canMoveCheck(MoveState.RIGHT, character);
+                        } else if (character.getPosition().isMoveLeft) {
+                            canMoveCheck(MoveState.LEFT, character);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean canMoveCheck(MoveState state, Character character) {
