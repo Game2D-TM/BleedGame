@@ -23,8 +23,8 @@ public class EnemyMovementHandler extends MovementHandler{
         if(canMoveCheck(MoveState.JUMP, enemy)) {
             enemy.getPosition().isJump = false;
         }
-        if(canMoveCheck(MoveState.DOWN, enemy)) {
-            enemy.getPosition().isMoveDown = false;
+        if(canMoveCheck(MoveState.CROUCH, enemy)) {
+            enemy.getPosition().isCrouch = false;
         }
         applyGravityCharacter(enemy);
     }

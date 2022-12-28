@@ -1,7 +1,8 @@
 package fightinggame.input.handler;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.player.PlayerFallDown;
+import fightinggame.animation.player.PlayerFallDownLTR;
+import fightinggame.animation.player.PlayerFallDownRTL;
 import fightinggame.entity.Background;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.platform.Platform;
@@ -41,7 +42,7 @@ public abstract class MovementHandler extends Handler {
                     } else {
                         if (character.isFallDown()) {
                             if (character.getCurrAnimation() != null) {
-                                if (character.getCurrAnimation() instanceof PlayerFallDown) {
+                                if (character.getCurrAnimation() instanceof PlayerFallDownLTR || character.getCurrAnimation() instanceof PlayerFallDownRTL) {
                                     if (character.getPosition().isMoveRight) {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNFORWARD));
                                     } else if (character.getPosition().isMoveLeft) {
@@ -177,23 +178,6 @@ public abstract class MovementHandler extends Handler {
                                     }
                                 }
                                 break;
-                            case DOWN:
-                                if (canMove) {
-                                    checkPos.setYPosition(checkPos.getYPosition() + speed + checkPos.getHeight());
-                                    if (platform instanceof WallTile || platform instanceof Tile) {
-                                        if (platform.checkValidPosition(checkPos)) {
-                                            canMove = false;
-                                            isMove = true;
-                                            break;
-                                        }
-                                    }
-                                    if (platform instanceof BlankTile) {
-                                        if (platform.checkValidPosition(checkPos)) {
-                                            isMove = true;
-                                        }
-                                    }
-                                }
-                                break;
                         }
                         if (isMove) {
                             break;
@@ -252,9 +236,6 @@ public abstract class MovementHandler extends Handler {
                     break;
                     case JUMP:
                         character.moveUp();
-                        break;
-                    case DOWN:
-                        character.moveDown();
                         break;
                 }
             }

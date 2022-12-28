@@ -46,8 +46,11 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
+
 //    private GamePosition playPosition;
     private Background background;
+    private Background map;
+    private boolean renderMap = true;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
     private final Map<String, GamePosition> positions = new HashMap<String, GamePosition>();
@@ -61,13 +64,21 @@ public class Gameplay extends JPanel implements Runnable {
     private final List<Item> itemsOnGround = new ArrayList<Item>();
     private Camera camera;
     public int gravity = 5;
+
     public Gameplay(Game game, int width, int height) {
         setSize(width, height);
         camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
         background = new Background(0, "Scene 1",
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
-                "data/scene_1.txt");
+                "data/scene_1.txt", 250, 180);
+        map = new Background(1, "Map", this,
+                new GamePosition(getCamera().getPosition().getXPosition()
+                        + getCamera().getPosition().getWidth() / 2 + 400,
+                        getCamera().getPosition().getYPosition(), 0, 0),
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"),
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
+                "data/scene_1.txt", 15, 15);
 //        playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
@@ -75,12 +86,12 @@ public class Gameplay extends JPanel implements Runnable {
 //        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
-        firstPlatform = background.getScene().get(9).get(7);
-        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
-        firstPlatform = background.getScene().get(9).get(8);
-        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+//        firstPlatform = background.getScene().get(9).get(8);
+//        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+//        firstPlatform = background.getScene().get(9).get(9);
+//        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -120,8 +131,7 @@ public class Gameplay extends JPanel implements Runnable {
                 break;
         }
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
-                firstPlatform.getPosition().getYPosition()
-        - 190, 300, 200);
+                firstPlatform.getPosition().getYPosition(), 250, 150);
         SpriteSheet enemyIdleSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 0, 192, 160,
                 23, 55, 160, 90, 4);
@@ -174,18 +184,18 @@ public class Gameplay extends JPanel implements Runnable {
         enemies.add(enemy);
         positions.put(enemy.getName(), enemy.getPosition());
         enemy.setCurPlatform(firstPlatform);
-        enemy.getStats().addExperience(50000);
+//        enemy.getStats().addExperience(50000);
     }
 
     public void playerInit(Platform firstPlatform) {
-        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition()+50,
+        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition() + 50,
                 firstPlatform.getPosition().getYPosition()
-        - 280 - 500, 350, 259); // 80
+                - 280 - 500, 350, 259); // 80
         //xPosition + 750,
         //        getHeight() / 2 + 735
         // xPosition,
         //        playPosition.getYPosition() - 50, 200, 290
-          Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
+        Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
 
 //        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
 //                0, 0, 200, 200,
@@ -266,58 +276,57 @@ public class Gameplay extends JPanel implements Runnable {
 //        playerDeathRTL.reverseImages();
 //        playerAttack1LTR.getImages().addAll(playerAttack2LTR.getImages());
 //        playerAttack1RTL.getImages().addAll(playerAttack2RTL.getImages());
-
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
         PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"));
-        PlayerRun runLTR = new PlayerRun(1,spriteSheetMap.get("Run01") , 0);
+        PlayerRunLTR runLTR = new PlayerRunLTR(1, spriteSheetMap.get("Run01"), 0);
         PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
         PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12);
         PlayerAttack attack03LTR = new PlayerAttack(2, spriteSheetMap.get("Attack03"), 12);
         PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), 12);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
-        PlayerJump jumpLTR = new PlayerJump(5, spriteSheetMap.get("Jump02"), 50);
-        PlayerFallDown fallDownLTR = new PlayerFallDown(6, spriteSheetMap.get("FallAnim01"), 50);
+        PlayerJumpLTR jumpLTR = new PlayerJumpLTR(5, spriteSheetMap.get("Jump02"), 30);
+        PlayerFallDownLTR fallDownLTR = new PlayerFallDownLTR(6, spriteSheetMap.get("FallAnim01"), 50);
         PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), 40);
         PlayerCrouch crouchLTR = new PlayerCrouch(8, spriteSheetMap.get("Crouch01"), 10);
         PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop"), 15);
-        PlayerSlide slideLTR = new PlayerSlide(10,spriteSheetMap.get("Slide01"), 20);
+        PlayerSlide slideLTR = new PlayerSlide(10, spriteSheetMap.get("Slide01"), 20);
         PlayerAirAttack airAttack01LTR = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01"), 20);
-        
+
         //RTL
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
         PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
         PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL());
-        PlayerRun runRTL = new PlayerRun(1, spriteSheetMap.get("Run01").convertRTL(), 0);
+        PlayerRunRTL runRTL = new PlayerRunRTL(1, spriteSheetMap.get("Run01").convertRTL(), 0);
         PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
         PlayerAttack attack03RTL = new PlayerAttack(2, spriteSheetMap.get("Attack03").convertRTL(), 12);
         PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), 12);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
-        PlayerJump jumpRTL = new PlayerJump(5, spriteSheetMap.get("Jump02").convertRTL(), 50);
-        PlayerFallDown fallDownRTL = new PlayerFallDown(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
+        PlayerJumpRTL jumpRTL = new PlayerJumpRTL(5, spriteSheetMap.get("Jump02").convertRTL(), 30);
+        PlayerFallDownRTL fallDownRTL = new PlayerFallDownRTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
         PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), 40);
         PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), 15);
-        PlayerSlide slideRTL = new PlayerSlide(10,spriteSheetMap.get("Slide01").convertRTL(), 20);
+        PlayerSlide slideRTL = new PlayerSlide(10, spriteSheetMap.get("Slide01").convertRTL(), 20);
         PlayerAirAttack airAttack01RTL = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
-
-
-        
+        // reverse arrays animations
+        jumpLTR.getSheet().reverseImages();
+        jumpRTL.getSheet().reverseImages();
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
-        
+
         //Run directions
         playerAnimations.put(CharacterState.RUNFORWARD, runLTR);
         playerAnimations.put(CharacterState.RUNBACK, runRTL);
-        
+
         //Idle
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
         playerAnimations.put(CharacterState.IDLE_RTL, idleRTL);
         playerAnimations.put(CharacterState.FIREIDLE_LTR, fireIdleLTR);
         playerAnimations.put(CharacterState.FIREIDLE_RTL, fireIdleRTL);
-        
+
         //Attacks
         playerAnimations.put(CharacterState.ATTACK01_LTR, attack01LTR);
         playerAnimations.put(CharacterState.ATTACK01_RTL, attack01RTL);
@@ -329,53 +338,52 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.FIREATTACK01_RTL, fireAttack01RTL);
         playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR);
         playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);
-        
+
         //Get Hit
         playerAnimations.put(CharacterState.GET_HIT_LTR, hitLTR);
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
-        
+
         //Death Animation
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
-        
+
         //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
         playerAnimations.put(CharacterState.JUMP_RTL, jumpRTL);
-        
+
         //Crouch Animation
         playerAnimations.put(CharacterState.CROUCH_LTR, crouchLTR);
         playerAnimations.put(CharacterState.CROUCH_RTL, crouchRTL);
-        
+
         //Slide Animation
         playerAnimations.put(CharacterState.SLIDE_LTR, slideLTR);
         playerAnimations.put(CharacterState.SLIDE_RTL, slideRTL);
-        
+
         //Falldown
         playerAnimations.put(CharacterState.FALLDOWN_LTR, fallDownLTR);
         playerAnimations.put(CharacterState.FALLDOWN_RTL, fallDownRTL);
-        
+
         //SpellCast
         playerAnimations.put(CharacterState.SPELLCAST_LTR, spellCastLTR);
         playerAnimations.put(CharacterState.SPELLCAST_RTL, spellCastRTL);
         playerAnimations.put(CharacterState.SPELLCASTLOOP_LTR, spellCastLoopLTR);
         playerAnimations.put(CharacterState.SPELLCASTLOOP_RTL, spellCastLoopRTL);
-        
-        
+
         //Init Inventory
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
-        
+
         //Init Player
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
                 playerAnimations, null, this, inventorySheet);
-        
+
         //Init Ability
         abilitiesCharacterInit(player.getAbilities(), player);
         itemInit(player.getInventory(), player);
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
         player.getAbility(0).getHandlers().add(abilityHandler);
         player.getAbility(1).getHandlers().add(abilityHandler);
-        
+
         //Init Handler
         game.addKeyListener(abilityHandler);
         PlayerMovementHandler keyBoardHandler = new PlayerMovementHandler(player, "player_movement", this);
@@ -384,7 +392,6 @@ public class Gameplay extends JPanel implements Runnable {
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
-        
         //Init platforms
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
@@ -396,8 +403,8 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet healthPotionSheet = new SpriteSheet();
         healthPotionSheet.add("assets/res/item/s_potion.png");
         HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
-        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character
-                , this, 1);
+        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character,
+                this, 1);
         abilitiesItemInit(healthPotion.getAbilities(), character);
         inventory.addItemToInventory(healthPotion);
         itemCount++;
@@ -474,10 +481,10 @@ public class Gameplay extends JPanel implements Runnable {
                             Random random = new Random();
                             int numberOfEnemies = random.nextInt(5);
                             int enemySpawnYPosition = -1;
-                            int platformStandSize = getPlatforms().get(10).size() - 1;
+                            int platformStandSize = getPlatforms().get(9).size() - 1;
                             int platformColumn = platformStandSize;
                             for (int i = 0; i < numberOfEnemies; i++) {
-                                Platform platform = getPlatforms().get(10).get(platformColumn);
+                                Platform platform = getPlatforms().get(9).get(platformColumn);
 //                                enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
 //                                while (true) {
 //                                    enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
@@ -486,12 +493,12 @@ public class Gameplay extends JPanel implements Runnable {
 //                                    }
 //                                }
 //                                diorInit(enemySpawnXPosition, enemySpawnYPosition);
-                                  diorInit(platform);
-                                  if(platformColumn > 0) {
-                                      platformColumn--;
-                                  } else {
-                                      platformColumn = platformStandSize;
-                                  }
+                                diorInit(platform);
+                                if (platformColumn > 0) {
+                                    platformColumn--;
+                                } else {
+                                    platformColumn = platformStandSize;
+                                }
                             }
                         } catch (Exception ex) {
                             System.out.println(ex.toString());
@@ -511,8 +518,13 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
-        if(background != null) {
+        if (background != null) {
             background.tick();
+        }
+        if (renderMap) {
+            if (map != null) {
+                map.tick();
+            }
         }
         if (camera != null) {
             camera.tick();
@@ -548,14 +560,19 @@ public class Gameplay extends JPanel implements Runnable {
 //            g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
 //                    playPosition.getWidth(), playPosition.getHeight());
         }
-        if(camera != null) {
-            camera.render(g);
+        if (renderMap) {
+            if (map != null) {
+                map.render(g2);
+            }
+        }
+        if (camera != null) {
+            camera.render(g2);
         }
         if (enemies != null) {
             if (enemies.size() > 0) {
                 for (int i = 0; i < enemies.size(); i++) {
                     Enemy enemy = enemies.get(i);
-                    if(camera.checkPositionRelateToCamera(enemy.getPosition())) {
+                    if (camera.checkPositionRelateToCamera(enemy.getPosition())) {
                         enemy.render(g2);
                     }
                 }
@@ -565,7 +582,7 @@ public class Gameplay extends JPanel implements Runnable {
             for (int i = 0; i < itemsOnGround.size(); i++) {
                 Item item = itemsOnGround.get(i);
                 if (item != null) {
-                    if(camera.checkPositionRelateToCamera(item.getPosition())) {
+                    if (camera.checkPositionRelateToCamera(item.getPosition())) {
                         item.render(g2);
                     }
                 }
@@ -590,20 +607,21 @@ public class Gameplay extends JPanel implements Runnable {
     public List<List<Platform>> getPlatforms() {
         return background.getScene();
     }
-    
+
     public GamePosition getPositionFromPlatform(Platform platform, int characterWidth, int characterHeight) {
-        return new GamePosition(platform.getPosition().getXPosition() + 5 ,
+        return new GamePosition(platform.getPosition().getXPosition() + 5,
                 platform.getPosition().getYPosition(), characterWidth, characterHeight);
     }
-    
+
     public List<List<Platform>> getSurroundPlatform(int i, int j) {
-        return background.getSurroundPlatform(i, j, background.DEF_SURROUND_TILE
-        , 0, 0, 0, 0);
+        return background.getSurroundPlatform(i, j, background.DEF_SURROUND_TILE,
+                0, 0, 0, 0);
     }
-    
+
     public GamePosition getScenePosition() {
         return background.getPosition();
     }
+
     public Player getPlayer() {
         return player;
     }
@@ -626,6 +644,14 @@ public class Gameplay extends JPanel implements Runnable {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public boolean isRenderMap() {
+        return renderMap;
+    }
+
+    public void setRenderMap(boolean renderMap) {
+        this.renderMap = renderMap;
     }
 
 //    public int getMaxYPlayArea() {

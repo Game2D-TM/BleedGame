@@ -20,7 +20,6 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
     private final Set<Integer> pressedKeys = new HashSet<>();
     private int keyboardCounter = 0;
     private boolean canAttack = false;
-    private boolean lastPressKeys = false;
     private double yAfterJump = 0;
 
     public PlayerMovementHandler() {
@@ -106,20 +105,20 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             break;
                         }
                         player.setIsLTR(false);
-                        player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                        if(!player.isInAir() && !player.isFallDown()) player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
                         player.getPosition().isMoveLeft = true;
                         break;
                     case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
-                        if (player.isAttack()) {
+                        if (player.isAttack() || player.getPosition().isMoving()) {
                             break;
                         }
                         if (player.isLTR()) {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.CROUCH_LTR));
                         } else {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.CROUCH_RTL));
                         }
-                        player.getPosition().isMoveDown = true;
+                        player.getPosition().isCrouch = true;
                         break;
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
@@ -127,8 +126,15 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             break;
                         }
                         player.setIsLTR(true);
-                        player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                        if(!player.isInAir() && !player.isFallDown()) player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
                         player.getPosition().isMoveRight = true;
+                        break;
+                    case KeyEvent.VK_CONTROL:
+                        if (player.isLTR()) {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.SLIDE_LTR));
+                        } else {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.SLIDE_RTL));
+                        }
                         break;
                     case KeyEvent.VK_SPACE:
                         if (!canAttack || player.isInAir() || player.isFallDown()) {
@@ -207,7 +213,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_S:
             case KeyEvent.VK_DOWN:
-                player.getPosition().isMoveDown = false;
+                player.getPosition().isCrouch = false;
                 break;
             case KeyEvent.VK_D:
             case KeyEvent.VK_RIGHT:

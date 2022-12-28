@@ -126,13 +126,16 @@ public abstract class Enemy extends Character {
                     }
                 }
                 if (!isLTR) {
-//                    position.isMoveLeft = true;
+                    position.isMoveLeft = true;
                 } else {
-//                    position.isMoveRight = true;
+                    position.isMoveRight = true;
                 }
                 checkNextToWall();
                 walkCounter = 0;
             }
+        }
+        if(!healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
+            gameplay.setRenderMap(true);
         }
     }
 
@@ -211,6 +214,7 @@ public abstract class Enemy extends Character {
                     ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
                 }
                 ENEMY_HEALTHBAR_SHOW = this;
+                gameplay.setRenderMap(false);
                 healthBar.setCanShow(true);
                 if (isLTR) {
                     currAnimation = animations.get(CharacterState.GET_HIT_LTR);
@@ -250,6 +254,7 @@ public abstract class Enemy extends Character {
                 }
                 ENEMY_HEALTHBAR_SHOW = this;
                 healthBar.setCanShow(true);
+                gameplay.setRenderMap(false);
                 if (isLTR) {
                     currAnimation = animations.get(CharacterState.GET_HIT_LTR);
                 } else {
