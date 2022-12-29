@@ -1,8 +1,7 @@
 package fightinggame.entity.enemy;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.enemy.EnemyRunBack;
-import fightinggame.animation.enemy.EnemyRunForward;
+import fightinggame.animation.enemy.*;
 import fightinggame.entity.Animation;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -42,7 +41,7 @@ public abstract class Enemy extends Character {
         Random rand = new Random();
         int range = rand.nextInt(rangeRandomSpeed);
         stats.setHealth(health);
-        stats.setSpeed(rand.nextInt(range));
+        stats.setSpeed(rand.nextInt(range) + 1);
     }
 
     @Override
@@ -130,11 +129,11 @@ public abstract class Enemy extends Character {
                 } else {
                     position.isMoveRight = true;
                 }
-                checkNextToWall();
+                checkInvalidPlatform();
                 walkCounter = 0;
             }
         }
-        if(!healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
+        if (!healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
             gameplay.setRenderMap(true);
         }
     }
@@ -156,7 +155,7 @@ public abstract class Enemy extends Character {
         isAttackedCounter = 0;
     }
 
-    public boolean checkNextToWall() {
+    public boolean checkInvalidPlatform() {
         if (insidePlatform != null) {
             try {
                 int row = insidePlatform.getRow();
@@ -167,8 +166,18 @@ public abstract class Enemy extends Character {
                         Platform platform = gameplay.getPlatforms().get(row).get(nColumn);
                         if (platform != null) {
                             if (platform instanceof WallTile || platform instanceof Tile) {
-                                isLTR = true;
-                                return true;
+                                if (platform.checkValidPosition(
+                                        new GamePosition(getXHitBox() - stats.getSpeed(), getYHitBox(), getWidthHitBox(), getHeightHitBox()))) {
+                                    isLTR = true;
+                                    return true;
+                                }
+                            }
+                            platform = gameplay.getPlatforms().get(row + 1).get(nColumn);
+                            if (platform != null) {
+                                if (!platform.isCanStand()) {
+                                    isLTR = true;
+                                    return true;
+                                }
                             }
                         }
                     } else {
@@ -176,8 +185,18 @@ public abstract class Enemy extends Character {
                         Platform platform = gameplay.getPlatforms().get(row).get(nColumn);
                         if (platform != null) {
                             if (platform instanceof WallTile || platform instanceof Tile) {
-                                isLTR = false;
-                                return true;
+                                if (platform.checkValidPosition(
+                                        new GamePosition(getXHitBox() + stats.getSpeed(), getYHitBox(), getWidthHitBox(), getHeightHitBox()))) {
+                                    isLTR = false;
+                                    return true;
+                                }
+                            }
+                            platform = gameplay.getPlatforms().get(row + 1).get(nColumn);
+                            if (platform != null) {
+                                if (!platform.isCanStand()) {
+                                    isLTR = false;
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -198,45 +217,6 @@ public abstract class Enemy extends Character {
 
     }
 
-    @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats) {
-        int attackMaxY = attackY + attackHeight;
-        if (isAttack && !isDeath) {
-            if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
-                    && ((attackY <= getYHitBox() && attackMaxY >= getYMaxHitBox()
-                    || (attackY >= getYHitBox() && attackMaxY <= getYMaxHitBox())
-                    || (attackY > getYHitBox() && attackY <= getYMaxHitBox()
-                    && attackMaxY > getYMaxHitBox())
-                    || (attackMaxY > getYHitBox() && attackMaxY <= getYMaxHitBox()
-                    && attackY < getYHitBox())))) {
-                setDefAttackedCounter();
-                if (ENEMY_HEALTHBAR_SHOW != null) {
-                    ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
-                }
-                ENEMY_HEALTHBAR_SHOW = this;
-                gameplay.setRenderMap(false);
-                healthBar.setCanShow(true);
-                if (isLTR) {
-                    currAnimation = animations.get(CharacterState.GET_HIT_LTR);
-                } else {
-                    currAnimation = animations.get(CharacterState.GET_HIT_RTL);
-                }
-                isAttacked = true;
-                receiveDamage = stats.getHit(attackerStats);
-                if (stats.getHealth() <= 0) {
-                    isDeath = true;
-                    if (isLTR) {
-                        currAnimation = animations.get(CharacterState.DEATH_LTR);
-                    } else {
-                        currAnimation = animations.get(CharacterState.DEATH_RTL);
-                    }
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-    
     @Override
     public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage) {
         int attackMaxY = attackY + attackHeight;
@@ -261,10 +241,15 @@ public abstract class Enemy extends Character {
                     currAnimation = animations.get(CharacterState.GET_HIT_RTL);
                 }
                 isAttacked = true;
-                if(attackDamage == -1) {
+                if (attackDamage == -1) {
                     receiveDamage = stats.getHit(attackerStats);
                 } else {
                     receiveDamage = stats.getHit(attackerStats, attackDamage);
+                }
+                if (isLTR) {
+                    position.setXPosition(position.getXPosition() - 30);
+                } else {
+                    position.setXPosition(position.getXPosition() + 30);
                 }
                 if (stats.getHealth() <= 0) {
                     isDeath = true;
@@ -287,7 +272,7 @@ public abstract class Enemy extends Character {
     public void addExperience(double experience) {
         this.experience += experience;
     }
-    
+
     public int getPoint() {
         return point;
     }

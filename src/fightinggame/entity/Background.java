@@ -105,7 +105,7 @@ public class Background {
                             platform.setPosition(new GamePosition(tempX, tempY, width, height));
                         }
                         tempX += width;
-                        if(images.size() > maxSize) {
+                        if (images.size() > maxSize) {
                             maxSize = images.size();
                         }
                     }
@@ -151,11 +151,11 @@ public class Background {
                                     - gameplay.getCamera().getPosition().getYPosition(), platform.getPosition().getWidth(),
                                     platform.getPosition().getHeight(), null);
                             // hitbox
-                            g.setColor(Color.red);
-                            g.drawRect(platform.getPosition().getXPosition()
-                                    - gameplay.getCamera().getPosition().getXPosition(), platform.getPosition().getYPosition()
-                                    - gameplay.getCamera().getPosition().getYPosition(), platform.getPosition().getWidth(),
-                                    platform.getPosition().getHeight());
+//                            g.setColor(Color.red);
+//                            g.drawRect(platform.getPosition().getXPosition()
+//                                    - gameplay.getCamera().getPosition().getXPosition(), platform.getPosition().getYPosition()
+//                                    - gameplay.getCamera().getPosition().getYPosition(), platform.getPosition().getWidth(),
+//                                    platform.getPosition().getHeight());
                         }
                     }
                 }
@@ -265,14 +265,24 @@ public class Background {
                         position.getHeight(), null);
             }
         }
-        if (scene != null && scene.size() > 0) {
-            for (int i = 0; i < scene.size(); i++) {
-                List<Platform> platforms = scene.get(i);
-                if (platforms != null && platforms.size() > 0) {
-                    for (int j = 0; j < platforms.size(); j++) {
-                        Platform platform = platforms.get(j);
-                        if (platform != null) {
-                            platform.render(g);
+        if (name != null) {
+            if (name.equalsIgnoreCase("map")) {
+                if(gameplay.getPlayer().getCurPlatform() != null) {
+                    Platform insidePlatform = gameplay.getPlayer().getCurPlatform();
+                    renderScene(g, getSurroundPlatform(insidePlatform.getRow(), insidePlatform.getColumn()
+                            , 5, 3, 0, 0, 0));
+                }
+            } else {
+                if (scene != null && scene.size() > 0) {
+                    for (int i = 0; i < scene.size(); i++) {
+                        List<Platform> platforms = scene.get(i);
+                        if (platforms != null && platforms.size() > 0) {
+                            for (int j = 0; j < platforms.size(); j++) {
+                                Platform platform = platforms.get(j);
+                                if (platform != null) {
+                                    platform.render(g);
+                                }
+                            }
                         }
                     }
                 }

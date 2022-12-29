@@ -6,6 +6,10 @@ public class GamePosition {
     public boolean isCrouch = false;
     public boolean isMoveRight = false;
     public boolean isMoveLeft = false;
+
+    // new
+    public boolean isSlide = false;
+
     private int xPosition;
     private int yPosition;
     private int width;
@@ -17,31 +21,32 @@ public class GamePosition {
         this.width = width;
         this.height = height;
     }
-    
+
     public boolean isPressKeys() {
-        if(isJump && isMoveRight || isJump && isMoveLeft ||
-                isCrouch && isMoveRight || isCrouch && isMoveLeft ||
-                isJump && isCrouch || isJump && isMoveLeft && isMoveRight ||
-                isCrouch && isMoveLeft && isMoveRight ||
-                isJump && isMoveLeft && isMoveRight && isCrouch) {
+        if (isJump && isMoveRight || isJump && isMoveLeft
+                || isCrouch && isMoveRight || isCrouch && isMoveLeft
+                || isJump && isCrouch || isJump && isMoveLeft && isMoveRight
+                || isCrouch && isMoveLeft && isMoveRight
+                || isJump && isMoveLeft && isMoveRight && isCrouch) {
             return true;
         }
         return false;
     }
+
     public boolean isNotPressKey() {
-        if(!isCrouch && !isJump && !isMoveLeft && !isMoveRight) {
+        if (!isCrouch && !isJump && !isMoveLeft && !isMoveRight) {
             return true;
         }
         return false;
     }
-    
+
     public boolean isMoving() {
-        if(isJump || isMoveLeft || isMoveRight) {
+        if (isJump || isMoveLeft || isMoveRight || isSlide) {
             return true;
         }
         return false;
     }
-    
+
     public boolean moveUp(int speed) {
         if (isJump) {
             yPosition = yPosition - speed;
@@ -73,7 +78,23 @@ public class GamePosition {
         }
         return false;
     }
-    
+
+    public boolean slideRight(int speed) {
+        if (isSlide) {
+            xPosition = xPosition + (speed * 2);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean slideLeft(int speed) {
+        if (isSlide) {
+            xPosition = xPosition - (speed * 2);
+            return true;
+        }
+        return false;
+    }
+
     public boolean moveUp(int speed, boolean isMoveUp) {
         if (isMoveUp) {
             yPosition = yPosition - speed;
@@ -105,7 +126,7 @@ public class GamePosition {
         }
         return false;
     }
-    
+
     public int getMaxY() {
         return yPosition + height;
     }
@@ -113,7 +134,7 @@ public class GamePosition {
     public int getMaxX() {
         return xPosition + width;
     }
-    
+
     public GamePosition() {
     }
 

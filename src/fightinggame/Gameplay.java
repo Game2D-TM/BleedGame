@@ -65,7 +65,7 @@ public class Gameplay extends JPanel implements Runnable {
     private AudioPlayer audioPlayer;
     private final List<Item> itemsOnGround = new ArrayList<Item>();
     private Camera camera;
-    public int gravity = 5;
+    public int gravity = 7;
 
     public Gameplay(Game game, int width, int height) {
         setSize(width, height);
@@ -90,8 +90,8 @@ public class Gameplay extends JPanel implements Runnable {
         diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
         firstPlatform = background.getScene().get(9).get(9);
         diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -131,7 +131,7 @@ public class Gameplay extends JPanel implements Runnable {
                 break;
         }
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
-                firstPlatform.getPosition().getYPosition(), 250, 150);
+                firstPlatform.getPosition().getYPosition(), 300, 200);
         SpriteSheet enemyIdleSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 0, 192, 160,
                 23, 55, 160, 90, 4);
@@ -291,7 +291,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), 40);
         PlayerCrouch crouchLTR = new PlayerCrouch(8, spriteSheetMap.get("Crouch01"), 10);
         PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop"), 15);
-        PlayerSlide slideLTR = new PlayerSlide(10, spriteSheetMap.get("Slide01"), 20);
+        PlayerSlideLTR slideLTR = new PlayerSlideLTR(10, spriteSheetMap.get("Slide01"), 30);
         PlayerAirAttack airAttack01LTR = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01"), 20);
 
         //RTL
@@ -309,7 +309,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerFallDownRTL fallDownRTL = new PlayerFallDownRTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
         PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), 40);
         PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), 15);
-        PlayerSlide slideRTL = new PlayerSlide(10, spriteSheetMap.get("Slide01").convertRTL(), 20);
+        PlayerSlideRTL slideRTL = new PlayerSlideRTL(10, spriteSheetMap.get("Slide01").convertRTL(), 30);
         PlayerAirAttack airAttack01RTL = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
         // reverse arrays animations
         jumpLTR.getSheet().reverseImages();

@@ -1,17 +1,10 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.player.PlayerAttack;
-import fightinggame.animation.player.PlayerCrouch;
-import fightinggame.animation.player.PlayerFallDownLTR;
-import fightinggame.animation.player.PlayerFallDownRTL;
-import fightinggame.animation.player.PlayerJumpLTR;
-import fightinggame.animation.player.PlayerJumpRTL;
-import fightinggame.animation.player.PlayerRunLTR;
-import fightinggame.animation.player.PlayerRunRTL;
 import fightinggame.entity.ability.Ability;
-import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
+import fightinggame.animation.player.*;
+import fightinggame.resource.ImageManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -83,7 +76,7 @@ public class Player extends Character {
         // hitbox
         g.setColor(Color.red);
         g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                 getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
                 getWidthHitBox(), getHeightHitBox());
         //attackhitbox
 //        int attackX;
@@ -109,15 +102,19 @@ public class Player extends Character {
                 return position.getXPosition() + 140;
             } else if (currAnimation instanceof PlayerRunRTL) {
                 return position.getXPosition() + 95;
-            } else if(currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJumpLTR) {
                 return position.getXPosition() + 152;
-            } else if(currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJumpRTL) {
                 return position.getXPosition() + 102;
-            } else if(currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDownLTR) {
                 return position.getXPosition() + 162;
-            } else if(currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDownRTL) {
                 return position.getXPosition() + 108;
-            } 
+            } else if(currAnimation instanceof PlayerSlideLTR) {
+                return position.getXPosition() + 105;
+            } else if(currAnimation instanceof PlayerSlideRTL) {
+                return position.getXPosition() + 75;
+            }
         }
         return position.getXPosition() + 115;
     }
@@ -132,14 +129,18 @@ public class Player extends Character {
                 return position.getWidth() / 3 + 30;
             } else if (currAnimation instanceof PlayerCrouch) {
                 return position.getWidth() / 3 + 10;
-            } else if(currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJumpLTR) {
                 return position.getWidth() / 3 - 25;
-            } else if(currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJumpRTL) {
                 return position.getWidth() / 3 - 25;
-            } else if(currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDownLTR) {
                 return position.getWidth() / 3 - 35;
-            } else if(currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDownRTL) {
                 return position.getWidth() / 3 - 35;
+            } else if(currAnimation instanceof PlayerSlideLTR) {
+                return position.getWidth() / 3 + 55;
+            } else if(currAnimation instanceof PlayerSlideRTL) {
+                return position.getWidth() / 3 + 55;
             }
         }
         return position.getWidth() / 3;
@@ -149,14 +150,18 @@ public class Player extends Character {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerCrouch) {
                 return position.getHeight() - 105;
-            } else if(currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJumpLTR) {
                 return position.getHeight() - 100;
-            } else if(currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJumpRTL) {
                 return position.getHeight() - 100;
-            } else if(currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDownLTR) {
                 return position.getHeight() - 75;
-            } else if(currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDownRTL) {
                 return position.getHeight() - 75;
+            } else if(currAnimation instanceof PlayerSlideLTR) {
+                return position.getHeight() / 3 + 20;
+            } else if(currAnimation instanceof PlayerSlideRTL) {
+                return position.getHeight() / 3 + 20;
             }
         }
         return position.getHeight() - 55;
@@ -170,14 +175,18 @@ public class Player extends Character {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerCrouch) {
                 return position.getYPosition() + position.getHeight() / 3 + 15;
-            } else if(currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJumpLTR) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if(currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJumpRTL) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if(currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDownLTR) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if(currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDownRTL) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
+            } else if(currAnimation instanceof PlayerSlideLTR) {
+                return position.getYPosition() + position.getHeight() / 2 + 20;
+            } else if(currAnimation instanceof PlayerSlideRTL) {
+                return position.getYPosition() + position.getHeight() / 2 + 20;
             }
         }
         return position.getYPosition() + position.getHeight() / 3 - 35;
@@ -222,6 +231,11 @@ public class Player extends Character {
                         receiveDamage = stats.getHit(attackerStats);
                     } else {
                         receiveDamage = stats.getHit(attackerStats, attackDamage);
+                    }
+                    if (isLTR) {
+                        position.setXPosition(position.getXPosition() - 30);
+                    } else {
+                        position.setXPosition(position.getXPosition() + 30);
                     }
                     if (stats.getHealth() <= 0) {
                         isDeath = true;

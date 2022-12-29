@@ -7,6 +7,7 @@ import fightinggame.entity.CharacterState;
 import fightinggame.entity.Player;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.platform.Platform;
+import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import java.awt.event.KeyEvent;
@@ -40,6 +41,11 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
     }
 
     public void tick() {
+        if (player.isLTR()) {
+            player.slideRight();
+        } else {
+            player.slideLeft();
+        }
         if (!player.isInAir()) {
             canMoveCheck(MoveState.LEFT, player);
             canMoveCheck(MoveState.RIGHT, player);
@@ -55,7 +61,6 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 } else {
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_RTL));
                 }
-                player.getPosition().isJump = false;
                 Platform insidePlatform = player.getCurPlatform();
                 if (insidePlatform != null) {
                     try {
@@ -69,7 +74,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         System.out.println(ex.toString());
                     }
                 }
-                if (player.getPosition().getYPosition() - player.getJumpFlySpeed() > yAfterJump) {
+                if (player.getYHitBox() - player.getJumpFlySpeed() > yAfterJump) {
                     player.getPosition().setYPosition(player.getPosition().getYPosition() - player.getJumpFlySpeed());
                     if (player.getPosition().isMoveRight) {
                         canMoveCheck(MoveState.RIGHT, player);
@@ -110,6 +115,13 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         if (player.isAttack() || player.isInAir() || player.isFallDown()) {
                             break;
                         }
+                        if (player.getStandPlatform() != null) {
+                            if (player.getStandPlatform() instanceof BlankTile) {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
                         player.getPosition().isJump = true;
                         break;
                     case KeyEvent.VK_A:
@@ -147,11 +159,15 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         player.getPosition().isMoveRight = true;
                         break;
                     case KeyEvent.VK_CONTROL:
+                        if (player.isAttack() || player.getPosition().isMoving()) {
+                            break;
+                        }
                         if (player.isLTR()) {
                             player.setCurrAnimation(player.getAnimations().get(CharacterState.SLIDE_LTR));
                         } else {
                             player.setCurrAnimation(player.getAnimations().get(CharacterState.SLIDE_RTL));
                         }
+                        player.getPosition().isSlide = true;
                         break;
                     case KeyEvent.VK_SPACE:
                         if (!canAttack || player.isInAir() || player.isFallDown()) {
@@ -235,6 +251,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             case KeyEvent.VK_D:
             case KeyEvent.VK_RIGHT:
                 player.getPosition().isMoveRight = false;
+                break;
+            case KeyEvent.VK_CONTROL:
+                player.getPosition().isSlide = false;
                 break;
         }
         if (!player.isDeath()) {

@@ -32,7 +32,7 @@ public abstract class MovementHandler extends Handler {
                 GamePosition position = character.getPosition();
                 double nY = vely + character.getYMaxHitBox();
                 if (character.getStandPlatform().isCanStand()) {
-                    if (nY <= character.getStandPlatform().getPosition().getYPosition()) {
+                    if (nY < character.getStandPlatform().getPosition().getYPosition()) {
                         position.setYPosition((int) vely + position.getYPosition());
                         if (character.getPosition().isMoveRight) {
                             canMoveCheck(MoveState.RIGHT, character);
@@ -40,6 +40,9 @@ public abstract class MovementHandler extends Handler {
                             canMoveCheck(MoveState.LEFT, character);
                         }
                     } else {
+                        int distance = character.getStandPlatform().getPosition().getYPosition() - character.getYMaxHitBox();
+                        distance = Math.abs(distance);
+                        position.setYPosition(position.getYPosition() - distance);
                         if (character.isFallDown()) {
                             if (character.getCurrAnimation() != null) {
                                 if (character.getCurrAnimation() instanceof PlayerFallDownLTR || character.getCurrAnimation() instanceof PlayerFallDownRTL) {
@@ -121,7 +124,7 @@ public abstract class MovementHandler extends Handler {
                         switch (state) {
                             case RIGHT:
                                 if (j >= Background.DEF_SURROUND_TILE) {
-                                    checkPos.setXPosition(checkPos.getXPosition() + speed + checkPos.getWidth());
+                                    checkPos.setXPosition(checkPos.getXPosition() + speed);
                                     if (canMove) {
                                         if (platform instanceof WallTile || platform instanceof Tile) {
                                             if (platform.checkValidPosition(checkPos)) {
@@ -162,21 +165,7 @@ public abstract class MovementHandler extends Handler {
                                 }
                                 break;
                             case JUMP:
-                                if (canMove) {
-                                    checkPos.setYPosition(checkPos.getYPosition() - (speed + character.getJumpSpeed()));
-                                    if (platform instanceof WallTile || platform instanceof Tile) {
-                                        if (platform.checkValidPosition(checkPos)) {
-                                            canMove = false;
-                                            isMove = true;
-                                            break;
-                                        }
-                                    }
-                                    if (platform instanceof BlankTile) {
-                                        if (platform.checkValidPosition(checkPos)) {
-                                            isMove = true;
-                                        }
-                                    }
-                                }
+                                isMove = true;
                                 break;
                         }
                         if (isMove) {
@@ -235,7 +224,7 @@ public abstract class MovementHandler extends Handler {
                     character.moveLeft();
                     break;
                     case JUMP:
-                    character.moveUp();
+                    character.jump();
                     break;
                 }
             }

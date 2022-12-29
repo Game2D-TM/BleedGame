@@ -108,8 +108,8 @@ public abstract class Character {
 //                                    position.getXPosition(),
 //                                    position.getYPosition() + position.getHeight() / 2,
 //                                    position.getWidth(), position.getHeight() / 2);
-                                GamePosition playerPos = new GamePosition(getXHitBox(), getYHitBox() + 50,
-                                        getWidthHitBox(), getHeightHitBox() / 2);
+                                GamePosition playerPos = new GamePosition(getXHitBox(), getYHitBox() + getHeightHitBox() / 3,
+                                        getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
                                 if (platform.checkValidPosition(playerPos)) {
                                     insidePlatform = platform;
                                     isSet = true;
@@ -137,10 +137,24 @@ public abstract class Character {
 
     public void checkStandPlatform() {
         try {
-            if (insidePlatform != null) {
-                Platform platform = gameplay.getPlatforms().get(insidePlatform.getRow() + 1).get(insidePlatform.getColumn());
-                if (platform != null) {
-                    standPlatform = platform;
+            if (standPlatform == null) {
+                if (insidePlatform != null) {
+                    Platform platform = gameplay.getPlatforms().get(insidePlatform.getRow() + 1).get(insidePlatform.getColumn());
+                    if (platform != null) {
+                        standPlatform = platform;
+                    }
+                }
+            } else {
+                if (((getXHitBox() >= standPlatform.getPosition().getXPosition() && getXMaxHitBox() <= standPlatform.getPosition().getMaxX())
+                        || (getXHitBox() < standPlatform.getPosition().getXPosition() && getXMaxHitBox() > standPlatform.getPosition().getMaxX())
+                        || (getXHitBox() >= standPlatform.getPosition().getXPosition() && getXHitBox() <= standPlatform.getPosition().getMaxX()
+                        && getXMaxHitBox() > standPlatform.getPosition().getMaxX())
+                        || (getXMaxHitBox() >= standPlatform.getPosition().getXPosition() && getXMaxHitBox() <= standPlatform.getPosition().getMaxX()
+                        && getXHitBox() < standPlatform.getPosition().getXPosition()))
+                        && (getYHitBox() < standPlatform.getPosition().getYPosition() && getYMaxHitBox() <= standPlatform.getPosition().getMaxY())) {
+
+                } else {
+                    standPlatform = null;
                 }
             }
         } catch (Exception ex) {
@@ -161,6 +175,11 @@ public abstract class Character {
                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                     position.getWidth(), position.getHeight());
         }
+        // find inside platform hitbox
+        g.setColor(Color.red);
+        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+                 getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
+                getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
         if (receiveDamage > 0) {
             receiveDamageRenderTick++;
             if (receiveDamageRenderTick > 80) {
@@ -202,12 +221,18 @@ public abstract class Character {
         return position.moveLeft(stats.getSpeed());
     }
 
-    public boolean moveUp() {
+    public boolean jump() {
         if (position.isJump) {
             inAir = true;
             return true;
         }
         return false;
+    }
+    public boolean slideRight() {
+        return position.slideRight(stats.getSpeed());
+    }
+    public boolean slideLeft() {
+        return position.slideLeft(stats.getSpeed());
     }
 
     public abstract int getXHitBox();
