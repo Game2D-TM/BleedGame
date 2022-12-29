@@ -56,12 +56,10 @@ public abstract class Character {
         inventory = new Inventory(this, inventorySheet, gameplay);
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
-//            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
             avatar = animations.get(CharacterState.IDLE_LTR).getSheet().getImage(0);
         } else {
             currAnimation = animations.get(CharacterState.IDLE_RTL);
             avatar = animations.get(CharacterState.IDLE_RTL).getSheet().getImage(0);
-//            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
         }
     }
 
@@ -178,10 +176,10 @@ public abstract class Character {
                     position.getWidth(), position.getHeight());
         }
         // find inside platform hitbox
-        g.setColor(Color.red);
-        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
-                getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
+//        g.setColor(Color.red);
+//        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
+//                getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
         if (receiveDamage > 0) {
             receiveDamageRenderTick++;
             if (receiveDamageRenderTick > 80) {
@@ -250,7 +248,11 @@ public abstract class Character {
     public abstract int getYHitBox();
 
     public abstract int getYMaxHitBox();
-
+    
+    public GamePosition getHitBoxPosition() {
+        return new GamePosition(getXHitBox(), getYHitBox(), getWidthHitBox(), getHeightHitBox());
+    }
+    
     public boolean moveDown() {
         return position.moveDown(stats.getSpeed());
     }

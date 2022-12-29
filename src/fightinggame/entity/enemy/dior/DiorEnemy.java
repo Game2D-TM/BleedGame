@@ -9,7 +9,6 @@ import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.resource.SpriteSheet;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Map;
@@ -96,66 +95,46 @@ public class DiorEnemy extends Enemy {
                 }
                 isAttack = true;
                 gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, stats);
-                int falloutX = gameplay.getPlayer().getPosition().getXPosition() - 100;
-//                if (falloutX >= gameplay.getPlayPosition().getXPosition()) {
-//                    gameplay.getPlayer().getPosition().setXPosition(falloutX);
-//                } else {
-//                    int falloutY = gameplay.getPlayer().getPosition().getYPosition() - 5;
-//                    if (falloutY > gameplay.getPlayPosition().getYPosition() + 15) {
-//                        gameplay.getPlayer().getPosition().setYPosition(
-//                                gameplay.getPlayer().getPosition().getYPosition() - 5);
-//                    } else {
-//                        falloutY = gameplay.getPlayer().getPosition().getMaxY() + 5;
-//                        if (falloutY < gameplay.getMaxYPlayArea() - 20) {
-//                            gameplay.getPlayer().getPosition().setYPosition(
-//                                    gameplay.getPlayer().getPosition().getYPosition() + 5);
-//                        } else {
-//                            gameplay.getPlayer().getPosition().setXPosition(
-//                                    gameplay.getPlayer().getPosition().getXPosition() + 150);
-//                            gameplay.getPlayer().getPosition().setYPosition(
-//                                    gameplay.getPlayer().getPosition().getYPosition() - 50);
-//                        }
-//                    }
-//                }
             }
         }
 
         if (color == DiorColor.Red) {
             if (!isAttack && !isDeath) {
-                Fireball fireBallAbility = ((Fireball) abilities.get(0));
-                if (fireBallAbility.isCanUse()) {
-                    int spawnX;
-                    int xChange;
-                    int skillDistance = 1400;
-                    GamePosition endPos;
-                    if (!isLTR) {
-                        xChange = 215;
-                        spawnX = position.getXPosition() - xChange;
-                        endPos = new GamePosition(
-                                position.getXPosition() - skillDistance - xChange, 0,
-                                 position.getMaxX() + skillDistance, 0);
-                    } else {
-                        xChange = 15;
-                        spawnX = position.getMaxX() + xChange;
-                        endPos = new GamePosition(
-                                position.getXPosition() - skillDistance,
-                                 0, position.getMaxX() + skillDistance + xChange, 0);
-                    }
-                    GamePosition fireBallPos = new GamePosition(spawnX,
-                            position.getYPosition() + position.getHeight() / 2 - 10, 200, 100);
-                    boolean result = fireBallAbility.execute(fireBallPos, endPos);
-                    if (result) {
-                        if (isLTR) {
-                            currAnimation = animations.get(CharacterState.ATTACK01_LTR);
+                if (checkPlayerOnSight()) {
+                    Fireball fireBallAbility = ((Fireball) abilities.get(0));
+                    if (fireBallAbility.isCanUse()) {
+                        int spawnX;
+                        int xChange;
+                        int skillDistance = 1400;
+                        GamePosition endPos;
+                        if (!isLTR) {
+                            xChange = 215;
+                            spawnX = position.getXPosition() - xChange;
+                            endPos = new GamePosition(
+                                    position.getXPosition() - skillDistance - xChange, 0,
+                                    position.getMaxX() + skillDistance, 0);
                         } else {
-                            currAnimation = animations.get(CharacterState.ATTACK01_RTL);
+                            xChange = 15;
+                            spawnX = position.getMaxX() + xChange;
+                            endPos = new GamePosition(
+                                    position.getXPosition() - skillDistance,
+                                    0, position.getMaxX() + skillDistance + xChange, 0);
                         }
-                        isAttack = true;
+                        GamePosition fireBallPos = new GamePosition(spawnX,
+                                position.getYPosition() + position.getHeight() / 2 - 10, 200, 100);
+                        boolean result = fireBallAbility.execute(fireBallPos, endPos);
+                        if (result) {
+                            if (isLTR) {
+                                currAnimation = animations.get(CharacterState.ATTACK01_LTR);
+                            } else {
+                                currAnimation = animations.get(CharacterState.ATTACK01_RTL);
+                            }
+                            isAttack = true;
+                        }
                     }
                 }
             }
         }
-
         if (currAnimation != null && !isAttacked && !isDeath) {
             if (currAnimation instanceof EnemyAttack) {
                 if (animateChange) {
@@ -187,10 +166,10 @@ public class DiorEnemy extends Enemy {
     public void render(Graphics g) {
         super.render(g);
         //hitbox
-        g.setColor(Color.red);
-        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition()
-                , getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
-                getWidthHitBox(), getHeightHitBox());
+//        g.setColor(Color.red);
+//        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                 getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+//                getWidthHitBox(), getHeightHitBox());
         // attack hitbox
 //        int attackX = position.getXPosition();
 //        if(isLTR) {
@@ -203,8 +182,8 @@ public class DiorEnemy extends Enemy {
 
     @Override
     public int getXHitBox() {
-        if(currAnimation != null) {
-            if(currAnimation instanceof EnemyRunBack) {
+        if (currAnimation != null) {
+            if (currAnimation instanceof EnemyRunBack) {
                 return position.getXPosition() + 30;
             }
         }

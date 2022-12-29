@@ -11,6 +11,7 @@ import fightinggame.entity.Character;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
+import fightinggame.entity.Player;
 import fightinggame.entity.Stats;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
@@ -19,10 +20,15 @@ import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
+import java.awt.Color;
 import java.util.List;
 
 public abstract class Enemy extends Character {
 
+    public static int DEF_X_VISION_POS = -500;
+    public static int DEF_Y_VISION_POS = -100;
+    public static int DEF_WIDTH_VISION_POS = 1000;
+    public static int DEF_HEIGHT_VISION_POS = 100;
     public static Enemy ENEMY_HEALTHBAR_SHOW;
     protected int deathCounter = 0;
     protected int isAttackedCounter = 0;
@@ -104,6 +110,9 @@ public abstract class Enemy extends Character {
                 }
             }
         }
+        if (!isDeath) {
+            checkPlayerOnSight();
+        }
         if (!isDeath && !isAttacked && !isAttack && !animateChange) {
             walkCounter++;
             if (walkCounter >= 100) {
@@ -124,12 +133,12 @@ public abstract class Enemy extends Character {
                         }
                     }
                 }
+                checkInvalidPlatform();
                 if (!isLTR) {
                     position.isMoveLeft = true;
                 } else {
                     position.isMoveRight = true;
                 }
-                checkInvalidPlatform();
                 walkCounter = 0;
             }
         }
@@ -144,15 +153,48 @@ public abstract class Enemy extends Character {
         if (healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
             healthBar.render(g);
         }
-//        g.setColor(Color.red);
-//        g.drawRect(position.getXPosition() - 400, position.getYPosition() - 100,
-//                position.getXPosition() + position.getWidth(),
-//                position.getHeight() + 200);
+        g.setColor(Color.red);
+        g.drawRect(position.getXPosition() + DEF_X_VISION_POS - gameplay.getCamera().getPosition().getXPosition(),
+                position.getYPosition() + DEF_Y_VISION_POS - gameplay.getCamera().getPosition().getYPosition(),
+                position.getWidth() + DEF_WIDTH_VISION_POS,
+                getHeightHitBox() + DEF_HEIGHT_VISION_POS);
 
     }
 
     public void setDefAttackedCounter() {
         isAttackedCounter = 0;
+    }
+
+    public boolean checkPlayerOnSight() {
+        Player player = gameplay.getPlayer();
+        if (player.isDeath()) {
+            return false;
+        }
+        GamePosition visionPos = getVisionPosition();
+        GamePosition playerPos = gameplay.getPlayer().getHitBoxPosition();
+        if (visionPos == null || playerPos == null || player == null) {
+            return false;
+        }
+        if (((playerPos.getXPosition() >= visionPos.getXPosition() && playerPos.getMaxX() <= visionPos.getMaxX())
+                || (playerPos.getXPosition() >= visionPos.getXPosition() && playerPos.getXPosition() <= visionPos.getMaxX()
+                && playerPos.getMaxX() > visionPos.getMaxX())
+                || (playerPos.getMaxX() >= visionPos.getXPosition() && playerPos.getMaxX() <= visionPos.getMaxX()
+                && playerPos.getXPosition() < visionPos.getXPosition()))
+                && (playerPos.getYPosition() >= visionPos.getYPosition() && playerPos.getMaxY() <= visionPos.getMaxY())) {
+            if (playerPos.getMaxX() < getXHitBox()) {
+                isLTR = false;
+            } else if (playerPos.getXPosition() > getXMaxHitBox()) {
+                isLTR = true;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public GamePosition getVisionPosition() {
+        return new GamePosition(position.getXPosition() + DEF_X_VISION_POS,
+                position.getYPosition() + DEF_Y_VISION_POS,
+                position.getWidth() + DEF_WIDTH_VISION_POS, getHeightHitBox() + DEF_HEIGHT_VISION_POS);
     }
 
     public boolean checkInvalidPlatform() {

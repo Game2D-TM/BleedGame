@@ -8,6 +8,7 @@ import fightinggame.resource.ImageManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Map;
 
 public class Player extends Character {
@@ -19,6 +20,7 @@ public class Player extends Character {
             Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
             Gameplay gameplay, SpriteSheet inventorySheet) {
         super(id, name, health, position, animations, characterAssets, gameplay, true, inventorySheet);
+        avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
         stats.setSpeed(2);

@@ -2,7 +2,6 @@ package fightinggame.entity.platform;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.GamePosition;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -41,10 +40,10 @@ public abstract class Platform {
                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
                     position.getHeight(), null);
 //      hitbox
-            g.setColor(Color.red);
-            g.drawRect(position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                    position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
-                    position.getHeight());
+//            g.setColor(Color.red);
+//            g.drawRect(position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+//                    position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
+//                    position.getHeight());
             canRender = false;
         }
     }

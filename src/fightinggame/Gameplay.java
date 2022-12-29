@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
+import fightinggame.entity.GameMap;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.throwable.Fireball;
@@ -72,7 +73,7 @@ public class Gameplay extends JPanel implements Runnable {
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
                 "data/scene_1.txt", 250, 180);
-        map = new Background(1, "Map", this,
+        map = new GameMap(1, "Map", this,
                 new GamePosition(0, 0, 0, 0),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
