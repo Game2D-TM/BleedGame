@@ -61,7 +61,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 } else {
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_RTL));
                 }
-                Platform insidePlatform = player.getCurPlatform();
+                Platform insidePlatform = player.getInsidePlatform();
                 if (insidePlatform != null) {
                     try {
                         Platform platformAbove = gameplay.getPlatforms().get(insidePlatform.getRow() - 1).get(insidePlatform.getColumn());
@@ -71,7 +71,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             }
                         }
                     } catch (Exception ex) {
-                        System.out.println(ex.toString());
+
                     }
                 }
                 if (player.getYHitBox() - player.getJumpFlySpeed() > yAfterJump) {

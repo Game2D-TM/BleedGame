@@ -38,4 +38,40 @@ public class HealthPotion extends Item {
         return false;
     }
 
+    @Override
+    public int getXHitBox() {
+        return position.getXPosition() + 20;
+    }
+
+    @Override
+    public int getWidthHitBox() {
+        return position.getWidth() - 40;
+    }
+
+    @Override
+    public int getHeightHitBox() {
+        return position.getHeight();
+    }
+
+    @Override
+    public int getXMaxHitBox() {
+        return getXHitBox() + getWidthHitBox();
+    }
+
+    @Override
+    public int getYHitBox() {
+        return position.getYPosition();
+    }
+
+    @Override
+    public int getYMaxHitBox() {
+        return getYHitBox() + getHeightHitBox();
+    }
+
+    @Override
+    public Item clone() {
+        return new HealthPotion(id, name, animation,
+                 character, gameplay, amount);
+    }
+
 }

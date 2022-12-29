@@ -49,7 +49,6 @@ import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
 
-//    private GamePosition playPosition;
     private Background background;
     private Background map;
     private boolean renderMap = true;
@@ -60,7 +59,6 @@ public class Gameplay extends JPanel implements Runnable {
     private int itemCount = 0;
     private int enemyCount = 0;
     private int enemyAnimationCount = 0;
-    private int enemySpawnXPosition;
     private Thread spawnEnemiesThread;
     private AudioPlayer audioPlayer;
     private final List<Item> itemsOnGround = new ArrayList<Item>();
@@ -75,24 +73,60 @@ public class Gameplay extends JPanel implements Runnable {
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
                 "data/scene_1.txt", 250, 180);
         map = new Background(1, "Map", this,
-                new GamePosition(0, 0, 300, 300),
+                new GamePosition(0, 0, 0, 0),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
                 "data/scene_1.txt", 15, 15);
-//        playPosition = new GamePosition(10, height / 2 + 130, width - 20, height / 3 + 20);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
-//        int xPosition = 10;
-//        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(9).get(3);
-        playerInit(firstPlatform); // playPosition.getYPosition() - 50
+        playerInit(firstPlatform);
         firstPlatform = background.getScene().get(9).get(8);
-        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+        diorInit(firstPlatform);
         firstPlatform = background.getScene().get(9).get(9);
-        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
-//        spawnEnemiesThread = new Thread(spawnEnemies());
-//        spawnEnemiesThread.start();
+        diorInit(firstPlatform);
+        spawnEnemiesThread = new Thread(spawnEnemies());
+        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
+    }
+
+    @Override
+    public void run() {
+        Graphics g = getGraphics();
+        long now;
+        long updateTime;
+        long wait;
+
+        long lastFpsCheck = 0;
+        int currentFps = 0;
+        int totalFrames = 0;
+
+        final int TARGET_FPS = Game.FPS;
+        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+        while (game.isRunning()) {
+            now = System.nanoTime();
+            totalFrames++;
+            if (System.nanoTime() > lastFpsCheck + 1000000000) {
+                lastFpsCheck = System.nanoTime();
+                currentFps = totalFrames;
+                totalFrames = 0;
+//                System.out.println("Current Fps: " + currentFps);
+            }
+            revalidate();
+            try {
+                tick();
+                render(g);
+            } catch (Exception ex) {
+//                System.out.println(ex.toString());
+            }
+            updateTime = System.nanoTime() - now;
+            wait = (OPTIMAL_TIME - updateTime) / 1000000;
+            try {
+                Thread.sleep(wait);
+            } catch (Exception e) {
+//                System.out.println(e.toString());
+            }
+        }
     }
 
     public void diorInit(Platform firstPlatform) {
@@ -176,6 +210,7 @@ public class Gameplay extends JPanel implements Runnable {
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
                 enemyAnimations, null, this, 200, null);
+        enemy.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
         enemy.getController().add(movementHandler);
         abilitiesCharacterInit(enemy.getAbilities(), enemy);
@@ -183,18 +218,14 @@ public class Gameplay extends JPanel implements Runnable {
         enemyCount++;
         enemies.add(enemy);
         positions.put(enemy.getName(), enemy.getPosition());
-        enemy.setCurPlatform(firstPlatform);
+        // level up to 8
 //        enemy.getStats().addExperience(50000);
     }
 
     public void playerInit(Platform firstPlatform) {
         GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition() + 50,
                 firstPlatform.getPosition().getYPosition()
-                - 280 - 500, 350, 259); // 80
-        //xPosition + 750,
-        //        getHeight() / 2 + 735
-        // xPosition,
-        //        playPosition.getYPosition() - 50, 200, 290
+                - 280 - 500, 350, 259);
         Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
 
 //        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
@@ -376,6 +407,8 @@ public class Gameplay extends JPanel implements Runnable {
         //Init Player
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
                 playerAnimations, null, this, inventorySheet);
+        //Init platforms
+        player.setInsidePlatform(firstPlatform);
 
         //Init Ability
         abilitiesCharacterInit(player.getAbilities(), player);
@@ -392,11 +425,11 @@ public class Gameplay extends JPanel implements Runnable {
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
-        //Init platforms
+
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
-        player.setCurPlatform(firstPlatform);
-        player.getStats().addExperience(50000);
+        // level up to 8
+//        player.getStats().addExperience(50000);
     }
 
     public void itemInit(Inventory inventory, Character character) {
@@ -480,22 +513,17 @@ public class Gameplay extends JPanel implements Runnable {
                         try {
                             Random random = new Random();
                             int numberOfEnemies = random.nextInt(5);
-                            int enemySpawnYPosition = -1;
                             int platformStandSize = getPlatforms().get(9).size() - 1;
                             int platformColumn = platformStandSize;
                             for (int i = 0; i < numberOfEnemies; i++) {
                                 Platform platform = getPlatforms().get(9).get(platformColumn);
-//                                enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
-//                                while (true) {
-//                                    enemySpawnYPosition = playPosition.getYPosition() + playPosition.getHeight() - random.nextInt(521);
-//                                    if (enemySpawnYPosition <= getMaxYPlayArea() - 180) {
-//                                        break;
-//                                    }
-//                                }
-//                                diorInit(enemySpawnXPosition, enemySpawnYPosition);
-
+                                if (platform == null) {
+                                    continue;
+                                }
                                 if (platform instanceof Tile || platform instanceof WallTile) {
-                                    i--;
+                                    if(i > 0) {
+                                        i--;
+                                    }
                                 } else {
                                     diorInit(platform);
                                 }
@@ -515,7 +543,7 @@ public class Gameplay extends JPanel implements Runnable {
                     try {
                         Thread.sleep(wait);
                     } catch (Exception e) {
-//                System.out.println(e.toString());
+
                     }
                 }
             }
@@ -560,10 +588,6 @@ public class Gameplay extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
         if (background != null) {
             background.render(g2);
-            // rectangle
-//            g.setColor(Color.red);
-//            g.drawRect(playPosition.getXPosition(), playPosition.getYPosition(),
-//                    playPosition.getWidth(), playPosition.getHeight());
         }
         if (renderMap) {
             if (map != null) {
@@ -602,13 +626,6 @@ public class Gameplay extends JPanel implements Runnable {
         return camera;
     }
 
-//    public GamePosition getPlayPosition() {
-//        return playPosition;
-//    }
-//
-//    public void setPlayPosition(GamePosition playPosition) {
-//        this.playPosition = playPosition;
-//    }
     public List<List<Platform>> getPlatforms() {
         return background.getScene();
     }
@@ -659,13 +676,6 @@ public class Gameplay extends JPanel implements Runnable {
         this.renderMap = renderMap;
     }
 
-//    public int getMaxYPlayArea() {
-//        return playPosition.getMaxY();
-//    }
-//
-//    public int getMaxXPlayArea() {
-//        return playPosition.getMaxX();
-//    }
     public Thread getThread() {
         return spawnEnemiesThread;
     }
@@ -684,45 +694,6 @@ public class Gameplay extends JPanel implements Runnable {
 
     public List<Item> getItemsOnGround() {
         return itemsOnGround;
-    }
-
-    @Override
-    public void run() {
-        Graphics g = getGraphics();
-        long now;
-        long updateTime;
-        long wait;
-
-        long lastFpsCheck = 0;
-        int currentFps = 0;
-        int totalFrames = 0;
-
-        final int TARGET_FPS = Game.FPS;
-        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
-        while (game.isRunning()) {
-            now = System.nanoTime();
-            totalFrames++;
-            if (System.nanoTime() > lastFpsCheck + 1000000000) {
-                lastFpsCheck = System.nanoTime();
-                currentFps = totalFrames;
-                totalFrames = 0;
-//                System.out.println("Current Fps: " + currentFps);
-            }
-            revalidate();
-            try {
-                tick();
-                render(g);
-            } catch (Exception ex) {
-                System.out.println(ex.toString());
-            }
-            updateTime = System.nanoTime() - now;
-            wait = (OPTIMAL_TIME - updateTime) / 1000000;
-            try {
-                Thread.sleep(wait);
-            } catch (Exception e) {
-//                System.out.println(e.toString());
-            }
-        }
     }
 
 }

@@ -40,9 +40,11 @@ public abstract class MovementHandler extends Handler {
                             canMoveCheck(MoveState.LEFT, character);
                         }
                     } else {
-                        int distance = character.getStandPlatform().getPosition().getYPosition() - character.getYMaxHitBox();
-                        distance = Math.abs(distance);
-                        position.setYPosition(position.getYPosition() - distance);
+                        if (character.getStandPlatform() != null) {
+                            int distance = character.getStandPlatform().getPosition().getYPosition() - character.getYMaxHitBox();
+                            distance = Math.abs(distance);
+                            position.setYPosition(position.getYPosition() - distance);
+                        }
                         if (character.isFallDown()) {
                             if (character.getCurrAnimation() != null) {
                                 if (character.getCurrAnimation() instanceof PlayerFallDownLTR || character.getCurrAnimation() instanceof PlayerFallDownRTL) {
@@ -81,7 +83,7 @@ public abstract class MovementHandler extends Handler {
         if (character == null) {
             return false;
         }
-        if (character.getCurPlatform() == null) {
+        if (character.getInsidePlatform()== null) {
             return false;
         }
         switch (state) {
@@ -99,8 +101,8 @@ public abstract class MovementHandler extends Handler {
         boolean canMove = true;
         boolean isMove = false;
         List<List<Platform>> surroundPlatforms;
-        surroundPlatforms = gameplay.getSurroundPlatform(character.getCurPlatform().getRow(),
-                character.getCurPlatform().getColumn());
+        surroundPlatforms = gameplay.getSurroundPlatform(character.getInsidePlatform().getRow(),
+                character.getInsidePlatform().getColumn());
 //        GamePosition position = character.getPosition();
         int speed = character.getStats().getSpeed();
         if (surroundPlatforms != null && surroundPlatforms.size() > 0) {
@@ -224,8 +226,8 @@ public abstract class MovementHandler extends Handler {
                     character.moveLeft();
                     break;
                     case JUMP:
-                    character.jump();
-                    break;
+                        character.jump();
+                        break;
                 }
             }
         }

@@ -118,8 +118,10 @@ public class Background {
         }
     }
 
-    public void initMap() {
+    public void initMap(List<List<Platform>> scene) {
         if (scene != null && scene.size() > 0) {
+            int nHeight = 0;
+            int maxSize = Integer.MIN_VALUE;
             int tempY = position.getYPosition();
             for (int i = 0; i < scene.size(); i++) {
                 List<Platform> images = scene.get(i);
@@ -131,10 +133,16 @@ public class Background {
                             platform.setPosition(new GamePosition(tempX, tempY, tileWidth, tileHeight));
                         }
                         tempX += tileWidth;
+                        if (images.size() > maxSize) {
+                            maxSize = images.size();
+                        }
                     }
                 }
                 tempY += tileHeight;
+                nHeight += tileHeight;
             }
+            position.setWidth(maxSize * tileWidth);
+            position.setHeight(nHeight);
         }
     }
 
@@ -145,7 +153,7 @@ public class Background {
                 if (images != null && images.size() > 0) {
                     for (int j = 0; j < images.size(); j++) {
                         Platform platform = images.get(j);
-                        if (platform != null) {
+                        if (platform != null && platform.getPosition() != null) {
                             g.drawImage(platform.getImage(), platform.getPosition().getXPosition()
                                     - gameplay.getCamera().getPosition().getXPosition(), platform.getPosition().getYPosition()
                                     - gameplay.getCamera().getPosition().getYPosition(), platform.getPosition().getWidth(),
@@ -237,8 +245,12 @@ public class Background {
             if (name.equalsIgnoreCase("map")) {
                 position.setXPosition(gameplay.getCamera().getPosition().getMaxX() - position.getWidth());
                 position.setYPosition(gameplay.getCamera().getPosition().getYPosition());
-//                initMap();
-                initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
+                Platform insidePlatform = gameplay.getPlayer().getInsidePlatform();
+                if (insidePlatform == null) {
+                    return;
+                }
+                initMap(getSurroundPlatform(insidePlatform.getRow(), insidePlatform.getColumn(),
+                        8, 3, 0, 0, 0));
                 return;
             }
         }
@@ -257,6 +269,28 @@ public class Background {
         }
     }
 
+    public boolean checkExistPlatformInSurroundList(List<List<Platform>> surroundPlatforms, Platform platform) {
+        if (surroundPlatforms == null) {
+            return false;
+        }
+        if (surroundPlatforms.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < surroundPlatforms.size(); i++) {
+            List<Platform> listPlatform = surroundPlatforms.get(i);
+            if (listPlatform == null) {
+                continue;
+            }
+            if (listPlatform.isEmpty()) {
+                continue;
+            }
+            if (listPlatform.contains(platform)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void render(Graphics g) {
         if (backgrounds != null && backgrounds.values().size() > 0) {
             for (BufferedImage image : backgrounds.values()) {
@@ -267,10 +301,12 @@ public class Background {
         }
         if (name != null) {
             if (name.equalsIgnoreCase("map")) {
-                if(gameplay.getPlayer().getCurPlatform() != null) {
-                    Platform insidePlatform = gameplay.getPlayer().getCurPlatform();
-                    renderScene(g, getSurroundPlatform(insidePlatform.getRow(), insidePlatform.getColumn()
-                            , 5, 3, 0, 0, 0));
+                if (gameplay.getPlayer().getInsidePlatform()!= null) {
+                    Platform insidePlatform = gameplay.getPlayer().getInsidePlatform();
+                    if (insidePlatform != null) {
+                        renderScene(g, getSurroundPlatform(insidePlatform.getRow(), insidePlatform.getColumn(),
+                                8, 3, 0, 0, 0));
+                    }
                 }
             } else {
                 if (scene != null && scene.size() > 0) {
@@ -290,7 +326,7 @@ public class Background {
         }
         if (name != null) {
             if (name.equalsIgnoreCase("map")) {
-                Platform playerInsidePlatform = gameplay.getPlayer().getCurPlatform();
+                Platform playerInsidePlatform = gameplay.getPlayer().getInsidePlatform();
                 if (playerInsidePlatform != null) {
                     Platform mapPlatform = scene.get(playerInsidePlatform.getRow()).get(playerInsidePlatform.getColumn());
                     if (mapPlatform != null) {
@@ -302,17 +338,26 @@ public class Background {
                 }
                 List<Enemy> enemies = gameplay.getEnemies();
                 if (enemies != null && enemies.size() > 0) {
-                    for (int i = 0; i < enemies.size(); i++) {
-                        Enemy enemy = enemies.get(i);
-                        if (enemy != null) {
-                            Platform enemyInsidePlatform = enemy.getCurPlatform();
-                            if (enemyInsidePlatform != null) {
-                                Platform mapPlatform = scene.get(enemyInsidePlatform.getRow()).get(enemyInsidePlatform.getColumn());
-                                if (mapPlatform != null) {
-                                    g.setColor(Color.red);
-                                    g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                                            mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
-                                            tileWidth, tileHeight);
+                    Platform playerPlatform = gameplay.getPlayer().getInsidePlatform();
+                    if (playerPlatform != null) {
+                        List<List<Platform>> surroundPlatforms = getSurroundPlatform(playerPlatform.getRow(), playerPlatform.getColumn(),
+                                8, 3, 0, 0, 0);
+                        if (surroundPlatforms != null && surroundPlatforms.size() > 0) {
+                            for (int i = 0; i < enemies.size(); i++) {
+                                Enemy enemy = enemies.get(i);
+                                if (enemy != null) {
+                                    Platform enemyInsidePlatform = enemy.getInsidePlatform();
+                                    if (enemyInsidePlatform != null) {
+                                        if (checkExistPlatformInSurroundList(surroundPlatforms, enemyInsidePlatform)) {
+                                            Platform mapPlatform = scene.get(enemyInsidePlatform.getRow()).get(enemyInsidePlatform.getColumn());
+                                            if (mapPlatform != null) {
+                                                g.setColor(Color.red);
+                                                g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                                                        mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                                                        tileWidth, tileHeight);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

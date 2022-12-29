@@ -49,6 +49,11 @@ public abstract class Platform {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return row == ((Platform)obj).getRow() && column == ((Platform)obj).getColumn();
+    }
+    
     public String getName() {
         return name;
     }

@@ -5,13 +5,11 @@ import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.platform.Platform;
 import fightinggame.input.handler.Handler;
-import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,10 +56,12 @@ public abstract class Character {
         inventory = new Inventory(this, inventorySheet, gameplay);
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
-            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
+//            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
+            avatar = animations.get(CharacterState.IDLE_LTR).getSheet().getImage(0);
         } else {
             currAnimation = animations.get(CharacterState.IDLE_RTL);
-            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
+            avatar = animations.get(CharacterState.IDLE_RTL).getSheet().getImage(0);
+//            avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
         }
     }
 
@@ -91,7 +91,6 @@ public abstract class Character {
         if (inventory != null) {
             inventory.tick();
         }
-        checkStandPlatform();
     }
 
     public void checkPlatForm(List<List<Platform>> scene) {
@@ -123,6 +122,7 @@ public abstract class Character {
                     }
                 }
             }
+            checkStandPlatform();
         } catch (Exception ex) {
 //            System.out.println(ex.toString() + " in " + this.getClass().getName());
             isDeath = true;
@@ -145,17 +145,19 @@ public abstract class Character {
                     }
                 }
             } else {
-                if (((getXHitBox() >= standPlatform.getPosition().getXPosition() && getXMaxHitBox() <= standPlatform.getPosition().getMaxX())
-                        || (getXHitBox() < standPlatform.getPosition().getXPosition() && getXMaxHitBox() > standPlatform.getPosition().getMaxX())
-                        || (getXHitBox() >= standPlatform.getPosition().getXPosition() && getXHitBox() <= standPlatform.getPosition().getMaxX()
-                        && getXMaxHitBox() > standPlatform.getPosition().getMaxX())
-                        || (getXMaxHitBox() >= standPlatform.getPosition().getXPosition() && getXMaxHitBox() <= standPlatform.getPosition().getMaxX()
-                        && getXHitBox() < standPlatform.getPosition().getXPosition()))
-                        && (getYHitBox() < standPlatform.getPosition().getYPosition() && getYMaxHitBox() <= standPlatform.getPosition().getMaxY())) {
+                if (standPlatform.getPosition() != null) {
+                    if (((getXHitBox() >= standPlatform.getPosition().getXPosition() && getXMaxHitBox() <= standPlatform.getPosition().getMaxX())
+                            || (getXHitBox() < standPlatform.getPosition().getXPosition() && getXMaxHitBox() > standPlatform.getPosition().getMaxX())
+                            || (getXHitBox() >= standPlatform.getPosition().getXPosition() && getXHitBox() <= standPlatform.getPosition().getMaxX()
+                            && getXMaxHitBox() > standPlatform.getPosition().getMaxX())
+                            || (getXMaxHitBox() >= standPlatform.getPosition().getXPosition() && getXMaxHitBox() <= standPlatform.getPosition().getMaxX()
+                            && getXHitBox() < standPlatform.getPosition().getXPosition()))
+                            && (getYHitBox() < standPlatform.getPosition().getYPosition() && getYMaxHitBox() <= standPlatform.getPosition().getMaxY())) {
 
-                } else {
-                    standPlatform = null;
-                }
+                    } else {
+                        standPlatform = null;
+                    }
+                } else standPlatform = null;
             }
         } catch (Exception ex) {
 //            System.out.println(ex.toString() + " in " + this.getClass().getName());
@@ -178,7 +180,7 @@ public abstract class Character {
         // find inside platform hitbox
         g.setColor(Color.red);
         g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                 getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
+                getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
                 getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
         if (receiveDamage > 0) {
             receiveDamageRenderTick++;
@@ -228,9 +230,11 @@ public abstract class Character {
         }
         return false;
     }
+
     public boolean slideRight() {
         return position.slideRight(stats.getSpeed());
     }
+
     public boolean slideLeft() {
         return position.slideLeft(stats.getSpeed());
     }
@@ -289,10 +293,6 @@ public abstract class Character {
 
     public Platform getInsidePlatform() {
         return insidePlatform;
-    }
-
-    public void setInsidePlatform(Platform insidePlatform) {
-        this.insidePlatform = insidePlatform;
     }
 
     public Platform getStandPlatform() {
@@ -455,11 +455,7 @@ public abstract class Character {
         this.gameplay = gameplay;
     }
 
-    public Platform getCurPlatform() {
-        return insidePlatform;
-    }
-
-    public void setCurPlatform(Platform curPlatform) {
+    public void setInsidePlatform(Platform curPlatform) {
         this.insidePlatform = curPlatform;
     }
 

@@ -7,6 +7,7 @@ import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
 import fightinggame.entity.Character;
 import fightinggame.entity.inventory.Inventory;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -70,6 +71,11 @@ public abstract class Item {
             animation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
                      position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                     position.getWidth(), position.getHeight());
+            //hitbox
+            g.setColor(Color.red);
+            g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+                     getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+                    getWidthHitBox(), getHeightHitBox());
         }
         if (abilities.size() > 0) {
             for (int i = 0; i < abilities.size(); i++) {
@@ -91,19 +97,20 @@ public abstract class Item {
 
     public void checkHit(Character character) {
         if (spawnDrop && dropExpireCounter <= 1500 && !character.isAttack()) {
-            GamePosition charPostion = character.getPosition();
-            if (((charPostion.getXPosition() < position.getXPosition() && charPostion.getMaxX() > position.getMaxX())
-                    || (charPostion.getXPosition() > position.getXPosition() && charPostion.getMaxX() < position.getMaxX())
-                    || (charPostion.getXPosition() >= position.getXPosition() && charPostion.getXPosition() <= position.getMaxX()
-                    && charPostion.getMaxX() > position.getMaxX())
-                    || (charPostion.getMaxX() >= position.getXPosition() && charPostion.getMaxX() <= position.getMaxX()
-                    && charPostion.getXPosition() < position.getXPosition()))
-                    && ((charPostion.getYPosition() <= position.getYPosition() && charPostion.getMaxY() >= position.getMaxY()
-                    || (charPostion.getYPosition() >= position.getYPosition() && charPostion.getMaxY() <= position.getMaxY())
-                    || (charPostion.getYPosition() > position.getYPosition() && charPostion.getYPosition() <= position.getMaxY()
-                    && charPostion.getMaxY() > position.getMaxY())
-                    || (charPostion.getMaxY() > position.getYPosition() && charPostion.getMaxY() <= position.getMaxY()
-                    && charPostion.getYPosition() < position.getYPosition())))) {
+            GamePosition charPostion = new GamePosition(character.getXHitBox(), character.getYHitBox(), 
+                    character.getWidthHitBox(), character.getHeightHitBox());
+            if (((charPostion.getXPosition() < getXHitBox() && charPostion.getMaxX() > getXMaxHitBox())
+                    || (charPostion.getXPosition() >= getXHitBox() && charPostion.getXPosition() <=  getXMaxHitBox()
+                    && charPostion.getMaxX() >  getXMaxHitBox())
+                    || (charPostion.getMaxX() >= getXHitBox() && charPostion.getMaxX() <=  getXMaxHitBox()
+                    && charPostion.getXPosition() < getXHitBox())
+                    || (charPostion.getXPosition() >= getXHitBox() && charPostion.getMaxX() <=  getXMaxHitBox()))
+                    && ((charPostion.getYPosition() < getYHitBox() && charPostion.getMaxY() > getYMaxHitBox()
+                    || (charPostion.getYPosition() >= getYHitBox() && charPostion.getYPosition() <= getYMaxHitBox()
+                    && charPostion.getMaxY() > getYMaxHitBox())
+                    || (charPostion.getMaxY() >= getYHitBox() && charPostion.getMaxY() <= getYMaxHitBox()
+                    && charPostion.getYPosition() < getYHitBox()))
+                    || (charPostion.getYPosition() >= getYHitBox() && charPostion.getMaxY() <= getYMaxHitBox()))) {
                 List<Item> itemsOnGround = gameplay.getItemsOnGround();
                 if (itemsOnGround.size() > 0) {
                     if (itemsOnGround.contains(this)) {
@@ -150,6 +157,21 @@ public abstract class Item {
         return null;
     }
 
+    @Override
+    public abstract Item clone();
+
+    public abstract int getXHitBox();
+
+    public abstract int getWidthHitBox();
+
+    public abstract int getHeightHitBox();
+
+    public abstract int getXMaxHitBox();
+
+    public abstract int getYHitBox();
+
+    public abstract int getYMaxHitBox();
+    
     public void setAnimation(Animation animation) {
         this.animation = animation;
     }
