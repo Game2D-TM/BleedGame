@@ -139,7 +139,7 @@ public class HealthBar {
         g.setColor(Color.white);
         g.drawString(character.getStats().getHealth() + "/" + maxHealth,
                 getHealthPointPos().getXPosition(), getHealthPointPos().getYPosition());
-        g.setColor(Color.orange);
+        g.setColor(Color.black);
         g.drawString(character.getName(), getNamePos().getXPosition()+180, getNamePos().getYPosition()-100);
         g.drawString("Level: " + character.getStats().getLevel(), getNamePos().getXPosition(), getNamePos().getYPosition());
         if (getPlayerScore() != null) {

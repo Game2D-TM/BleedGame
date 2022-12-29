@@ -163,7 +163,7 @@ public abstract class MovementHandler extends Handler {
                                 break;
                             case JUMP:
                                 if (canMove) {
-                                    checkPos.setYPosition(checkPos.getYPosition() - speed - checkPos.getHeight());
+                                    checkPos.setYPosition(checkPos.getYPosition() - (speed + character.getJumpSpeed()));
                                     if (platform instanceof WallTile || platform instanceof Tile) {
                                         if (platform.checkValidPosition(checkPos)) {
                                             canMove = false;
@@ -203,7 +203,7 @@ public abstract class MovementHandler extends Handler {
                             checkPos.setXPosition(checkPos.getXPosition() + speed);
                             if (nextPlatform instanceof Tile || nextPlatform instanceof WallTile) {
                                 if (nextPlatform.checkValidPosition(checkPos)) {
-                                    break;
+                                    return false;
                                 }
                             }
                         }
@@ -225,7 +225,7 @@ public abstract class MovementHandler extends Handler {
                             checkPos.setXPosition(checkPos.getXPosition() - speed);
                             if (nextPlatform instanceof Tile || nextPlatform instanceof WallTile) {
                                 if (nextPlatform.checkValidPosition(checkPos)) {
-                                    break;
+                                    return false;
                                 }
                             }
                         }
@@ -235,8 +235,8 @@ public abstract class MovementHandler extends Handler {
                     character.moveLeft();
                     break;
                     case JUMP:
-                        character.moveUp();
-                        break;
+                    character.moveUp();
+                    break;
                 }
             }
         }

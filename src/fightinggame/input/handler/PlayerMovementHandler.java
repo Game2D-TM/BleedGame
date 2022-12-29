@@ -6,6 +6,9 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.CharacterState;
 import fightinggame.entity.Player;
 import fightinggame.entity.enemy.Enemy;
+import fightinggame.entity.platform.Platform;
+import fightinggame.entity.platform.tile.Tile;
+import fightinggame.entity.platform.tile.WallTile;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
@@ -53,6 +56,19 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_RTL));
                 }
                 player.getPosition().isJump = false;
+                Platform insidePlatform = player.getCurPlatform();
+                if (insidePlatform != null) {
+                    try {
+                        Platform platformAbove = gameplay.getPlatforms().get(insidePlatform.getRow() - 1).get(insidePlatform.getColumn());
+                        if (platformAbove != null) {
+                            if (platformAbove instanceof Tile || platformAbove instanceof WallTile) {
+                                yAfterJump = platformAbove.getPosition().getMaxY();
+                            }
+                        }
+                    } catch (Exception ex) {
+                        System.out.println(ex.toString());
+                    }
+                }
                 if (player.getPosition().getYPosition() - player.getJumpFlySpeed() > yAfterJump) {
                     player.getPosition().setYPosition(player.getPosition().getYPosition() - player.getJumpFlySpeed());
                     if (player.getPosition().isMoveRight) {
@@ -102,7 +118,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             break;
                         }
                         player.setIsLTR(false);
-                        if(!player.isInAir() && !player.isFallDown()) player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                        if (!player.isInAir() && !player.isFallDown()) {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                        }
                         player.getPosition().isMoveLeft = true;
                         break;
                     case KeyEvent.VK_S:
@@ -123,7 +141,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             break;
                         }
                         player.setIsLTR(true);
-                        if(!player.isInAir() && !player.isFallDown()) player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                        if (!player.isInAir() && !player.isFallDown()) {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                        }
                         player.getPosition().isMoveRight = true;
                         break;
                     case KeyEvent.VK_CONTROL:

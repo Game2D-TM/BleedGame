@@ -36,6 +36,8 @@ import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.healing.HealthPotion;
 import fightinggame.entity.platform.Platform;
+import fightinggame.entity.platform.tile.Tile;
+import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.input.handler.EnemyMovementHandler;
 import fightinggame.input.handler.MouseHandler;
 import fightinggame.input.handler.PlayerAbilityHandler;
@@ -73,9 +75,7 @@ public class Gameplay extends JPanel implements Runnable {
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
                 "data/scene_1.txt", 250, 180);
         map = new Background(1, "Map", this,
-                new GamePosition(getCamera().getPosition().getXPosition()
-                        + getCamera().getPosition().getWidth() / 2 + 400,
-                        getCamera().getPosition().getYPosition(), 0, 0),
+                new GamePosition(0, 0, 300, 300),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
                 "data/scene_1.txt", 15, 15);
@@ -86,12 +86,12 @@ public class Gameplay extends JPanel implements Runnable {
 //        enemySpawnXPosition = xPosition + 1700;
         Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform); // playPosition.getYPosition() - 50
-//        firstPlatform = background.getScene().get(9).get(8);
-//        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
-//        firstPlatform = background.getScene().get(9).get(9);
-//        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
-//        spawnEnemiesThread = new Thread(spawnEnemies());
-//        spawnEnemiesThread.start();
+        firstPlatform = background.getScene().get(9).get(8);
+        diorInit(firstPlatform);// enemySpawnXPosition, playPosition.getYPosition() + playPosition.getHeight() - 520
+        firstPlatform = background.getScene().get(9).get(9);
+        diorInit(firstPlatform); // enemySpawnXPosition, playPosition.getYPosition() + 50
+        spawnEnemiesThread = new Thread(spawnEnemies());
+        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
@@ -493,7 +493,12 @@ public class Gameplay extends JPanel implements Runnable {
 //                                    }
 //                                }
 //                                diorInit(enemySpawnXPosition, enemySpawnYPosition);
-                                diorInit(platform);
+
+                                if (platform instanceof Tile || platform instanceof WallTile) {
+                                    i--;
+                                } else {
+                                    diorInit(platform);
+                                }
                                 if (platformColumn > 0) {
                                     platformColumn--;
                                 } else {

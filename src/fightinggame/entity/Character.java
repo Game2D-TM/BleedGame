@@ -95,31 +95,42 @@ public abstract class Character {
     }
 
     public void checkPlatForm(List<List<Platform>> scene) {
-        if (scene != null && scene.size() > 0) {
-            boolean isSet = false;
-            for (int i = 0; i < scene.size(); i++) {
-                List<Platform> platforms = scene.get(i);
-                if (platforms != null && platforms.size() > 0) {
-                    for (int j = 0; j < platforms.size(); j++) {
-                        Platform platform = platforms.get(j);
-                        if (platform != null) {
+        try {
+            if (scene != null && scene.size() > 0) {
+                boolean isSet = false;
+                for (int i = 0; i < scene.size(); i++) {
+                    List<Platform> platforms = scene.get(i);
+                    if (platforms != null && platforms.size() > 0) {
+                        for (int j = 0; j < platforms.size(); j++) {
+                            Platform platform = platforms.get(j);
+                            if (platform != null) {
 //                            GamePosition playerPos = new GamePosition(
 //                                    position.getXPosition(),
 //                                    position.getYPosition() + position.getHeight() / 2,
 //                                    position.getWidth(), position.getHeight() / 2);
-                            GamePosition playerPos = new GamePosition(getXHitBox(), getYHitBox() + 50,
-                                     getWidthHitBox(), getHeightHitBox() / 2);
-                            if (platform.checkValidPosition(playerPos)) {
-                                insidePlatform = platform;
-                                isSet = true;
-                                break;
+                                GamePosition playerPos = new GamePosition(getXHitBox(), getYHitBox() + 50,
+                                        getWidthHitBox(), getHeightHitBox() / 2);
+                                if (platform.checkValidPosition(playerPos)) {
+                                    insidePlatform = platform;
+                                    isSet = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isSet) {
-                        break;
+                        if (isSet) {
+                            break;
+                        }
                     }
                 }
+            }
+        } catch (Exception ex) {
+//            System.out.println(ex.toString() + " in " + this.getClass().getName());
+            isDeath = true;
+            stats.setHealth(0);
+            if (isLTR) {
+                currAnimation = animations.get(CharacterState.DEATH_LTR);
+            } else {
+                currAnimation = animations.get(CharacterState.DEATH_RTL);
             }
         }
     }
@@ -133,7 +144,14 @@ public abstract class Character {
                 }
             }
         } catch (Exception ex) {
-            System.out.println(ex.toString());
+//            System.out.println(ex.toString() + " in " + this.getClass().getName());
+            isDeath = true;
+            stats.setHealth(0);
+            if (isLTR) {
+                currAnimation = animations.get(CharacterState.DEATH_LTR);
+            } else {
+                currAnimation = animations.get(CharacterState.DEATH_RTL);
+            }
         }
     }
 

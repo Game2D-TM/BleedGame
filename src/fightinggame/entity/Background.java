@@ -1,6 +1,7 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
+import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
@@ -59,7 +60,11 @@ public class Background {
         this.tileHeight = tileHeight;
         this.position = new GamePosition(-15, 0, width, height);
         loadImagesToScene();
-        initScene(position.getXPosition(), position.getYPosition(),tileWidth, tileHeight);
+        if (name != null) {
+            if (!name.equalsIgnoreCase("map")) {
+                initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
+            }
+        }
     }
 
     public Background(int id, String name, Gameplay gameplay,
@@ -78,7 +83,11 @@ public class Background {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         loadImagesToScene();
-        initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
+        if (name != null) {
+            if (!name.equalsIgnoreCase("map")) {
+                initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
+            }
+        }
     }
 
     public void initScene(int x, int y, int width, int height) {
@@ -96,9 +105,9 @@ public class Background {
                             platform.setPosition(new GamePosition(tempX, tempY, width, height));
                         }
                         tempX += width;
-                    }
-                    if (images.size() > maxSize) {
-                        maxSize = images.size();
+                        if(images.size() > maxSize) {
+                            maxSize = images.size();
+                        }
                     }
                 }
                 tempY += height;
@@ -106,6 +115,26 @@ public class Background {
             }
             position.setWidth(maxSize * width);
             position.setHeight(nHeight);
+        }
+    }
+
+    public void initMap() {
+        if (scene != null && scene.size() > 0) {
+            int tempY = position.getYPosition();
+            for (int i = 0; i < scene.size(); i++) {
+                List<Platform> images = scene.get(i);
+                if (images != null && images.size() > 0) {
+                    int tempX = position.getXPosition();
+                    for (int j = 0; j < images.size(); j++) {
+                        Platform platform = images.get(j);
+                        if (platform != null) {
+                            platform.setPosition(new GamePosition(tempX, tempY, tileWidth, tileHeight));
+                        }
+                        tempX += tileWidth;
+                    }
+                }
+                tempY += tileHeight;
+            }
         }
     }
 
@@ -185,7 +214,7 @@ public class Background {
                                             }
                                         }
                                     }
-                                    if(name.equalsIgnoreCase("map")) {
+                                    if (name.equalsIgnoreCase("map")) {
                                         nPlatform.setIsMapRender(true);
                                     }
                                     platforms.add(nPlatform);
@@ -204,10 +233,11 @@ public class Background {
     }
 
     public void tick() {
-        if(name != null) {
-            if(name.equalsIgnoreCase("map")) {
+        if (name != null) {
+            if (name.equalsIgnoreCase("map")) {
                 position.setXPosition(gameplay.getCamera().getPosition().getMaxX() - position.getWidth());
                 position.setYPosition(gameplay.getCamera().getPosition().getYPosition());
+//                initMap();
                 initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
                 return;
             }
@@ -243,6 +273,38 @@ public class Background {
                         Platform platform = platforms.get(j);
                         if (platform != null) {
                             platform.render(g);
+                        }
+                    }
+                }
+            }
+        }
+        if (name != null) {
+            if (name.equalsIgnoreCase("map")) {
+                Platform playerInsidePlatform = gameplay.getPlayer().getCurPlatform();
+                if (playerInsidePlatform != null) {
+                    Platform mapPlatform = scene.get(playerInsidePlatform.getRow()).get(playerInsidePlatform.getColumn());
+                    if (mapPlatform != null) {
+                        g.setColor(Color.white);
+                        g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                                mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                                tileWidth, tileHeight);
+                    }
+                }
+                List<Enemy> enemies = gameplay.getEnemies();
+                if (enemies != null && enemies.size() > 0) {
+                    for (int i = 0; i < enemies.size(); i++) {
+                        Enemy enemy = enemies.get(i);
+                        if (enemy != null) {
+                            Platform enemyInsidePlatform = enemy.getCurPlatform();
+                            if (enemyInsidePlatform != null) {
+                                Platform mapPlatform = scene.get(enemyInsidePlatform.getRow()).get(enemyInsidePlatform.getColumn());
+                                if (mapPlatform != null) {
+                                    g.setColor(Color.red);
+                                    g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                                            mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                                            tileWidth, tileHeight);
+                                }
+                            }
                         }
                     }
                 }
