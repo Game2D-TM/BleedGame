@@ -82,12 +82,12 @@ public class Gameplay extends JPanel implements Runnable {
         audioPlayer = new AudioPlayer("assets/res/sound");
         Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform);
-        firstPlatform = background.getScene().get(9).get(8);
-        diorInit(firstPlatform);
-        firstPlatform = background.getScene().get(9).get(9);
-        diorInit(firstPlatform);
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+//        firstPlatform = background.getScene().get(9).get(8);
+//        diorInit(firstPlatform);
+//        firstPlatform = background.getScene().get(9).get(9);
+//        diorInit(firstPlatform);
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 

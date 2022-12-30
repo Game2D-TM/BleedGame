@@ -15,6 +15,7 @@ public class Player extends Character {
 
     private int isStunCounter = 0;
     private int point = 0;
+    private boolean isAirAttack;
 
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
@@ -81,14 +82,14 @@ public class Player extends Character {
                 getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
                 getWidthHitBox(), getHeightHitBox());
         //attackhitbox
-//        int attackX;
-//        if(isLTR) {
-//            attackX = position.getXPosition() + position.getWidth();
-//        } else attackX = position.getXPosition() - 20;
-//        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
-//        int attackHeight = position.getHeight() / 2 - 10;
-//        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition()
-//                , attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
+        int attackX;
+        if(isLTR) {
+            attackX = position.getXPosition() + position.getWidth();
+        } else attackX = position.getXPosition() - 20;
+        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
+        int attackHeight = position.getHeight() / 2 - 10;
+        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition()
+                , attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
     }
 
     @Override
@@ -254,6 +255,14 @@ public class Player extends Character {
         return false;
     }
 
+    public boolean isAirAttack() {
+        return isAirAttack;
+    }
+
+    public void setIsAirAttack(boolean isAirAttack) {
+        this.isAirAttack = isAirAttack;
+    }
+    
     public int getPoint() {
         return point;
     }
