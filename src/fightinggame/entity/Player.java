@@ -16,6 +16,7 @@ public class Player extends Character {
     private int isStunCounter = 0;
     private int point = 0;
     private boolean isAirAttack;
+    private boolean isSpecialAttack;
 
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
@@ -55,6 +56,29 @@ public class Player extends Character {
     public void tick() {
         super.tick();
         healthBar.tick();
+        if (!isDeath && isSpecialAttack) {
+            if (currAnimation != null) {
+                if (currAnimation instanceof PlayerAttackSpecial_LTR) {
+                    if (currAnimation.getSheet().getSpriteIndex() == currAnimation.getSheet().getImages().size() - 1) {
+                        isSpecialAttack = false;
+                        if (isLTR) {
+                            currAnimation = animations.get(CharacterState.IDLE_LTR);
+                        } else {
+                            currAnimation = animations.get(CharacterState.IDLE_RTL);
+                        }
+                    }
+                } else if (currAnimation instanceof PlayerAttackSpecial_RTL) {
+                    if (currAnimation.getSheet().getSpriteIndex() == currAnimation.getSheet().getImages().size() - 1) {
+                        isSpecialAttack = false;
+                        if (isLTR) {
+                            currAnimation = animations.get(CharacterState.IDLE_LTR);
+                        } else {
+                            currAnimation = animations.get(CharacterState.IDLE_RTL);
+                        }
+                    }
+                }
+            }
+        }
         if (isAttacked && !isDeath) {
             isStunCounter++;
             if (isStunCounter > 50) {
@@ -83,13 +107,15 @@ public class Player extends Character {
                 getWidthHitBox(), getHeightHitBox());
         //attackhitbox
         int attackX;
-        if(isLTR) {
+        if (isLTR) {
             attackX = position.getXPosition() + position.getWidth();
-        } else attackX = position.getXPosition() - 20;
+        } else {
+            attackX = position.getXPosition() - 20;
+        }
         int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
         int attackHeight = position.getHeight() / 2 - 10;
-        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition()
-                , attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
+        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition(),
+                attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
     }
 
     @Override
@@ -113,9 +139,9 @@ public class Player extends Character {
                 return position.getXPosition() + 162;
             } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getXPosition() + 108;
-            } else if(currAnimation instanceof PlayerSlide_LTR) {
+            } else if (currAnimation instanceof PlayerSlide_LTR) {
                 return position.getXPosition() + 105;
-            } else if(currAnimation instanceof PlayerSlide_RTL) {
+            } else if (currAnimation instanceof PlayerSlide_RTL) {
                 return position.getXPosition() + 75;
             }
         }
@@ -140,9 +166,9 @@ public class Player extends Character {
                 return position.getWidth() / 3 - 35;
             } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getWidth() / 3 - 35;
-            } else if(currAnimation instanceof PlayerSlide_LTR) {
+            } else if (currAnimation instanceof PlayerSlide_LTR) {
                 return position.getWidth() / 3 + 55;
-            } else if(currAnimation instanceof PlayerSlide_RTL) {
+            } else if (currAnimation instanceof PlayerSlide_RTL) {
                 return position.getWidth() / 3 + 55;
             }
         }
@@ -161,9 +187,9 @@ public class Player extends Character {
                 return position.getHeight() - 75;
             } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getHeight() - 75;
-            } else if(currAnimation instanceof PlayerSlide_LTR) {
+            } else if (currAnimation instanceof PlayerSlide_LTR) {
                 return position.getHeight() / 3 + 20;
-            } else if(currAnimation instanceof PlayerSlide_RTL) {
+            } else if (currAnimation instanceof PlayerSlide_RTL) {
                 return position.getHeight() / 3 + 20;
             }
         }
@@ -186,9 +212,9 @@ public class Player extends Character {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
             } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if(currAnimation instanceof PlayerSlide_LTR) {
+            } else if (currAnimation instanceof PlayerSlide_LTR) {
                 return position.getYPosition() + position.getHeight() / 2 + 20;
-            } else if(currAnimation instanceof PlayerSlide_RTL) {
+            } else if (currAnimation instanceof PlayerSlide_RTL) {
                 return position.getYPosition() + position.getHeight() / 2 + 20;
             }
         }
@@ -255,6 +281,14 @@ public class Player extends Character {
         return false;
     }
 
+    public boolean isSpecialAttack() {
+        return isSpecialAttack;
+    }
+
+    public void setIsSpecialAttack(boolean isSpecialAttack) {
+        this.isSpecialAttack = isSpecialAttack;
+    }
+
     public boolean isAirAttack() {
         return isAirAttack;
     }
@@ -262,7 +296,7 @@ public class Player extends Character {
     public void setIsAirAttack(boolean isAirAttack) {
         this.isAirAttack = isAirAttack;
     }
-    
+
     public int getPoint() {
         return point;
     }

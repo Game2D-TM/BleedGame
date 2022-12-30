@@ -20,7 +20,6 @@ import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
 import fightinggame.resource.SpriteSheet;
-import java.awt.Color;
 import java.util.List;
 
 public abstract class Enemy extends Character {
@@ -153,11 +152,12 @@ public abstract class Enemy extends Character {
         if (healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
             healthBar.render(g);
         }
-        g.setColor(Color.red);
-        g.drawRect(position.getXPosition() + DEF_X_VISION_POS - gameplay.getCamera().getPosition().getXPosition(),
-                position.getYPosition() + DEF_Y_VISION_POS - gameplay.getCamera().getPosition().getYPosition(),
-                position.getWidth() + DEF_WIDTH_VISION_POS,
-                getHeightHitBox() + DEF_HEIGHT_VISION_POS);
+        // vision hitbox
+//        g.setColor(Color.red);
+//        g.drawRect(position.getXPosition() + DEF_X_VISION_POS - gameplay.getCamera().getPosition().getXPosition(),
+//                position.getYPosition() + DEF_Y_VISION_POS - gameplay.getCamera().getPosition().getYPosition(),
+//                position.getWidth() + DEF_WIDTH_VISION_POS,
+//                getHeightHitBox() + DEF_HEIGHT_VISION_POS);
 
     }
 

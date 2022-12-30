@@ -82,8 +82,8 @@ public class Gameplay extends JPanel implements Runnable {
         audioPlayer = new AudioPlayer("assets/res/sound");
         Platform firstPlatform = getPlatforms().get(9).get(3);
         playerInit(firstPlatform);
-//        firstPlatform = background.getScene().get(9).get(8);
-//        diorInit(firstPlatform);
+        firstPlatform = background.getScene().get(9).get(8);
+        diorInit(firstPlatform);
 //        firstPlatform = background.getScene().get(9).get(9);
 //        diorInit(firstPlatform);
 //        spawnEnemiesThread = new Thread(spawnEnemies());
@@ -308,6 +308,13 @@ public class Gameplay extends JPanel implements Runnable {
 //        playerDeathRTL.reverseImages();
 //        playerAttack1LTR.getImages().addAll(playerAttack2LTR.getImages());
 //        playerAttack1RTL.getImages().addAll(playerAttack2RTL.getImages());
+        SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01");
+        SpriteSheet attackSpecialRTL = spriteSheetMap.get("Attack01").convertRTL();
+        // Add special attack new sheet
+        attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack02").getImages());
+        attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack03").getImages());
+        attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack02").convertRTL().getImages());
+        attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack03").convertRTL().getImages());
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
@@ -315,7 +322,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01"), 0);
         PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
         PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12);
-        PlayerAttack attack03LTR = new PlayerAttack(2, spriteSheetMap.get("Attack03"), 12);
+        PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, 15);
         PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), 12);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
         PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, spriteSheetMap.get("Jump02"), 30);
@@ -345,7 +352,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL(), 0);
         PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
-        PlayerAttack attack03RTL = new PlayerAttack(2, spriteSheetMap.get("Attack03").convertRTL(), 12);
+        PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, 15);
         PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), 12);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
@@ -369,6 +376,7 @@ public class Gameplay extends JPanel implements Runnable {
         // reverse arrays animations
         jumpLTR.getSheet().reverseImages();
         jumpRTL.getSheet().reverseImages();
+        
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
 
