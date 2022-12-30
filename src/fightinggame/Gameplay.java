@@ -445,7 +445,13 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.SPELLCAST_RTL, spellCastRTL);
         playerAnimations.put(CharacterState.SPELLCASTLOOP_LTR, spellCastLoopLTR);
         playerAnimations.put(CharacterState.SPELLCASTLOOP_RTL, spellCastLoopRTL);
-
+        
+        //Ledge Climb
+        playerAnimations.put(CharacterState.LEDGECLIMB_LTR, ledgeClimbLTR);//New
+        playerAnimations.put(CharacterState.LEDGECLIMB_RTL, ledgeClimbRTL);//New
+        playerAnimations.put(CharacterState.LEDGEGRAB_LTR, ledgeGrabLTR);//New
+        playerAnimations.put(CharacterState.LEDGEGRAB_RTL, ledgeGrabRTL);//New
+        
         //Init Inventory
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
