@@ -42,8 +42,7 @@ public class MouseHandler extends Handler implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (isClicked && !player.isDeath() && !player.isInAir()
-                && !player.isFallDown()) {
+        if (isClicked && !player.isDeath()) {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (canClick) {
                     if (!player.isAttack() && !player.getPosition().isMoving() && !player.isAttacked()) {
@@ -53,20 +52,29 @@ public class MouseHandler extends Handler implements MouseListener {
                             }
                         }
                         Animation attack = null;
-                        if (player.isLTR()) {
-                            attack = player.getAnimations().get(CharacterState.ATTACK01_LTR);
-                        } else {
-                            attack = player.getAnimations().get(CharacterState.ATTACK01_RTL);
-                        }
                         if (!player.isAttack()) {
+                            if (player.isFallDown() || player.isInAir()) {
+                                if (player.isLTR()) {
+                                    attack = player.getAnimations().get(CharacterState.AIRATTACK01_LTR);
+                                } else {
+                                    attack = player.getAnimations().get(CharacterState.AIRATTACK01_RTL);
+                                }
+                            } else {
+                                if (player.isLTR()) {
+                                    attack = player.getAnimations().get(CharacterState.ATTACK01_LTR);
+                                } else {
+                                    attack = player.getAnimations().get(CharacterState.ATTACK01_RTL);
+                                }
+//                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
+//                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
+                            }
                             if (player.isLTR()) {
-                                player.getPosition().setWidth(player.getPosition().getWidth() + 20);
+                                player.getPosition().setWidth(player.getPosition().getWidth() + 20); // 120
                             } else {
                                 player.getPosition().setXPosition(player.getPosition().getXPosition() - 20);
                                 player.getPosition().setWidth(player.getPosition().getWidth() + 20);
                             }
-//                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
-//                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
+                            player.setCurrAnimation(attack);
                             player.setIsAttack(true);
                             gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
                             if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
@@ -93,7 +101,6 @@ public class MouseHandler extends Handler implements MouseListener {
                                 }
                             }
                         }
-                        player.setCurrAnimation(attack);
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException ex) {

@@ -109,7 +109,8 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
         pressedKeys.add(e.getKeyCode());
         if (!pressedKeys.isEmpty()) {
             for (Iterator<Integer> it = pressedKeys.iterator(); it.hasNext();) {
-                switch (it.next()) {
+                int keyCode = it.next();
+                switch (keyCode) {
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
                         if (player.isAttack() || player.isInAir() || player.isFallDown()) {
@@ -169,8 +170,10 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         }
                         player.getPosition().isSlide = true;
                         break;
-                    case KeyEvent.VK_SPACE:
-                        if (!canAttack || player.isInAir() || player.isFallDown()) {
+                    case KeyEvent.VK_J:
+                    case KeyEvent.VK_K:
+                    case KeyEvent.VK_L:
+                        if (!canAttack || player.isAttack()) {
                             break;
                         }
                         if (!player.isAttack() && !player.getPosition().isMoving() && !player.isAttacked()) {
@@ -180,22 +183,49 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                 }
                             }
                             Animation attack = null;
-                            if (player.isLTR()) {
-                                attack = player.getAnimations().get(CharacterState.ATTACK01_LTR);
+                            if ((player.isFallDown() || player.isInAir()) && keyCode != KeyEvent.VK_L) {
+                                if (player.isLTR()) {
+                                    attack = player.getAnimations().get(CharacterState.AIRATTACK01_LTR);
+                                } else {
+                                    attack = player.getAnimations().get(CharacterState.AIRATTACK01_RTL);
+                                }
                             } else {
-                                attack = player.getAnimations().get(CharacterState.ATTACK01_RTL);
+                                if(keyCode == KeyEvent.VK_J) {
+                                    if (player.isLTR()) {
+                                        attack = player.getAnimations().get(CharacterState.ATTACK01_LTR);
+                                    } else {
+                                        attack = player.getAnimations().get(CharacterState.ATTACK01_RTL);
+                                    }
+                                } else if(keyCode == KeyEvent.VK_K) {
+                                    if (player.isLTR()) {
+                                        attack = player.getAnimations().get(CharacterState.ATTACK02_LTR);
+                                    } else {
+                                        attack = player.getAnimations().get(CharacterState.ATTACK02_RTL);
+                                    }
+                                    try {
+                                        Thread.sleep(50);
+                                    } catch (InterruptedException ex) {
+                                        Logger.getLogger(PlayerMovementHandler.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                } else if(keyCode == KeyEvent.VK_L) {
+                                    if (player.isLTR()) {
+                                        attack = player.getAnimations().get(CharacterState.ATTACK03_LTR);
+                                    } else {
+                                        attack = player.getAnimations().get(CharacterState.ATTACK03_RTL);
+                                    }
+                                }
+//                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
+//                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
                             }
-                            player.setIsAttack(true);
-                            player.setCurrAnimation(attack);
-                            gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
                             if (player.isLTR()) {
                                 player.getPosition().setWidth(player.getPosition().getWidth() + 20); // 120
                             } else {
                                 player.getPosition().setXPosition(player.getPosition().getXPosition() - 20);
                                 player.getPosition().setWidth(player.getPosition().getWidth() + 20);
                             }
-//                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
-//                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
+                            player.setCurrAnimation(attack);
+                            player.setIsAttack(true);
+                            gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
                             if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
                                 int attackX;
                                 int attackY;
