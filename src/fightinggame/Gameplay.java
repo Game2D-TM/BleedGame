@@ -312,37 +312,60 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
         PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"));
-        PlayerRunLTR runLTR = new PlayerRunLTR(1, spriteSheetMap.get("Run01"), 0);
+        PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01"), 0);
         PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
         PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12);
         PlayerAttack attack03LTR = new PlayerAttack(2, spriteSheetMap.get("Attack03"), 12);
         PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), 12);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
-        PlayerJumpLTR jumpLTR = new PlayerJumpLTR(5, spriteSheetMap.get("Jump02"), 30);
-        PlayerFallDownLTR fallDownLTR = new PlayerFallDownLTR(6, spriteSheetMap.get("FallAnim01"), 50);
+        PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, spriteSheetMap.get("Jump02"), 30);
+        PlayerFallDown_LTR fallDownLTR = new PlayerFallDown_LTR(6, spriteSheetMap.get("FallAnim01"), 50);
         PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), 40);
         PlayerCrouch crouchLTR = new PlayerCrouch(8, spriteSheetMap.get("Crouch01"), 10);
         PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop"), 15);
-        PlayerSlideLTR slideLTR = new PlayerSlideLTR(10, spriteSheetMap.get("Slide01"), 30);
-        PlayerAirAttack airAttack01LTR = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01"), 20);
+        PlayerSlide_LTR slideLTR = new PlayerSlide_LTR(10, spriteSheetMap.get("Slide01"), 30);
+        PlayerAirAttack_LTR airAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack01"), 20);
+        PlayerAirAttack_LTR airAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack02"), 20);
+        PlayerAirAttack_LTR airAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03"), 20);
+        PlayerAirAttack_LTR airAttackLoopLTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03Loop"), 20);
+        PlayerJumpRoll_LTR jumpRollLTR = new PlayerJumpRoll_LTR(12, spriteSheetMap.get("JumpRoll01"), 15);
+        PlayerGetUp_LTR getUpLTR = new PlayerGetUp_LTR(13, spriteSheetMap.get("GetUp01"), 15);
+        PlayerFallDown_LTR knockDownLTR = new PlayerFallDown_LTR(14, spriteSheetMap.get("KnockDown01"), 25);
+        PlayerLedgeAction_LTR ledgeClimbLTR = new PlayerLedgeAction_LTR(15, spriteSheetMap.get("LedgeClimb01"), 15);
+        PlayerLedgeAction_LTR ledgeGrabLTR = new PlayerLedgeAction_LTR(16, spriteSheetMap.get("LedgeGrab01"), 15);
+        PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, spriteSheetMap.get("WallRun01"), 15);
+        PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, spriteSheetMap.get("WallSlide01"), 15);
+        PlayerRun_LTR sprintLTR = new PlayerRun_LTR(19, spriteSheetMap.get("Sprint01"), 0);
+        
 
         //RTL
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
         PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
         PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL());
-        PlayerRunRTL runRTL = new PlayerRunRTL(1, spriteSheetMap.get("Run01").convertRTL(), 0);
+        PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL(), 0);
         PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
         PlayerAttack attack03RTL = new PlayerAttack(2, spriteSheetMap.get("Attack03").convertRTL(), 12);
         PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), 12);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
-        PlayerJumpRTL jumpRTL = new PlayerJumpRTL(5, spriteSheetMap.get("Jump02").convertRTL(), 30);
-        PlayerFallDownRTL fallDownRTL = new PlayerFallDownRTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
+        PlayerJump_RTL jumpRTL = new PlayerJump_RTL(5, spriteSheetMap.get("Jump02").convertRTL(), 30);
+        PlayerFallDown_RTL fallDownRTL = new PlayerFallDown_RTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
         PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), 40);
         PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), 15);
-        PlayerSlideRTL slideRTL = new PlayerSlideRTL(10, spriteSheetMap.get("Slide01").convertRTL(), 30);
-        PlayerAirAttack airAttack01RTL = new PlayerAirAttack(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
+        PlayerSlide_RTL slideRTL = new PlayerSlide_RTL(10, spriteSheetMap.get("Slide01").convertRTL(), 30);
+        PlayerAirAttack_RTL airAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
+        PlayerAirAttack_RTL airAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack02").convertRTL(), 20);
+        PlayerAirAttack_RTL airAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03").convertRTL(), 20);
+        PlayerAirAttack_RTL airAttackLoopRTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03Loop").convertRTL(), 20);
+        PlayerJumpRoll_RTL jumpRollRTL = new PlayerJumpRoll_RTL(12, spriteSheetMap.get("JumpRoll01").convertRTL(), 15);
+        PlayerGetUp_RTL getUpRTL = new PlayerGetUp_RTL(13, spriteSheetMap.get("GetUp01").convertRTL(), 15);
+        PlayerFallDown_RTL knockDownRTL = new PlayerFallDown_RTL(14, spriteSheetMap.get("KnockDown01").convertRTL(), 25);
+        PlayerLedgeAction_RTL ledgeClimbRTL = new PlayerLedgeAction_RTL(15, spriteSheetMap.get("LedgeClimb01").convertRTL(), 15);
+        PlayerLedgeAction_RTL ledgeGrabRTL = new PlayerLedgeAction_RTL(16, spriteSheetMap.get("LedgeGrab01").convertRTL(), 15);
+        PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, spriteSheetMap.get("WallRun01").convertRTL(), 15);
+        PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, spriteSheetMap.get("WallSlide01").convertRTL(), 15);
+        PlayerRun_RTL sprintRTL = new PlayerRun_RTL(19, spriteSheetMap.get("Sprint01").convertRTL(), 0);
         // reverse arrays animations
         jumpLTR.getSheet().reverseImages();
         jumpRTL.getSheet().reverseImages();
@@ -352,6 +375,12 @@ public class Gameplay extends JPanel implements Runnable {
         //Run directions
         playerAnimations.put(CharacterState.RUNFORWARD, runLTR);
         playerAnimations.put(CharacterState.RUNBACK, runRTL);
+        playerAnimations.put(CharacterState.SPRINT_LTR, sprintLTR);//New
+        playerAnimations.put(CharacterState.SPRINT_RTL, sprintRTL);//New
+        playerAnimations.put(CharacterState.WALLRUN_LTR, wallRunLTR);//New
+        playerAnimations.put(CharacterState.WALLRUN_RTL, wallRunRTL);//New
+        playerAnimations.put(CharacterState.WALLSLIDE_LTR, wallSlideLTR);//New
+        playerAnimations.put(CharacterState.WALLSLIDE_RTL, wallSlideRTL);//New
 
         //Idle
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
@@ -368,8 +397,15 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.ATTACK03_RTL, attack03RTL);
         playerAnimations.put(CharacterState.FIREATTACK01_LTR, fireAttack01LTR);
         playerAnimations.put(CharacterState.FIREATTACK01_RTL, fireAttack01RTL);
-        playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR);
-        playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);
+        playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR); //New
+        playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);//New
+        playerAnimations.put(CharacterState.AIRATTACK02_LTR, airAttack02LTR);//New
+        playerAnimations.put(CharacterState.AIRATTACK02_RTL, airAttack02RTL);//New
+        playerAnimations.put(CharacterState.AIRATTACK03_LTR, airAttack03LTR);//New
+        playerAnimations.put(CharacterState.AIRATTACK03_RTL, airAttack03RTL);//New
+        playerAnimations.put(CharacterState.AIRATTACKLOOP_LTR, airAttackLoopLTR);//New
+        playerAnimations.put(CharacterState.AIRATTACKLOOP_RTL, airAttackLoopRTL);//New
+
 
         //Get Hit
         playerAnimations.put(CharacterState.GET_HIT_LTR, hitLTR);
@@ -382,6 +418,10 @@ public class Gameplay extends JPanel implements Runnable {
         //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
         playerAnimations.put(CharacterState.JUMP_RTL, jumpRTL);
+        playerAnimations.put(CharacterState.JUMPROLL_LTR, jumpRollLTR); //New
+        playerAnimations.put(CharacterState.JUMPROLL_RTL, jumpRollRTL);//New
+
+        
 
         //Crouch Animation
         playerAnimations.put(CharacterState.CROUCH_LTR, crouchLTR);
@@ -394,6 +434,11 @@ public class Gameplay extends JPanel implements Runnable {
         //Falldown
         playerAnimations.put(CharacterState.FALLDOWN_LTR, fallDownLTR);
         playerAnimations.put(CharacterState.FALLDOWN_RTL, fallDownRTL);
+        playerAnimations.put(CharacterState.KNOCKDOWN_LTR, knockDownLTR);//New
+        playerAnimations.put(CharacterState.KNOCKDOWN_RTL, knockDownRTL);//New
+        playerAnimations.put(CharacterState.GETUP_LTR, getUpLTR);//New
+        playerAnimations.put(CharacterState.GETUP_RTL, getUpRTL);//New
+        
 
         //SpellCast
         playerAnimations.put(CharacterState.SPELLCAST_LTR, spellCastLTR);

@@ -1,8 +1,8 @@
 package fightinggame.input.handler;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.player.PlayerFallDownLTR;
-import fightinggame.animation.player.PlayerFallDownRTL;
+import fightinggame.animation.player.PlayerFallDown_LTR;
+import fightinggame.animation.player.PlayerFallDown_RTL;
 import fightinggame.entity.Background;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.platform.Platform;
@@ -47,7 +47,7 @@ public abstract class MovementHandler extends Handler {
                         }
                         if (character.isFallDown()) {
                             if (character.getCurrAnimation() != null) {
-                                if (character.getCurrAnimation() instanceof PlayerFallDownLTR || character.getCurrAnimation() instanceof PlayerFallDownRTL) {
+                                if (character.getCurrAnimation() instanceof PlayerFallDown_LTR || character.getCurrAnimation() instanceof PlayerFallDown_RTL) {
                                     if (character.getPosition().isMoveRight) {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNFORWARD));
                                     } else if (character.getPosition().isMoveLeft) {

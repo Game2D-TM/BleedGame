@@ -100,21 +100,21 @@ public class Player extends Character {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerAttack) {
                 return position.getXPosition() + 110;
-            } else if (currAnimation instanceof PlayerRunLTR) {
+            } else if (currAnimation instanceof PlayerRun_LTR) {
                 return position.getXPosition() + 140;
-            } else if (currAnimation instanceof PlayerRunRTL) {
+            } else if (currAnimation instanceof PlayerRun_RTL) {
                 return position.getXPosition() + 95;
-            } else if (currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJump_LTR) {
                 return position.getXPosition() + 152;
-            } else if (currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJump_RTL) {
                 return position.getXPosition() + 102;
-            } else if (currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDown_LTR) {
                 return position.getXPosition() + 162;
-            } else if (currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getXPosition() + 108;
-            } else if(currAnimation instanceof PlayerSlideLTR) {
+            } else if(currAnimation instanceof PlayerSlide_LTR) {
                 return position.getXPosition() + 105;
-            } else if(currAnimation instanceof PlayerSlideRTL) {
+            } else if(currAnimation instanceof PlayerSlide_RTL) {
                 return position.getXPosition() + 75;
             }
         }
@@ -123,25 +123,25 @@ public class Player extends Character {
 
     public int getWidthHitBox() {
         if (currAnimation != null) {
-            if (currAnimation instanceof PlayerRunLTR) {
+            if (currAnimation instanceof PlayerRun_LTR) {
                 return position.getWidth() / 3 - 5;
-            } else if (currAnimation instanceof PlayerRunRTL) {
+            } else if (currAnimation instanceof PlayerRun_RTL) {
                 return position.getWidth() / 3 - 3;
             } else if (currAnimation instanceof PlayerAttack) {
                 return position.getWidth() / 3 + 30;
             } else if (currAnimation instanceof PlayerCrouch) {
                 return position.getWidth() / 3 + 10;
-            } else if (currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJump_LTR) {
                 return position.getWidth() / 3 - 25;
-            } else if (currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJump_RTL) {
                 return position.getWidth() / 3 - 25;
-            } else if (currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDown_LTR) {
                 return position.getWidth() / 3 - 35;
-            } else if (currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getWidth() / 3 - 35;
-            } else if(currAnimation instanceof PlayerSlideLTR) {
+            } else if(currAnimation instanceof PlayerSlide_LTR) {
                 return position.getWidth() / 3 + 55;
-            } else if(currAnimation instanceof PlayerSlideRTL) {
+            } else if(currAnimation instanceof PlayerSlide_RTL) {
                 return position.getWidth() / 3 + 55;
             }
         }
@@ -152,17 +152,17 @@ public class Player extends Character {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerCrouch) {
                 return position.getHeight() - 105;
-            } else if (currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJump_LTR) {
                 return position.getHeight() - 100;
-            } else if (currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJump_RTL) {
                 return position.getHeight() - 100;
-            } else if (currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDown_LTR) {
                 return position.getHeight() - 75;
-            } else if (currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getHeight() - 75;
-            } else if(currAnimation instanceof PlayerSlideLTR) {
+            } else if(currAnimation instanceof PlayerSlide_LTR) {
                 return position.getHeight() / 3 + 20;
-            } else if(currAnimation instanceof PlayerSlideRTL) {
+            } else if(currAnimation instanceof PlayerSlide_RTL) {
                 return position.getHeight() / 3 + 20;
             }
         }
@@ -177,17 +177,17 @@ public class Player extends Character {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerCrouch) {
                 return position.getYPosition() + position.getHeight() / 3 + 15;
-            } else if (currAnimation instanceof PlayerJumpLTR) {
+            } else if (currAnimation instanceof PlayerJump_LTR) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if (currAnimation instanceof PlayerJumpRTL) {
+            } else if (currAnimation instanceof PlayerJump_RTL) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if (currAnimation instanceof PlayerFallDownLTR) {
+            } else if (currAnimation instanceof PlayerFallDown_LTR) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if (currAnimation instanceof PlayerFallDownRTL) {
+            } else if (currAnimation instanceof PlayerFallDown_RTL) {
                 return position.getYPosition() + position.getHeight() / 3 - 46;
-            } else if(currAnimation instanceof PlayerSlideLTR) {
+            } else if(currAnimation instanceof PlayerSlide_LTR) {
                 return position.getYPosition() + position.getHeight() / 2 + 20;
-            } else if(currAnimation instanceof PlayerSlideRTL) {
+            } else if(currAnimation instanceof PlayerSlide_RTL) {
                 return position.getYPosition() + position.getHeight() / 2 + 20;
             }
         }
