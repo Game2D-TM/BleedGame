@@ -52,10 +52,12 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             }
         } else {
             if (yAfterJump != 0) {
-                if (player.isLTR()) {
-                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_LTR));
-                } else {
-                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_RTL));
+                if (!player.isDoubleJump()) {
+                    if (player.isLTR()) {
+                        player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_LTR));
+                    } else {
+                        player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMP_RTL));
+                    }
                 }
                 Platform insidePlatform = player.getInsidePlatform();
                 if (insidePlatform != null) {
@@ -83,6 +85,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_RTL));
                     }
                     player.getPosition().isJump = false;
+                    if (player.isDoubleJump()) {
+                        player.setIsDoubleJump(false);
+                    }
                 }
             }
         }
@@ -105,6 +110,16 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 switch (keyCode) {
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
+                        if (player.isInAir() && !player.isDoubleJump()) {
+                            player.setIsDoubleJump(true);
+                            if (player.isLTR()) {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMPROLL_LTR));
+                            } else {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMPROLL_RTL));
+                            }
+                            if(yAfterJump != 0) yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getStats().getJumpSpeed());
+                            break;
+                        }
                         if (player.isAttack() || player.isInAir() || player.isFallDown()) {
                             break;
                         }
@@ -263,7 +278,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             }
         }
     }
-    
+
     public void attackEnemies(Animation attack, int attackX,
             int attackY, int attackHeight, int stunTime) {
         attackEnemies(attack, attackX, attackY, attackHeight, stunTime, -1);

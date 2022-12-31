@@ -151,7 +151,7 @@ public class Background {
                                 if (!tilesStr[i].isBlank()) {
                                     String key = tilesStr[i];
                                     Platform nPlatform;
-                                    if (key.equals("-1")) {
+                                    if (key.equals("0")) {
                                         nPlatform = new BlankTile("Blank " + (row + col),
                                                 tiles.get(key), null, gameplay, row, col);
                                     } else {
@@ -160,7 +160,7 @@ public class Background {
                                                     tiles.get(key), null, gameplay, row, col);
                                         } else {
                                             if (row < NUMBER_SKY_ROW) {
-                                                if (key.equals("-1")) {
+                                                if (key.equals("0")) {
                                                     nPlatform = new BlankTile("Blank " + (row + col),
                                                             tiles.get(key), null, gameplay, row, col);
                                                 } else {

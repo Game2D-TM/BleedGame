@@ -70,7 +70,7 @@ public class SlotInventory {
         if(item != null) {
             GamePosition itemInSlotPos = 
                     new GamePosition(position.getXPosition() + 12, 
-                                    position.getYPosition() + 18, Inventory.ITEM_WIDTH, Inventory.ITEM_HEIGHT);
+                                    position.getYPosition() + 18, Item.ITEM_WIDTH, Item.ITEM_HEIGHT);
             item.setPosition(itemInSlotPos);
         }
     }

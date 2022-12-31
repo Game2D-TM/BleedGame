@@ -17,6 +17,7 @@ public class Player extends Character {
     private int score = 0;
     private boolean isAirAttack;
     private boolean isSpecialAttack;
+    private boolean isDoubleJump;
 
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
@@ -309,6 +310,15 @@ public class Player extends Character {
         }
         return abilities.get(index);
     }
+
+    public boolean isDoubleJump() {
+        return isDoubleJump;
+    }
+
+    public void setIsDoubleJump(boolean isDoubleJump) {
+        this.isDoubleJump = isDoubleJump;
+    }
+    
 
     public GamePosition getPlayerScorePos() {
         return healthBar.getPositions().get("player_score");

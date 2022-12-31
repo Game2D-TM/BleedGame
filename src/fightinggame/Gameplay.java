@@ -8,6 +8,7 @@ import fightinggame.animation.enemy.EnemyIdle;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.animation.item.HealthPotionAnimation;
+import fightinggame.animation.item.equipment.FireSwordAnimation;
 import fightinggame.animation.player.*;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Background;
@@ -32,9 +33,11 @@ import fightinggame.entity.Character;
 import fightinggame.entity.GameMap;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
+import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
+import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.item.healing.HealthPotion;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
@@ -472,12 +475,34 @@ public class Gameplay extends JPanel implements Runnable {
 
         //Init Ability
         abilitiesCharacterInit(player.getAbilities(), player);
+        
+        //Init Item
+        SpriteSheet fireSwordSheet = new SpriteSheet();
+        fireSwordSheet.add("assets/res/item/icon_items/Swords/Fire_Sworld.png");
+        FireSwordAnimation fireSwordAnimation = new FireSwordAnimation(1, fireSwordSheet, -1);
+        Map<CharacterState, Animation> itemEquipAnimations = new HashMap<CharacterState, Animation>();
+        itemEquipAnimations.put(CharacterState.IDLE_LTR, fireIdleLTR);
+        itemEquipAnimations.put(CharacterState.IDLE_RTL, fireIdleRTL);
+        itemEquipAnimations.put(CharacterState.ATTACK01_LTR, fireAttack01LTR);
+        itemEquipAnimations.put(CharacterState.ATTACK01_RTL, fireAttack01RTL);
+        Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, 1, itemEquipAnimations);
+        AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
+        fireSword.getAbilities().add(attackIncrease);
+        // platform spawn
+        Platform spawnArea = getPlatforms().get(4).get(10);
+        fireSword.setPosition(new GamePosition(spawnArea.getPosition().getXPosition()
+                + spawnArea.getPosition().getWidth() / 2 - (Item.ITEM_WIDTH + 80)
+                , spawnArea.getPosition().getYPosition() - (Item.ITEM_HEIGHT + 50)
+                , Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
+        fireSword.setSpawnForever(true);
+        itemsOnGround.add(fireSword);
         itemInit(player.getInventory(), player);
+        
+
+        //Init Handler
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
         player.getAbility(0).getHandlers().add(abilityHandler);
         player.getAbility(1).getHandlers().add(abilityHandler);
-
-        //Init Handler
         game.addKeyListener(abilityHandler);
         PlayerMovementHandler keyBoardHandler = new PlayerMovementHandler(player, "player_movement", this);
         MouseHandler mouseHandler = new MouseHandler(player, "player_mouse", this);
@@ -485,7 +510,7 @@ public class Gameplay extends JPanel implements Runnable {
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
-
+        
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
         // level up to 8

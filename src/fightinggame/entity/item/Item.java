@@ -15,6 +15,9 @@ import java.util.List;
 
 public abstract class Item {
 
+    public static int ITEM_WIDTH = 50;
+    public static int ITEM_HEIGHT = 50;
+
     protected int id;
     protected String name;
     protected Animation animation;
@@ -25,6 +28,7 @@ public abstract class Item {
     protected final List<Ability> abilities = new ArrayList<>();
     protected Gameplay gameplay;
     protected boolean spawnDrop;
+    protected boolean spawnForever;
     protected int dropExpireCounter = 0;
     protected int timeExpire = 2000;
 
@@ -54,7 +58,10 @@ public abstract class Item {
                 ability.tick();
             }
         }
-        if (spawnDrop) {
+        if (spawnForever) {
+            checkHit(gameplay.getPlayer());
+        }
+        if (spawnDrop && !spawnForever) {
             dropExpireCounter++;
             if (dropExpireCounter > timeExpire) {
                 gameplay.getItemsOnGround().remove(this);
@@ -67,14 +74,14 @@ public abstract class Item {
     }
 
     public void render(Graphics g) {
-        if (animation != null && spawnDrop) {
+        if (animation != null && (spawnDrop || spawnForever)) {
             animation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                    position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                     position.getWidth(), position.getHeight());
             //hitbox
             g.setColor(Color.red);
             g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                     getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+                    getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
                     getWidthHitBox(), getHeightHitBox());
         }
         if (abilities.size() > 0) {
@@ -89,22 +96,22 @@ public abstract class Item {
         if (animation != null) {
             if (position != null) {
                 animation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                         position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                        position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                         position.getWidth(), position.getHeight());
             }
         }
     }
 
-    public void checkHit(Character character) {
-        if (spawnDrop && dropExpireCounter <= 1500 && !character.isAttack()) {
-            GamePosition charPostion = new GamePosition(character.getXHitBox(), character.getYHitBox(), 
+    public boolean checkHit(Character character) {
+        if (((spawnDrop && dropExpireCounter <= 1500) || spawnForever) && !character.isAttack()) {
+            GamePosition charPostion = new GamePosition(character.getXHitBox(), character.getYHitBox(),
                     character.getWidthHitBox(), character.getHeightHitBox());
             if (((charPostion.getXPosition() < getXHitBox() && charPostion.getMaxX() > getXMaxHitBox())
-                    || (charPostion.getXPosition() >= getXHitBox() && charPostion.getXPosition() <=  getXMaxHitBox()
-                    && charPostion.getMaxX() >  getXMaxHitBox())
-                    || (charPostion.getMaxX() >= getXHitBox() && charPostion.getMaxX() <=  getXMaxHitBox()
+                    || (charPostion.getXPosition() >= getXHitBox() && charPostion.getXPosition() <= getXMaxHitBox()
+                    && charPostion.getMaxX() > getXMaxHitBox())
+                    || (charPostion.getMaxX() >= getXHitBox() && charPostion.getMaxX() <= getXMaxHitBox()
                     && charPostion.getXPosition() < getXHitBox())
-                    || (charPostion.getXPosition() >= getXHitBox() && charPostion.getMaxX() <=  getXMaxHitBox()))
+                    || (charPostion.getXPosition() >= getXHitBox() && charPostion.getMaxX() <= getXMaxHitBox()))
                     && ((charPostion.getYPosition() < getYHitBox() && charPostion.getMaxY() > getYMaxHitBox()
                     || (charPostion.getYPosition() >= getYHitBox() && charPostion.getYPosition() <= getYMaxHitBox()
                     && charPostion.getMaxY() > getYMaxHitBox())
@@ -123,16 +130,17 @@ public abstract class Item {
                                 }
                             }
                         }
-                        gameplay.getAudioPlayer().startThread("health_pickup", false, 0.8f);
                         itemsOnGround.remove(this);
                         Inventory inventory = character.getInventory();
                         inventory.addItemToInventory(this);
                         spawnDrop = false;
                         dropExpireCounter = 0;
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
 
     public abstract boolean use();
@@ -171,7 +179,7 @@ public abstract class Item {
     public abstract int getYHitBox();
 
     public abstract int getYMaxHitBox();
-    
+
     public void setAnimation(Animation animation) {
         this.animation = animation;
     }
@@ -222,6 +230,14 @@ public abstract class Item {
 
     public void setSpawnDrop(boolean spawnDrop) {
         this.spawnDrop = spawnDrop;
+    }
+
+    public boolean isSpawnForever() {
+        return spawnForever;
+    }
+
+    public void setSpawnForever(boolean spawnForever) {
+        this.spawnForever = spawnForever;
     }
 
 }

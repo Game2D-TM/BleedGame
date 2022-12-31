@@ -44,23 +44,25 @@ public abstract class MovementHandler extends Handler {
                         }
                         if (character.isFallDown()) {
                             if (character.getCurrAnimation() != null) {
-                                if (character.getCurrAnimation() instanceof PlayerFallDown_LTR || character.getCurrAnimation() instanceof PlayerFallDown_RTL) {
-                                    if (character.getPosition().isMoveRight) {
-                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNFORWARD));
-                                    } else if (character.getPosition().isMoveLeft) {
-                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNBACK));
-                                    } else {
-                                        if (character.isLTR()) {
-                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.IDLE_LTR));
+                                if (character instanceof Player) {
+                                    if (character.getCurrAnimation() instanceof PlayerFallDown_LTR || character.getCurrAnimation() instanceof PlayerFallDown_RTL) {
+                                        if (character.getPosition().isMoveRight) {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNFORWARD));
+                                        } else if (character.getPosition().isMoveLeft) {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.RUNBACK));
                                         } else {
-                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.IDLE_RTL));
+                                            if (character.isLTR()) {
+                                                character.setCurrAnimation(character.getAnimations().get(CharacterState.IDLE_LTR));
+                                            } else {
+                                                character.setCurrAnimation(character.getAnimations().get(CharacterState.IDLE_RTL));
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                        if(character instanceof Player) {
-                            ((Player)character).setIsAirAttack(false);
+                        if (character instanceof Player) {
+                            ((Player) character).setIsAirAttack(false);
                         }
                         character.getStats().setVely(0);
                         character.setFallDown(false);
@@ -88,12 +90,16 @@ public abstract class MovementHandler extends Handler {
     public void falldownMove(Character character) {
         if (character.getPosition().isMoveRight) {
             if (canMoveCheck(MoveState.RIGHT, character)) {
-                if(character.isInAir()) return;
+                if (character.isInAir()) {
+                    return;
+                }
                 character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_LTR));
             }
         } else if (character.getPosition().isMoveLeft) {
             if (canMoveCheck(MoveState.LEFT, character)) {
-                if(character.isInAir()) return;
+                if (character.isInAir()) {
+                    return;
+                }
                 character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
             }
         }

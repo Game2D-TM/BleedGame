@@ -43,10 +43,12 @@ public abstract class Ability {
         this.animationRTL = animationRTL;
         this.gameplay = gameplay;
         this.character = character;
-        if (character.isLTR()) {
-            currAnimation = animationLTR;
-        } else {
-            currAnimation = animationRTL;
+        if (character != null) {
+            if (character.isLTR()) {
+                currAnimation = animationLTR;
+            } else {
+                currAnimation = animationRTL;
+            }
         }
     }
 
@@ -62,10 +64,12 @@ public abstract class Ability {
         this.border = border;
         this.gameplay = gameplay;
         this.character = character;
-        if (character.isLTR()) {
-            currAnimation = animationLTR;
-        } else {
-            currAnimation = animationRTL;
+        if (character != null) {
+            if (character.isLTR()) {
+                currAnimation = animationLTR;
+            } else {
+                currAnimation = animationRTL;
+            }
         }
     }
 
@@ -78,7 +82,6 @@ public abstract class Ability {
         this.gameplay = gameplay;
         this.character = character;
     }
-    
 
     public long getCoolDownTime() {
         return coolDown = (resetTime - resetTimeCounter) / 100;
@@ -127,11 +130,11 @@ public abstract class Ability {
     }
 
     public abstract boolean execute();
-    
+
     public abstract boolean execute(Character character);
-    
+
     public abstract boolean execute(List<Character> characters);
-    
+
     public int getId() {
         return id;
     }
