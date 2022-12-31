@@ -90,7 +90,7 @@ public class MouseHandler extends Handler implements MouseListener {
                                 attackHeight = player.getPosition().getHeight() / 2 - 10;
                                 for (int i = 0; i < gameplay.getEnemies().size(); i++) {
                                     Enemy enemy = gameplay.getEnemies().get(i);
-                                    if (enemy.checkHit(attackX, attackY, attackHeight, true, player.getStats())) {
+                                    if (enemy.checkHit(attackX, attackY, attackHeight, true, player)) {
                                         enemy.setStunTime(50);
                                         if (enemy.getStats().getHealth() <= 0) {
                                             gameplay.getAudioPlayer().startThread("kill_sound", false, 0.8f);

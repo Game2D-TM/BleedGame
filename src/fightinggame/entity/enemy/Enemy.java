@@ -12,7 +12,6 @@ import fightinggame.entity.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
 import fightinggame.entity.Player;
-import fightinggame.entity.Stats;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.platform.Platform;
@@ -88,7 +87,7 @@ public abstract class Enemy extends Character {
                     }
                 }
                 gameplay.getPlayer().getStats().addExperience(experience);
-                gameplay.getPlayer().addPoint(point);
+                gameplay.getPlayer().addScore(point);
                 gameplay.getEnemies().remove(this);
                 gameplay.getPositions().remove(name);
                 deathCounter = 0;
@@ -260,7 +259,8 @@ public abstract class Enemy extends Character {
     }
 
     @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage) {
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, 
+            Character character, int attackDamage) {
         int attackMaxY = attackY + attackHeight;
         if (isAttack && !isDeath) {
             if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
@@ -284,14 +284,14 @@ public abstract class Enemy extends Character {
                 }
                 isAttacked = true;
                 if (attackDamage == -1) {
-                    receiveDamage = stats.getHit(attackerStats);
+                    receiveDamage = stats.getHit(character.getStats());
                 } else {
-                    receiveDamage = stats.getHit(attackerStats, attackDamage);
+                    receiveDamage = stats.getHit(character.getStats(), attackDamage);
                 }
-                if (isLTR) {
-                    position.setXPosition(position.getXPosition() - 30);
+                if (character.isLTR()) {
+                    position.setXPosition(position.getXPosition() + character.getStats().getBounceRange());
                 } else {
-                    position.setXPosition(position.getXPosition() + 30);
+                    position.setXPosition(position.getXPosition() - character.getStats().getBounceRange());
                 }
                 if (stats.getHealth() <= 0) {
                     isDeath = true;

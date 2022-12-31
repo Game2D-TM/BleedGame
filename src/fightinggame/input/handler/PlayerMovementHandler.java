@@ -41,18 +41,14 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
     }
 
     public void tick() {
-        if (player.isLTR()) {
-            player.slideRight();
-        } else {
-            player.slideLeft();
-        }
         if (!player.isInAir()) {
             canMoveCheck(MoveState.LEFT, player);
             canMoveCheck(MoveState.RIGHT, player);
+            canMoveCheck(MoveState.SLIDE, player);
         }
         if (!player.isInAir()) {
             if (canMoveCheck(MoveState.JUMP, player)) {
-                yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getJumpSpeed());
+                yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getStats().getJumpSpeed());
             }
         } else {
             if (yAfterJump != 0) {
@@ -74,13 +70,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
 
                     }
                 }
-                if (player.getYHitBox() - player.getJumpFlySpeed() > yAfterJump) {
-                    player.getPosition().setYPosition(player.getPosition().getYPosition() - player.getJumpFlySpeed());
-                    if (player.getPosition().isMoveRight) {
-                        canMoveCheck(MoveState.RIGHT, player);
-                    } else if (player.getPosition().isMoveLeft) {
-                        canMoveCheck(MoveState.LEFT, player);
-                    }
+                if (player.getYHitBox() - player.getStats().getJumpFlySpeed() > yAfterJump) {
+                    player.getPosition().setYPosition(player.getPosition().getYPosition() - player.getStats().getJumpFlySpeed());
+                    falldownMove(player);
                 } else {
                     yAfterJump = 0;
                     player.setFallDown(true);
@@ -103,7 +95,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (player.isAttacked() || player.isDeath()) {
+        if (player.isAttacked() || player.isDeath() || player.isSpecialAttack()) {
             return;
         }
         pressedKeys.add(e.getKeyCode());
@@ -160,7 +152,8 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         player.getPosition().isMoveRight = true;
                         break;
                     case KeyEvent.VK_CONTROL:
-                        if (player.isAttack() || player.getPosition().isMoving()) {
+                        if (player.isAttack() || player.getPosition().isMoving() || player.isInAir()
+                                || player.isFallDown()) {
                             break;
                         }
                         if (player.isLTR()) {
@@ -182,26 +175,59 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                     break;
                                 }
                             }
+                            int attackX = -1, attackY = -1, attackHeight = 1;
                             Animation attack = null;
                             if ((player.isFallDown() || player.isInAir()) && keyCode != KeyEvent.VK_L) {
+                                if (player.isAirAttack()) {
+                                    break;
+                                }
                                 if (player.isLTR()) {
                                     attack = player.getAnimations().get(CharacterState.AIRATTACK01_LTR);
                                 } else {
                                     attack = player.getAnimations().get(CharacterState.AIRATTACK01_RTL);
                                 }
-                                attackEnemies(attack, 1);
+                                if (player.isLTR()) {
+                                    player.getPosition().setWidth(player.getPosition().getWidth() + 20); // 120
+                                } else {
+                                    player.getPosition().setXPosition(player.getPosition().getXPosition() - 20);
+                                    player.getPosition().setWidth(player.getPosition().getWidth() + 20);
+                                }
+                                if (player.isLTR()) {
+                                    attackX = player.getPosition().getXPosition() + player.getPosition().getWidth() - 12;
+                                } else {
+                                    attackX = player.getPosition().getXPosition() + 12;
+                                }
+                                attackY = player.getPosition().getYPosition() + player.getPosition().getHeight() / 3 - 10;
+                                attackHeight = player.getPosition().getHeight() / 2 - 50;
+                                player.setIsAirAttack(true);
+                                attackEnemies(attack, attackX, attackY, attackHeight, 50);
                             } else {
+                                if (player.isLTR()) {
+                                    player.getPosition().setWidth(player.getPosition().getWidth() + 20); // 120
+                                } else {
+                                    player.getPosition().setXPosition(player.getPosition().getXPosition() - 20);
+                                    player.getPosition().setWidth(player.getPosition().getWidth() + 20);
+                                }
+                                if (player.isLTR()) {
+                                    attackX = player.getPosition().getXPosition() + player.getPosition().getWidth() - 2;
+                                } else {
+                                    attackX = player.getPosition().getXPosition() + 2;
+                                }
+                                attackY = player.getPosition().getYPosition() + player.getPosition().getHeight() / 3 - 10;
+                                attackHeight = player.getPosition().getHeight() / 2 - 10;
                                 if (keyCode == KeyEvent.VK_J) {
                                     if (player.isLTR()) {
                                         attack = player.getAnimations().get(CharacterState.ATTACK01_LTR);
                                     } else {
                                         attack = player.getAnimations().get(CharacterState.ATTACK01_RTL);
                                     }
-                                    attackEnemies(attack, 1);
+                                    attackEnemies(attack, attackX, attackY, attackHeight, 50);
                                 } else if (keyCode == KeyEvent.VK_K) {
                                     if (player.isLTR()) {
+                                        attackX -= 16;
                                         attack = player.getAnimations().get(CharacterState.ATTACK02_LTR);
                                     } else {
+                                        attackX += 16;
                                         attack = player.getAnimations().get(CharacterState.ATTACK02_RTL);
                                     }
                                     try {
@@ -209,7 +235,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                     } catch (InterruptedException ex) {
                                         Logger.getLogger(PlayerMovementHandler.class.getName()).log(Level.SEVERE, null, ex);
                                     }
-                                    attackEnemies(attack, 1);
+                                    attackEnemies(attack, attackX, attackY, attackHeight, 50, player.getStats().getAttackDamage() + 5);
                                 } else if (keyCode == KeyEvent.VK_L) {
                                     if (player.isLTR()) {
                                         attack = player.getAnimations().get(CharacterState.ATTACK03_LTR);
@@ -217,7 +243,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                         attack = player.getAnimations().get(CharacterState.ATTACK03_RTL);
                                     }
                                     player.setIsSpecialAttack(true);
-                                    attackEnemies(attack, 3);
+                                    attackEnemies(attack, attackX, attackY, attackHeight, 50);
                                 }
 //                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
 //                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
@@ -237,37 +263,42 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             }
         }
     }
+    
+    public void attackEnemies(Animation attack, int attackX,
+            int attackY, int attackHeight, int stunTime) {
+        attackEnemies(attack, attackX, attackY, attackHeight, stunTime, -1);
+    }
 
-    public void attackEnemies(Animation attack, int attackCount) {
-        if (player.isLTR()) {
-            player.getPosition().setWidth(player.getPosition().getWidth() + 20); // 120
-        } else {
-            player.getPosition().setXPosition(player.getPosition().getXPosition() - 20);
-            player.getPosition().setWidth(player.getPosition().getWidth() + 20);
-        }
+    public void attackEnemies(Animation attack, int attackX,
+            int attackY, int attackHeight, int stunTime, int attackDamage) {
         player.setCurrAnimation(attack);
         player.setIsAttack(true);
         gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
-        int additionAttackX = 30;
-        int stunTime = 50;
-        for (int i = 0; i < attackCount; i++) {
-            if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
-                int attackX;
-                int attackY;
-                int attackHeight;
-                if (i > 0) {
-                    player.getPosition().setXPosition(player.getPosition().getXPosition() + additionAttackX);
-                }
-                if (player.isLTR()) {
-                    attackX = player.getPosition().getXPosition() + player.getPosition().getWidth() - 2;
+//        int additionAttackX = 30;
+//        int stunTime = 50;
+//        for (int i = 0; i < attackCount; i++) {
+        if (gameplay.getEnemies() != null && gameplay.getEnemies().size() > 0) {
+//                if (i > 0) {
+//                    if (player.isLTR()) {
+//                        player.getPosition().setXPosition(player.getPosition().getXPosition() + additionAttackX);
+//                        attackX += additionAttackX;
+//                    } else {
+//                        player.getPosition().setXPosition(player.getPosition().getXPosition() - additionAttackX);
+//                    }
+//                }
+            for (int j = 0; j < gameplay.getEnemies().size(); j++) {
+                Enemy enemy = gameplay.getEnemies().get(j);
+                if (attackDamage > 0) {
+                    if (enemy.checkHit(attackX, attackY, attackHeight, true, player, attackDamage)) {
+                        enemy.setStunTime(stunTime);
+                        if (enemy.getStats().getHealth() <= 0) {
+                            gameplay.getAudioPlayer().startThread("kill_sound", false, 0.8f);
+                        } else {
+                            gameplay.getAudioPlayer().startThread("hit_dior_firror", false, 0.8f);
+                        }
+                    }
                 } else {
-                    attackX = player.getPosition().getXPosition() + 2;
-                }
-                attackY = player.getPosition().getYPosition() + player.getPosition().getHeight() / 3 - 10;
-                attackHeight = player.getPosition().getHeight() / 2 - 10;
-                for (int j = 0; j < gameplay.getEnemies().size(); j++) {
-                    Enemy enemy = gameplay.getEnemies().get(j);
-                    if (enemy.checkHit(attackX, attackY, attackHeight, true, player.getStats())) {
+                    if (enemy.checkHit(attackX, attackY, attackHeight, true, player)) {
                         enemy.setStunTime(stunTime);
                         if (enemy.getStats().getHealth() <= 0) {
                             gameplay.getAudioPlayer().startThread("kill_sound", false, 0.8f);
@@ -276,8 +307,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         }
                     }
                 }
-                stunTime += 50;
             }
+//                stunTime += 50;
+//            }
         }
     }
 
@@ -302,16 +334,25 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 break;
         }
         if (!player.isDeath()) {
-            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                if (player.isAttack() && !player.isSpecialAttack()) {
+            if (e.getKeyCode() == KeyEvent.VK_J || e.getKeyCode() == KeyEvent.VK_K || e.getKeyCode() == KeyEvent.VK_L) {
+                if (player.isAttack() && !player.isSpecialAttack()
+                        && !player.isInAir() && !player.isFallDown()) {
                     if (player.isLTR()) {
                         player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_LTR));
                     } else {
                         player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_RTL));
                     }
                 }
+                if (player.isAirAttack()) {
+                    if (player.isLTR()) {
+                        player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_LTR));
+                    } else {
+                        player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                    }
+                }
             } else {
-                if (player.getPosition().isNotPressKey() && !player.isSpecialAttack()) {
+                if (player.getPosition().isNotPressKey() && !player.isSpecialAttack()
+                        && !player.isInAir() && !player.isFallDown()) {
                     if (player.isLTR()) {
                         player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_LTR));
                     } else {

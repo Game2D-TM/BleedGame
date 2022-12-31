@@ -14,13 +14,18 @@ public class Stats {
     private int attackDamage;
     private int defenceDamage;
     private float defenceChange = 0.001f;
+    private int bounceRange = 30;
     private int health;
     private int speed;
     private int levelUpPoint = 0;
     private int critDamage;
     private float critChange;
+    private int jumpSpeed = 100;
+    private float vely = 0;
+    private int jumpFlySpeed = 4;
 
-    public Stats(Character character, int level, double levelExperience, int attackDamage, int defenceDamage, int health, int speed, int levelUpPoint, int critDamage, float critChange) {
+    public Stats(Character character, int level, double levelExperience, int attackDamage, int defenceDamage, 
+            int health, int speed, int levelUpPoint, int critDamage, float critChange) {
         this.character = character;
         this.level = level;
         this.levelExperience = levelExperience;
@@ -251,5 +256,64 @@ public class Stats {
     public void setCritChange(float critChange) {
         this.critChange = critChange;
     }
+
+    public int getLevelUpCount() {
+        return levelUpCount;
+    }
+
+    public void setLevelUpCount(int levelUpCount) {
+        this.levelUpCount = levelUpCount;
+    }
+
+    public double getNextLevelExperience() {
+        return nextLevelExperience;
+    }
+
+    public void setNextLevelExperience(double nextLevelExperience) {
+        this.nextLevelExperience = nextLevelExperience;
+    }
+
+    public float getDefenceChange() {
+        return defenceChange;
+    }
+
+    public void setDefenceChange(float defenceChange) {
+        this.defenceChange = defenceChange;
+    }
+
+    public int getJumpSpeed() {
+        return jumpSpeed;
+    }
+
+    public void setJumpSpeed(int jumpSpeed) {
+        this.jumpSpeed = jumpSpeed;
+    }
+
+    public float getVely() {
+        return vely;
+    }
+
+    public void setVely(float vely) {
+        this.vely = vely;
+    }
+
+    public int getJumpFlySpeed() {
+        return jumpFlySpeed;
+    }
+
+    public void setJumpFlySpeed(int jumpFlySpeed) {
+        this.jumpFlySpeed = jumpFlySpeed;
+    }
+
+    public int getBounceRange() {
+        return bounceRange;
+    }
+
+    public void setBounceRange(int bounceRange) {
+        this.bounceRange = bounceRange;
+    }
+    
+    
+    
 
 }
