@@ -15,6 +15,16 @@ public class HealthPotion extends Item {
     }
 
     @Override
+    public boolean checkHit(Character character) {
+        boolean result = super.checkHit(character);
+        if(result) {
+            gameplay.getAudioPlayer().startThread("health_pickup", false, 0.8f);
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
     public boolean use() {
         Heal heal = (Heal) abilities.get(0);
         if (heal == null) {

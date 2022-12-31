@@ -132,13 +132,13 @@ public abstract class Character {
             checkStandPlatform();
         } catch (Exception ex) {
 //            System.out.println(ex.toString() + " in " + this.getClass().getName());
-            isDeath = true;
-            stats.setHealth(0);
-            if (isLTR) {
-                currAnimation = animations.get(CharacterState.DEATH_LTR);
-            } else {
-                currAnimation = animations.get(CharacterState.DEATH_RTL);
-            }
+//            isDeath = true;
+//            stats.setHealth(0);
+//            if (isLTR) {
+//                currAnimation = animations.get(CharacterState.DEATH_LTR);
+//            } else {
+//                currAnimation = animations.get(CharacterState.DEATH_RTL);
+//            }
         }
     }
 

@@ -12,7 +12,6 @@ import fightinggame.entity.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
 import fightinggame.entity.Player;
-import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
@@ -74,7 +73,7 @@ public abstract class Enemy extends Character {
                         }
                         GamePosition itemPos = item.getPosition();
                         if (itemPos == null) {
-                            itemPos = new GamePosition(0, 0, Inventory.ITEM_WIDTH, Inventory.ITEM_HEIGHT);
+                            itemPos = new GamePosition(0, 0, Item.ITEM_WIDTH, Item.ITEM_HEIGHT);
                             itemPos.setXPosition(position.getXPosition() + position.getWidth() / 2 - 20);
                             itemPos.setYPosition(position.getMaxY() - itemPos.getHeight());
                             item.setPosition(itemPos);

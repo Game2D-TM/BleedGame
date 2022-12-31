@@ -15,8 +15,6 @@ public class Inventory {
 
     public static int ITEM_SLOT_WIDTH = 90;
     public static int ITEM_SLOT_HEIGHT = 90;
-    public static int ITEM_WIDTH = 50;
-    public static int ITEM_HEIGHT = 50;
     public static int ITEM_SLOT_ANIMATION_TICK = -1;
     public static int DISTANCE_X_TO_CAMERA = 650;
     public static int DISTANCE_Y_TO_CAMERA = 250;

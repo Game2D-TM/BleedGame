@@ -48,6 +48,10 @@ public class Stats {
         this.critDamage = critDamage;
         this.critChange = critChange;
     }
+    
+    public void addAttackDamage(int amount) {
+        attackDamage += amount;
+    }
 
     public int getHit(Stats attackerStats) {
         int receiveDamage = (attackerStats.getAttackDamageWithCrit());
