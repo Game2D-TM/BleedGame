@@ -24,6 +24,11 @@ public class SpriteSheet {
         images = new ArrayList<>();
     }
 
+    private SpriteSheet(BufferedImage sprite, List<BufferedImage> images) {
+        this.sprite = sprite;
+        this.images = images;
+    }
+    
     public SpriteSheet(BufferedImage sprite, int cutX, int cutY, int cutWidth, int cutHeight,
             int x, int y, int width, int height, int imageNum) {
         this.sprite = sprite;
@@ -145,6 +150,13 @@ public class SpriteSheet {
         }
         result.setImages(flipped);
         return result;
+    }
+
+    @Override
+    public SpriteSheet clone() {
+        List<BufferedImage> nImages = new ArrayList<>();
+        nImages.addAll(images);
+        return new SpriteSheet(sprite, nImages);
     }
 
     public int getSpriteCounter() {

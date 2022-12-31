@@ -80,7 +80,7 @@ public class Gameplay extends JPanel implements Runnable {
                 "data/scene_1.txt", 15, 15);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
-        Platform firstPlatform = getPlatforms().get(9).get(3);
+        Platform firstPlatform = getPlatforms().get(10).get(3);
         playerInit(firstPlatform);
         firstPlatform = background.getScene().get(9).get(8);
         diorInit(firstPlatform);
@@ -224,9 +224,9 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void playerInit(Platform firstPlatform) {
-        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition() + 50,
+        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition()
-                - 280 - 500, 350, 259);
+                - 280 - 400, 350, 259);
         Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
 
 //        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
@@ -308,7 +308,7 @@ public class Gameplay extends JPanel implements Runnable {
 //        playerDeathRTL.reverseImages();
 //        playerAttack1LTR.getImages().addAll(playerAttack2LTR.getImages());
 //        playerAttack1RTL.getImages().addAll(playerAttack2RTL.getImages());
-        SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01");
+        SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01").clone();
         SpriteSheet attackSpecialRTL = spriteSheetMap.get("Attack01").convertRTL();
         // Add special attack new sheet
         attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack02").getImages());

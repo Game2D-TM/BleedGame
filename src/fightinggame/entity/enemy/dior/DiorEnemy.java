@@ -94,7 +94,7 @@ public class DiorEnemy extends Enemy {
                     currAnimation = animations.get(CharacterState.ATTACK01_RTL);
                 }
                 isAttack = true;
-                gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, stats);
+                gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, this);
             }
         }
 

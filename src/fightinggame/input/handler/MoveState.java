@@ -4,5 +4,8 @@ public enum MoveState {
     CROUCH,
     LEFT,
     RIGHT,
-    JUMP
+    JUMP,
+    SLIDE,
+    GRAP,
+    CLIMB
 }

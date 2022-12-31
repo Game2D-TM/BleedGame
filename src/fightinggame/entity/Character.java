@@ -36,9 +36,6 @@ public abstract class Character {
     protected Gameplay gameplay;
     protected Platform insidePlatform = null;
     protected Platform standPlatform = null;
-    protected int jumpSpeed = 100;
-    protected float vely = 0;
-    protected int jumpFlySpeed = 4;
     protected boolean inAir = false;
     protected boolean fallDown = false;
     protected Stats stats;
@@ -93,6 +90,7 @@ public abstract class Character {
 
     public void checkPlatForm(List<List<Platform>> scene) {
         try {
+            List<Platform> insidePlatforms = new ArrayList<>();
             if (scene != null && scene.size() > 0) {
                 boolean isSet = false;
                 for (int i = 0; i < scene.size(); i++) {
@@ -101,16 +99,11 @@ public abstract class Character {
                         for (int j = 0; j < platforms.size(); j++) {
                             Platform platform = platforms.get(j);
                             if (platform != null) {
-//                            GamePosition playerPos = new GamePosition(
-//                                    position.getXPosition(),
-//                                    position.getYPosition() + position.getHeight() / 2,
-//                                    position.getWidth(), position.getHeight() / 2);
                                 GamePosition playerPos = new GamePosition(getXHitBox(), getYHitBox() + getHeightHitBox() / 3,
                                         getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
                                 if (platform.checkValidPosition(playerPos)) {
-                                    insidePlatform = platform;
+                                    insidePlatforms.add(platform);
                                     isSet = true;
-                                    break;
                                 }
                             }
                         }
@@ -119,6 +112,22 @@ public abstract class Character {
                         }
                     }
                 }
+            }
+            switch(insidePlatforms.size()) {
+                case 0:
+                    break;
+                case 1:
+                    insidePlatform = insidePlatforms.get(0);
+                    break;
+                case 2:
+                    Platform firstPlatform = insidePlatforms.get(0);
+                    Platform secondPlatform = insidePlatforms.get(1);
+                    int amountXFirstPlatform = firstPlatform.getPosition().getMaxX() - position.getXPosition();
+                    int amountXSecondPlatform = position.getMaxX() - secondPlatform.getPosition().getXPosition();
+                    if(amountXFirstPlatform > amountXSecondPlatform) {
+                        insidePlatform = firstPlatform;
+                    } else insidePlatform = secondPlatform;
+                    break;
             }
             checkStandPlatform();
         } catch (Exception ex) {
@@ -155,7 +164,9 @@ public abstract class Character {
                     } else {
                         standPlatform = null;
                     }
-                } else standPlatform = null;
+                } else {
+                    standPlatform = null;
+                }
             }
         } catch (Exception ex) {
 //            System.out.println(ex.toString() + " in " + this.getClass().getName());
@@ -207,10 +218,11 @@ public abstract class Character {
         return inventory;
     }
 
-    public abstract boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage);
+    public abstract boolean checkHit(int attackX, int attackY, int attackHeight,
+            boolean isAttack, Character character, int attackDamage);
 
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats) {
-        return checkHit(attackX, attackY, attackHeight, isAttack, attackerStats, -1);
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Character character) {
+        return checkHit(attackX, attackY, attackHeight, isAttack, character, -1);
     }
 
     public boolean moveRight() {
@@ -248,21 +260,13 @@ public abstract class Character {
     public abstract int getYHitBox();
 
     public abstract int getYMaxHitBox();
-    
+
     public GamePosition getHitBoxPosition() {
         return new GamePosition(getXHitBox(), getYHitBox(), getWidthHitBox(), getHeightHitBox());
     }
-    
+
     public boolean moveDown() {
         return position.moveDown(stats.getSpeed());
-    }
-
-    public int getJumpFlySpeed() {
-        return jumpFlySpeed;
-    }
-
-    public void setJumpFlySpeed(int jumpFlySpeed) {
-        this.jumpFlySpeed = jumpFlySpeed;
     }
 
     public int getId() {
@@ -303,22 +307,6 @@ public abstract class Character {
 
     public void setStandPlatform(Platform standPlatform) {
         this.standPlatform = standPlatform;
-    }
-
-    public int getJumpSpeed() {
-        return jumpSpeed;
-    }
-
-    public void setJumpSpeed(int jumpSpeed) {
-        this.jumpSpeed = jumpSpeed;
-    }
-
-    public float getVely() {
-        return vely;
-    }
-
-    public void setVely(float vely) {
-        this.vely = vely;
     }
 
     public boolean isInAir() {

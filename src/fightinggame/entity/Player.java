@@ -14,7 +14,7 @@ import java.util.Map;
 public class Player extends Character {
 
     private int isStunCounter = 0;
-    private int point = 0;
+    private int score = 0;
     private boolean isAirAttack;
     private boolean isSpecialAttack;
 
@@ -30,16 +30,10 @@ public class Player extends Character {
         stats.setAttackDamage(50);
         stats.setCritChange(0.5f);
         stats.setCritDamage(10);
+        stats.setJumpSpeed(300);
         healthBar.getPositions().put("player_score",
                 new GamePosition(healthBar.getNamePos().getXPosition(),
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
-        jumpSpeed = 300;
-        fallDown = true;
-        if (isLTR) {
-            currAnimation = animations.get(CharacterState.FALLDOWN_LTR);
-        } else {
-            currAnimation = animations.get(CharacterState.FALLDOWN_LTR);
-        }
     }
 
     @Override
@@ -97,25 +91,25 @@ public class Player extends Character {
     public void render(Graphics g) {
         super.render(g);
         healthBar.render(g);
-        g.drawString("Score: " + point, getPlayerScorePos().getXPosition(),
+        g.drawString("Score: " + score, getPlayerScorePos().getXPosition(),
                 getPlayerScorePos().getYPosition());
         g.setColor(Color.red);
         // hitbox
-        g.setColor(Color.red);
-        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
-                getWidthHitBox(), getHeightHitBox());
+//        g.setColor(Color.red);
+//        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+//                getWidthHitBox(), getHeightHitBox());
         //attackhitbox
-        int attackX;
-        if (isLTR) {
-            attackX = position.getXPosition() + position.getWidth();
-        } else {
-            attackX = position.getXPosition() - 20;
-        }
-        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
-        int attackHeight = position.getHeight() / 2 - 10;
-        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition(),
-                attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
+//        int attackX;
+//        if (isLTR) {
+//            attackX = position.getMaxX() - 12;
+//        } else {
+//            attackX = position.getXPosition() - 20 + 12;
+//        }
+//        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
+//        int attackHeight = position.getHeight() / 2 - 50;
+//        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition(),
+//                attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
     }
 
     @Override
@@ -226,7 +220,8 @@ public class Player extends Character {
     }
 
     @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Stats attackerStats, int attackDamage) {
+    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack,
+            Character character, int attackDamage) {
         int attackMaxY = attackY + attackHeight;
         if (!isAttack && !isDeath) {
             if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
@@ -257,14 +252,14 @@ public class Player extends Character {
                     }
                     isAttacked = true;
                     if (attackDamage == -1) {
-                        receiveDamage = stats.getHit(attackerStats);
+                        receiveDamage = stats.getHit(character.getStats());
                     } else {
-                        receiveDamage = stats.getHit(attackerStats, attackDamage);
+                        receiveDamage = stats.getHit(character.getStats(), attackDamage);
                     }
-                    if (isLTR) {
-                        position.setXPosition(position.getXPosition() - 30);
+                    if (character.isLTR) {
+                        position.setXPosition(position.getXPosition() + character.getStats().getBounceRange());
                     } else {
-                        position.setXPosition(position.getXPosition() + 30);
+                        position.setXPosition(position.getXPosition() - character.getStats().getBounceRange());
                     }
                     if (stats.getHealth() <= 0) {
                         isDeath = true;
@@ -297,12 +292,12 @@ public class Player extends Character {
         this.isAirAttack = isAirAttack;
     }
 
-    public int getPoint() {
-        return point;
+    public int getScore() {
+        return score;
     }
 
-    public void addPoint(int point) {
-        this.point += point;
+    public void addScore(int point) {
+        this.score += point;
     }
 
     public Ability getAbility(int index) {
