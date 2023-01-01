@@ -21,23 +21,6 @@ public class Sword extends Equipment{
     }
     
     @Override
-    public boolean checkHit(Character character) {
-        boolean result = super.checkHit(character);
-        if(result) {
-            result = use();
-            if(result) {
-                if(itemEquipAnimations != null && itemEquipAnimations.size() > 0) {
-                    for(CharacterState state : itemEquipAnimations.keySet()) {
-                        character.getAnimations().put(state, itemEquipAnimations.get(state));
-                    }
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    @Override
     public boolean use() {
         if(!isEquip) {
             IncreaseStat increaseStat = (IncreaseStat) abilities.get(0);

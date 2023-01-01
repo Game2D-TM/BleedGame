@@ -35,6 +35,7 @@ import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
+import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.equipment.weapon.Sword;
@@ -73,13 +74,15 @@ public class Gameplay extends JPanel implements Runnable {
         setSize(width, height);
         camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
         background = new Background(0, "Scene 1",
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"), width, height,
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null, this,
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Wallpaper"), width, height,
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Tiles"),
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Objects"), this,
                 "data/scene_1.txt", 250, 180);
         map = new GameMap(1, "Map", this,
                 new GamePosition(0, 0, 0, 0),
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest"),
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Forest/Tiles"), null,
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Wallpaper"),
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Tiles"),
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Objects"),
                 "data/scene_1.txt", 15, 15);
         this.game = game;
         audioPlayer = new AudioPlayer("assets/res/sound");
@@ -346,7 +349,6 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, spriteSheetMap.get("WallRun01"), 15);
         PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, spriteSheetMap.get("WallSlide01"), 15);
         PlayerRun_LTR sprintLTR = new PlayerRun_LTR(19, spriteSheetMap.get("Sprint01"), 0);
-        
 
         //RTL
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
@@ -379,7 +381,7 @@ public class Gameplay extends JPanel implements Runnable {
         // reverse arrays animations
         jumpLTR.getSheet().reverseImages();
         jumpRTL.getSheet().reverseImages();
-        
+
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
 
@@ -417,7 +419,6 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.AIRATTACKLOOP_LTR, airAttackLoopLTR);//New
         playerAnimations.put(CharacterState.AIRATTACKLOOP_RTL, airAttackLoopRTL);//New
 
-
         //Get Hit
         playerAnimations.put(CharacterState.GET_HIT_LTR, hitLTR);
         playerAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
@@ -431,8 +432,6 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.JUMP_RTL, jumpRTL);
         playerAnimations.put(CharacterState.JUMPROLL_LTR, jumpRollLTR); //New
         playerAnimations.put(CharacterState.JUMPROLL_RTL, jumpRollRTL);//New
-
-        
 
         //Crouch Animation
         playerAnimations.put(CharacterState.CROUCH_LTR, crouchLTR);
@@ -449,20 +448,19 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.KNOCKDOWN_RTL, knockDownRTL);//New
         playerAnimations.put(CharacterState.GETUP_LTR, getUpLTR);//New
         playerAnimations.put(CharacterState.GETUP_RTL, getUpRTL);//New
-        
 
         //SpellCast
         playerAnimations.put(CharacterState.SPELLCAST_LTR, spellCastLTR);
         playerAnimations.put(CharacterState.SPELLCAST_RTL, spellCastRTL);
         playerAnimations.put(CharacterState.SPELLCASTLOOP_LTR, spellCastLoopLTR);
         playerAnimations.put(CharacterState.SPELLCASTLOOP_RTL, spellCastLoopRTL);
-        
+
         //Ledge Climb
         playerAnimations.put(CharacterState.LEDGECLIMB_LTR, ledgeClimbLTR);//New
         playerAnimations.put(CharacterState.LEDGECLIMB_RTL, ledgeClimbRTL);//New
         playerAnimations.put(CharacterState.LEDGEGRAB_LTR, ledgeGrabLTR);//New
         playerAnimations.put(CharacterState.LEDGEGRAB_RTL, ledgeGrabRTL);//New
-        
+
         //Init Inventory
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
@@ -475,8 +473,8 @@ public class Gameplay extends JPanel implements Runnable {
 
         //Init Ability
         abilitiesCharacterInit(player.getAbilities(), player);
-        
-        //Init Item
+
+        //Init Items
         SpriteSheet fireSwordSheet = new SpriteSheet();
         fireSwordSheet.add("assets/res/item/icon_items/Swords/Fire_Sworld.png");
         FireSwordAnimation fireSwordAnimation = new FireSwordAnimation(1, fireSwordSheet, -1);
@@ -489,15 +487,19 @@ public class Gameplay extends JPanel implements Runnable {
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
         // platform spawn
-        Platform spawnArea = getPlatforms().get(4).get(10);
-        fireSword.setPosition(new GamePosition(spawnArea.getPosition().getXPosition()
-                + spawnArea.getPosition().getWidth() / 2 - (Item.ITEM_WIDTH + 80)
-                , spawnArea.getPosition().getYPosition() - (Item.ITEM_HEIGHT + 50)
-                , Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
-        fireSword.setSpawnForever(true);
-        itemsOnGround.add(fireSword);
+//        Platform spawnArea = getPlatforms().get(4).get(10);
+//        fireSword.setPosition(spawnArea.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
+//        fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
+//        fireSword.setSpawnForever(true);
+//        itemsOnGround.add(fireSword);
+        Platform platform = getPlatforms().get(4).get(10);
+        if (platform != null) {
+            fireSword.setPosition(platform.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
+            fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
+            ((Chest) platform.getObjects().get(0)).getItems().add(fireSword);
+        }
+
         itemInit(player.getInventory(), player);
-        
 
         //Init Handler
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
@@ -510,7 +512,7 @@ public class Gameplay extends JPanel implements Runnable {
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
-        
+
         positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
         // level up to 8
@@ -606,7 +608,7 @@ public class Gameplay extends JPanel implements Runnable {
                                     continue;
                                 }
                                 if (platform instanceof Tile || platform instanceof WallTile) {
-                                    if(i > 0) {
+                                    if (i > 0) {
                                         i--;
                                     }
                                 } else {

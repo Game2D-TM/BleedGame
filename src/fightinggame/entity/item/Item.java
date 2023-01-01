@@ -7,7 +7,6 @@ import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
 import fightinggame.entity.Character;
 import fightinggame.entity.inventory.Inventory;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -79,10 +78,10 @@ public abstract class Item {
                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                     position.getWidth(), position.getHeight());
             //hitbox
-            g.setColor(Color.red);
-            g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                    getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
-                    getWidthHitBox(), getHeightHitBox());
+//            g.setColor(Color.red);
+//            g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                    getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+//                    getWidthHitBox(), getHeightHitBox());
         }
         if (abilities.size() > 0) {
             for (int i = 0; i < abilities.size(); i++) {

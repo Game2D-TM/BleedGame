@@ -48,16 +48,24 @@ public class ImageManager {
                         if (imageFile == null) {
                             continue;
                         }
-                        String fileName = imageFile.getName();
-                        if (fileName.contains(".png")) {
-                            fileName = fileName.replace(".png", "");
+                        if (!imageFile.exists()) {
+                            continue;
                         }
-                        if (fileName.contains(".jpg")) {
-                            fileName = fileName.replace(".jpg", "");
-                        }
-                        BufferedImage image = loadImage(imageFile);
-                        if (image != null) {
-                            images.put(fileName, image);
+                        if (imageFile.isDirectory()) {
+                            if(imageFile.getName().equals("Raw")) continue;
+                            images.putAll(loadImagesFromFolderToMap(imageFile.getAbsolutePath()));
+                        } else {
+                            String fileName = imageFile.getName();
+                            if (fileName.contains(".png")) {
+                                fileName = fileName.replace(".png", "");
+                            }
+                            if (fileName.contains(".jpg")) {
+                                fileName = fileName.replace(".jpg", "");
+                            }
+                            BufferedImage image = loadImage(imageFile);
+                            if (image != null) {
+                                images.put(fileName, image);
+                            }
                         }
                     }
                 }
@@ -80,16 +88,24 @@ public class ImageManager {
                         if (imageFile == null) {
                             continue;
                         }
-                        String fileName = imageFile.getName();
-                        if (fileName.contains(".png")) {
-                            fileName = fileName.replace(".png", "");
+                        if (!imageFile.exists()) {
+                            continue;
                         }
-                        if (fileName.contains(".jpg")) {
-                            fileName = fileName.replace(".jpg", "");
-                        }
-                        BufferedImage image = loadImage(imageFile);
-                        if (image != null) {
-                            images.add(image);
+                        if (imageFile.isDirectory()) {
+                            if(imageFile.getName().equals("Raw")) continue;
+                            images.addAll(loadImagesFromFolderToList(imageFile.getAbsolutePath()));
+                        } else {
+                            String fileName = imageFile.getName();
+                            if (fileName.contains(".png")) {
+                                fileName = fileName.replace(".png", "");
+                            }
+                            if (fileName.contains(".jpg")) {
+                                fileName = fileName.replace(".jpg", "");
+                            }
+                            BufferedImage image = loadImage(imageFile);
+                            if (image != null) {
+                                images.add(image);
+                            }
                         }
                     }
                 }
@@ -102,7 +118,7 @@ public class ImageManager {
     }
 
     public static List<BufferedImage> loadImagesWithCutFromFolderToList(String folderName,
-             int x, int y, int width, int height) {
+            int x, int y, int width, int height) {
         try {
             File file = new File(folderName);
             if (file.exists()) {
@@ -113,16 +129,25 @@ public class ImageManager {
                         if (imageFile == null) {
                             continue;
                         }
-                        String fileName = imageFile.getName();
-                        if (fileName.contains(".png")) {
-                            fileName = fileName.replace(".png", "");
+                        if (!imageFile.exists()) {
+                            continue;
                         }
-                        if (fileName.contains(".jpg")) {
-                            fileName = fileName.replace(".jpg", "");
-                        }
-                        BufferedImage image = loadImage(imageFile);
-                        if (image != null) {
-                            images.add(image.getSubimage(x, y, width, height));
+                        if (imageFile.isDirectory()) {
+                            if(imageFile.getName().equals("Raw")) continue;
+                            images.addAll(loadImagesWithCutFromFolderToList(imageFile.getAbsolutePath(),
+                                    x, y, width, height));
+                        } else {
+                            String fileName = imageFile.getName();
+                            if (fileName.contains(".png")) {
+                                fileName = fileName.replace(".png", "");
+                            }
+                            if (fileName.contains(".jpg")) {
+                                fileName = fileName.replace(".jpg", "");
+                            }
+                            BufferedImage image = loadImage(imageFile);
+                            if (image != null) {
+                                images.add(image.getSubimage(x, y, width, height));
+                            }
                         }
                     }
                 }
