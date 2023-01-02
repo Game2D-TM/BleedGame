@@ -110,6 +110,23 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 switch (keyCode) {
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
+                        if (player.isWallSlide()) {
+                            player.getStats().setVely(0);
+                            player.getPosition().isJump = true;
+//                          wallslide double jump
+//                            if (player.isInAir() && !player.isDoubleJump()) {
+//                                player.setIsDoubleJump(true);
+//                                if (player.isLTR()) {
+//                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMPROLL_LTR));
+//                                } else {
+//                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMPROLL_RTL));
+//                                }
+//                                if (yAfterJump != 0) {
+//                                    yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getStats().getJumpSpeed());
+//                                }
+//                            }
+                            break;
+                        }
                         if (player.isInAir() && !player.isDoubleJump()) {
                             player.setIsDoubleJump(true);
                             if (player.isLTR()) {
@@ -117,7 +134,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             } else {
                                 player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMPROLL_RTL));
                             }
-                            if(yAfterJump != 0) yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getStats().getJumpSpeed());
+                            if (yAfterJump != 0) {
+                                yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getStats().getJumpSpeed());
+                            }
                             break;
                         }
                         if (player.isAttack() || player.isInAir() || player.isFallDown()) {

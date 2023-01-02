@@ -38,6 +38,8 @@ public abstract class Character {
     protected Platform standPlatform = null;
     protected boolean inAir = false;
     protected boolean fallDown = false;
+    protected boolean wallSlide = false;
+    protected boolean grapEdge = false;
     protected Stats stats;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
@@ -447,6 +449,22 @@ public abstract class Character {
 
     public void setInsidePlatform(Platform curPlatform) {
         this.insidePlatform = curPlatform;
+    }
+
+    public boolean isWallSlide() {
+        return wallSlide;
+    }
+
+    public void setWallSlide(boolean wallSlide) {
+        this.wallSlide = wallSlide;
+    }
+
+    public boolean isGrapEdge() {
+        return grapEdge;
+    }
+
+    public void setGrapEdge(boolean grapEdge) {
+        this.grapEdge = grapEdge;
     }
 
 }
