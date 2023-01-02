@@ -43,6 +43,7 @@ public abstract class Enemy extends Character {
         healthBar.setAppearTimeLimit(1000);
         Random rand = new Random();
         int range = rand.nextInt(rangeRandomSpeed);
+        if(range == 0) range += 1;
         stats.setHealth(health);
         stats.setSpeed(rand.nextInt(range) + 1);
     }

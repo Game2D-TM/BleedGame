@@ -191,6 +191,12 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet enemyAttack = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 640, 192, 160,
                 0, 55, 180, 90, 4);
+//        ImageManager.writeImages(enemyIdleSheet.getImages(), "assets/res/enemy/dior_firor/idle", "Idle_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyHit.getImages(), "assets/res/enemy/dior_firor/hit", "Hit_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyDeath.getImages(), "assets/res/enemy/dior_firor/death", "Death_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyRunForward.getImages(), "assets/res/enemy/dior_firor/run_rtl", "Run_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyRunBack.getImages(), "assets/res/enemy/dior_firor/run_ltr", "Run_LTR", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyAttack.getImages(), "assets/res/enemy/dior_firor/attack", "Attack_RTL", ImageManager.EXTENSION_PNG);
         EnemyIdle idle = new EnemyIdle(enemyAnimationCount, enemyIdleSheet);
         enemyAnimationCount++;
         EnemyHit hit = new EnemyHit(enemyAnimationCount, enemyHit);
@@ -486,7 +492,7 @@ public class Gameplay extends JPanel implements Runnable {
         Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, 1, itemEquipAnimations);
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
-        // platform spawn
+//        platform spawn
 //        Platform spawnArea = getPlatforms().get(4).get(10);
 //        fireSword.setPosition(spawnArea.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
 //        fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);

@@ -12,6 +12,64 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class ImageManager {
+    
+    public static String EXTENSION_PNG = ".png";
+    public static String EXTENSION_JPG = ".jpg";
+    
+    public static String getFileExtension(String fileName) {
+        if (fileName == null) {
+            throw new IllegalArgumentException("fileName must not be null!");
+        }
+
+        String extension = "";
+
+        int index = fileName.lastIndexOf('.');
+        if (index > 0) {
+            extension = fileName.substring(index + 1);
+        }
+
+        return extension;
+    }
+
+    public static boolean writeImage(BufferedImage image, String fileName) {
+        if (!fileName.contains(".png") && !fileName.contains(".jpg")) {
+            return false;
+        }
+        String extension = getFileExtension(fileName);
+        File outputfile = new File(fileName);
+        if(outputfile.exists()) return false;
+        try {
+            boolean result = outputfile.createNewFile();
+            if(result) {
+                return ImageIO.write(image, extension, outputfile);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ImageManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public static boolean writeImages(List<BufferedImage> images, String folderPath
+                            , String defFileName, String extension) {
+        if(images == null) {
+            return false;
+        }
+        File folder = new File(folderPath);
+        if(!folder.exists()) {
+            folder.mkdir();
+        }
+        if(images.size() > 0) {
+            int count = 0;
+            for(int i = 0; i < images.size(); i++) {
+                BufferedImage image = images.get(i);
+                if(image == null) continue;
+                String fileName = folder.getAbsolutePath() + "/" + defFileName + "_" + count + extension;
+                writeImage(image, fileName);
+                count++;
+            }
+        }
+        return false;
+    }
 
     public static BufferedImage loadImage(String fileName) {
         try {
@@ -52,7 +110,9 @@ public class ImageManager {
                             continue;
                         }
                         if (imageFile.isDirectory()) {
-                            if(imageFile.getName().equals("Raw")) continue;
+                            if (imageFile.getName().equals("Raw")) {
+                                continue;
+                            }
                             images.putAll(loadImagesFromFolderToMap(imageFile.getAbsolutePath()));
                         } else {
                             String fileName = imageFile.getName();
@@ -92,7 +152,9 @@ public class ImageManager {
                             continue;
                         }
                         if (imageFile.isDirectory()) {
-                            if(imageFile.getName().equals("Raw")) continue;
+                            if (imageFile.getName().equals("Raw")) {
+                                continue;
+                            }
                             images.addAll(loadImagesFromFolderToList(imageFile.getAbsolutePath()));
                         } else {
                             String fileName = imageFile.getName();
@@ -133,7 +195,9 @@ public class ImageManager {
                             continue;
                         }
                         if (imageFile.isDirectory()) {
-                            if(imageFile.getName().equals("Raw")) continue;
+                            if (imageFile.getName().equals("Raw")) {
+                                continue;
+                            }
                             images.addAll(loadImagesWithCutFromFolderToList(imageFile.getAbsolutePath(),
                                     x, y, width, height));
                         } else {
@@ -158,4 +222,5 @@ public class ImageManager {
         }
         return null;
     }
+
 }
