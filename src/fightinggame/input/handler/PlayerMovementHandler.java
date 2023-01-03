@@ -1,6 +1,7 @@
 package fightinggame.input.handler;
 
 import fightinggame.Gameplay;
+import fightinggame.animation.player.PlayerCrouch;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.entity.Animation;
 import fightinggame.entity.CharacterState;
@@ -40,11 +41,30 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
     public void keyTyped(KeyEvent e) {
     }
 
+    public boolean checkIsCrouch() {
+        if (player.getPosition().isCrouch && !player.getPosition().isMoving()) {
+            if (player.isLTR()) {
+                if (player.getCurrAnimation() instanceof PlayerCrouch); else {
+                    player.setCurrAnimation(player.getAnimations().get(CharacterState.CROUCH_LTR));
+                }
+            } else {
+                if (player.getCurrAnimation() instanceof PlayerCrouch); else {
+                    player.setCurrAnimation(player.getAnimations().get(CharacterState.CROUCH_RTL));
+                }
+            }
+            return true;
+        } else {
+            player.getPosition().isCrouch = false;
+        }
+        return false;
+    }
+
     public void tick() {
         if (!player.isInAir()) {
             canMoveCheck(MoveState.LEFT, player);
             canMoveCheck(MoveState.RIGHT, player);
             canMoveCheck(MoveState.SLIDE, player);
+            checkIsCrouch();
         }
         if (!player.isInAir()) {
             if (canMoveCheck(MoveState.JUMP, player)) {
@@ -113,18 +133,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         if (player.isWallSlide()) {
                             player.getStats().setVely(0);
                             player.getPosition().isJump = true;
-//                          wallslide double jump
-//                            if (player.isInAir() && !player.isDoubleJump()) {
-//                                player.setIsDoubleJump(true);
-//                                if (player.isLTR()) {
-//                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMPROLL_LTR));
-//                                } else {
-//                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.JUMPROLL_RTL));
-//                                }
-//                                if (yAfterJump != 0) {
-//                                    yAfterJump = player.getPosition().getYPosition() - (player.getStats().getSpeed() + player.getStats().getJumpSpeed());
-//                                }
-//                            }
+                            player.setWallSlide(false);
                             break;
                         }
                         if (player.isInAir() && !player.isDoubleJump()) {
@@ -166,11 +175,6 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     case KeyEvent.VK_DOWN:
                         if (player.isAttack() || player.getPosition().isMoving()) {
                             break;
-                        }
-                        if (player.isLTR()) {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.CROUCH_LTR));
-                        } else {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.CROUCH_RTL));
                         }
                         player.getPosition().isCrouch = true;
                         break;

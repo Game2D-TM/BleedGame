@@ -1,9 +1,9 @@
 package fightinggame.animation.enemy;
 
-import fightinggame.entity.Animation;
+import fightinggame.animation.character.CharacterIdle;
 import fightinggame.resource.SpriteSheet;
 
-public class EnemyIdle extends Animation{
+public class EnemyIdle extends CharacterIdle{
     
     public EnemyIdle(int id, SpriteSheet sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);

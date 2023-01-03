@@ -171,6 +171,7 @@ public class Gameplay extends JPanel implements Runnable {
                 diorColor = DiorColor.Yellow;
                 break;
         }
+        // Init enemy position
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition(), 300, 200);
         SpriteSheet enemyIdleSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
@@ -191,6 +192,7 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet enemyAttack = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 640, 192, 160,
                 0, 55, 180, 90, 4);
+//        Export bufferedimage to file
 //        ImageManager.writeImages(enemyIdleSheet.getImages(), "assets/res/enemy/dior_firor/idle", "Idle_RTL", ImageManager.EXTENSION_PNG);
 //        ImageManager.writeImages(enemyHit.getImages(), "assets/res/enemy/dior_firor/hit", "Hit_RTL", ImageManager.EXTENSION_PNG);
 //        ImageManager.writeImages(enemyDeath.getImages(), "assets/res/enemy/dior_firor/death", "Death_RTL", ImageManager.EXTENSION_PNG);
@@ -236,90 +238,12 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void playerInit(Platform firstPlatform) {
+        // init player position
         GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition()
                 - 280 - 400, 350, 259);
         Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
-
-//        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Run.png"),
-//                0, 0, 200, 200,
-//                75, 75, 43, 48, 8);
-//        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack1.png"),
-//                800, 0, 200, 200,
-//                75, 53, 115, 70, 2);
-//        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Attack2.png"),
-//                800, 0, 200, 200,
-//                75, 53, 115, 70, 2);
-//        SpriteSheet playerHitLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/TakeHit.png"),
-//                0, 0, 200, 200,
-//                75, 68, 38, 55, 4);
-//        SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR/Death.png"),
-//                0, 0, 200, 200,
-//                75, 70, 46, 55, 6);
-//
-//        SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Idle.png"),
-//                0, 0, 200, 200,
-//                87, 70, 38, 53, 8);
-//        SpriteSheet playerRunRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Run.png"),
-//                0, 0, 200, 200,
-//                83, 75, 43, 48, 8);
-//        SpriteSheet playerAttack1RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Attack1.png"),
-//                0, 0, 200, 200,
-//                5, 53, 113, 70, 2);
-//        SpriteSheet playerAttack2RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Attack2.png"),
-//                0, 0, 200, 200,
-//                5, 53, 113, 70, 2);
-//        SpriteSheet playerHitRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/TakeHit.png"),
-//                0, 0, 200, 200,
-//                85, 68, 38, 55, 4);
-//        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL/Death.png"),
-//                0, 0, 200, 200,
-//                80, 70, 42, 55, 6);
-//        SpriteSheet playerIdleSheetLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Idle.png"),
-//                0, 0, 64, 80,
-//                21, 15, 36, 49, 4);
-//        SpriteSheet playerRunLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Run.png"),
-//                0, 0, 80, 80,
-//                27, 16, 33, 52, 8);
-//        SpriteSheet playerAttack1LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack1.png"),
-//                0, 0, 96, 80,
-//                30, 0, 57, 65, 5);
-//        SpriteSheet playerAttack2LTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Attack2.png"),
-//                0, 0, 96, 80,
-//                10, 10, 70, 65, 8);
-//        SpriteSheet playerHitLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/TakeHit.png"),
-//                0, 0, 64, 64,
-//                5, 0, 54, 64, 4);
-//        SpriteSheet playerDeathLTR = new SpriteSheet(ImageManager.loadImage("assets/res/player/LTR_New_Hero/Death.png"),
-//                0, 0, 80, 64,
-//                10, 0, 64, 64, 8);
-//
-//        SpriteSheet playerIdleSheetRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Idle.png"),
-//                0, 0, 64, 80,
-//                8, 15, 35, 49, 4);
-//        SpriteSheet playerRunRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Run.png"),
-//                0, 0, 80, 80,
-//                20, 16, 33, 52, 8);
-//        SpriteSheet playerAttack1RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack1.png"),
-//                0, 0, 95, 77,
-//                12, 0, 57, 65, 5);
-//        SpriteSheet playerAttack2RTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Attack2.png"),
-//                0, 0, 96, 80,
-//                10, 0, 65, 65, 8);
-//        SpriteSheet playerHitRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/TakeHit.png"),
-//                0, 0, 64, 64,
-//                0, 0, 54, 64, 4);
-//        SpriteSheet playerDeathRTL = new SpriteSheet(ImageManager.loadImage("assets/res/player/RTL_New_Hero/Death.png"),
-//                0, 0, 80, 64,
-//                24, 20, 40, 44, 8);
-//        playerIdleSheetRTL.reverseImages();
-//        playerRunRTL.reverseImages();
-//        playerAttack1RTL.reverseImages();
-//        playerAttack2RTL.reverseImages();
-//        playerHitRTL.reverseImages();
-//        playerDeathRTL.reverseImages();
-//        playerAttack1LTR.getImages().addAll(playerAttack2LTR.getImages());
-//        playerAttack1RTL.getImages().addAll(playerAttack2RTL.getImages());
+        
         SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01").clone();
         SpriteSheet attackSpecialRTL = spriteSheetMap.get("Attack01").convertRTL();
         // Add special attack new sheet
@@ -327,6 +251,7 @@ public class Gameplay extends JPanel implements Runnable {
         attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack03").getImages());
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack02").convertRTL().getImages());
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack03").convertRTL().getImages());
+        
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
@@ -398,8 +323,8 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.SPRINT_RTL, sprintRTL);//New
         playerAnimations.put(CharacterState.WALLRUN_LTR, wallRunLTR);//New
         playerAnimations.put(CharacterState.WALLRUN_RTL, wallRunRTL);//New
-        playerAnimations.put(CharacterState.WALLSLIDE_LTR, wallSlideLTR);//New
-        playerAnimations.put(CharacterState.WALLSLIDE_RTL, wallSlideRTL);//New
+        playerAnimations.put(CharacterState.WALLSLIDE_LTR, wallSlideLTR);
+        playerAnimations.put(CharacterState.WALLSLIDE_RTL, wallSlideRTL);
 
         //Idle
         playerAnimations.put(CharacterState.IDLE_LTR, idleLTR);
@@ -436,8 +361,8 @@ public class Gameplay extends JPanel implements Runnable {
         //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
         playerAnimations.put(CharacterState.JUMP_RTL, jumpRTL);
-        playerAnimations.put(CharacterState.JUMPROLL_LTR, jumpRollLTR); //New
-        playerAnimations.put(CharacterState.JUMPROLL_RTL, jumpRollRTL);//New
+        playerAnimations.put(CharacterState.JUMPROLL_LTR, jumpRollLTR);
+        playerAnimations.put(CharacterState.JUMPROLL_RTL, jumpRollRTL);
 
         //Crouch Animation
         playerAnimations.put(CharacterState.CROUCH_LTR, crouchLTR);

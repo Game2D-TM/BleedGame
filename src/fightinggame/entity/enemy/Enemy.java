@@ -27,6 +27,7 @@ public abstract class Enemy extends Character {
     public static int DEF_WIDTH_VISION_POS = 1000;
     public static int DEF_HEIGHT_VISION_POS = 100;
     public static Enemy ENEMY_HEALTHBAR_SHOW;
+    
     protected int deathCounter = 0;
     protected int isAttackedCounter = 0;
     protected int walkCounter = 0;
@@ -108,10 +109,11 @@ public abstract class Enemy extends Character {
                 }
             }
         }
-        if (!isDeath) {
+        if (!isDeath && !inAir && !fallDown) {
             checkPlayerOnSight();
         }
-        if (!isDeath && !isAttacked && !isAttack && !animateChange) {
+        if (!isDeath && !isAttacked && !isAttack && !animateChange
+                && !inAir && !fallDown) {
             walkCounter++;
             if (walkCounter >= 100) {
                 if (currAnimation == null) {
@@ -166,12 +168,12 @@ public abstract class Enemy extends Character {
 
     public boolean checkPlayerOnSight() {
         Player player = gameplay.getPlayer();
-        if (player.isDeath()) {
+        if (player == null || player.isDeath()) {
             return false;
         }
         GamePosition visionPos = getVisionPosition();
         GamePosition playerPos = gameplay.getPlayer().getHitBoxPosition();
-        if (visionPos == null || playerPos == null || player == null) {
+        if (visionPos == null || playerPos == null) {
             return false;
         }
         if (((playerPos.getXPosition() >= visionPos.getXPosition() && playerPos.getMaxX() <= visionPos.getMaxX())

@@ -60,7 +60,7 @@ public abstract class MovementHandler extends Handler {
         }
         return false;
     }
-    
+
     // error need fix
     public boolean checkCanGrapTile(Character character) {
         try {
@@ -128,37 +128,39 @@ public abstract class MovementHandler extends Handler {
                 if (character.getStandPlatform().isCanStand()) {
                     if (nY < character.getStandPlatform().getPosition().getYPosition()) {
                         position.setYPosition((int) vely + position.getYPosition());
-                        if (checkNextToBarrier(character)) {
-                            character.setWallSlide(true);
-                            if (character.isLTR()) {
-                                if (character.getCurrAnimation() instanceof PlayerWallAction_LTR); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_LTR));
-                                }
-                                if (!character.isLTR()) {
-                                    if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
-                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                        if (character instanceof Player) {
+                            if (checkNextToBarrier(character)) {
+                                character.setWallSlide(true);
+                                if (character.isLTR()) {
+                                    if (character.getCurrAnimation() instanceof PlayerWallAction_LTR); else {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_LTR));
+                                    }
+                                    if (!character.isLTR()) {
+                                        if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                                        }
+                                    }
+                                } else {
+                                    if (character.getCurrAnimation() instanceof PlayerWallAction_RTL); else {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_RTL));
+                                    }
+                                    if (character.isLTR()) {
+                                        if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_LTR));
+                                        }
                                     }
                                 }
                             } else {
-                                if (character.getCurrAnimation() instanceof PlayerWallAction_RTL); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_RTL));
-                                }
+                                character.setWallSlide(false);
+                                falldownMove(character);
                                 if (character.isLTR()) {
                                     if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_LTR));
                                     }
-                                }
-                            }
-                        } else {
-                            character.setWallSlide(false);
-                            falldownMove(character);
-                            if (character.isLTR()) {
-                                if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_LTR));
-                                }
-                            } else {
-                                if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                                } else {
+                                    if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                                    }
                                 }
                             }
                         }
@@ -211,37 +213,39 @@ public abstract class MovementHandler extends Handler {
                     if (character.getStandPlatform() instanceof BlankTile) {
                         position.setYPosition((int) vely + position.getYPosition());
                         character.setFallDown(true);
-                        if (checkNextToBarrier(character)) {
-                            character.setWallSlide(true);
-                            if (character.isLTR()) {
-                                if (character.getCurrAnimation() instanceof PlayerWallAction_LTR); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_LTR));
-                                }
-                                if (!character.isLTR()) {
-                                    if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
-                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                        if (character instanceof Player) {
+                            if (checkNextToBarrier(character)) {
+                                character.setWallSlide(true);
+                                if (character.isLTR()) {
+                                    if (character.getCurrAnimation() instanceof PlayerWallAction_LTR); else {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_LTR));
+                                    }
+                                    if (!character.isLTR()) {
+                                        if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                                        }
+                                    }
+                                } else {
+                                    if (character.getCurrAnimation() instanceof PlayerWallAction_RTL); else {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_RTL));
+                                    }
+                                    if (character.isLTR()) {
+                                        if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {
+                                            character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_LTR));
+                                        }
                                     }
                                 }
                             } else {
-                                if (character.getCurrAnimation() instanceof PlayerWallAction_RTL); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_RTL));
-                                }
+                                character.setWallSlide(false);
+                                falldownMove(character);
                                 if (character.isLTR()) {
                                     if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_LTR));
                                     }
-                                }
-                            }
-                        } else {
-                            character.setWallSlide(false);
-                            falldownMove(character);
-                            if (character.isLTR()) {
-                                if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_LTR));
-                                }
-                            } else {
-                                if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
-                                    character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                                } else {
+                                    if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
+                                        character.setCurrAnimation(character.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                                    }
                                 }
                             }
                         }
@@ -312,10 +316,6 @@ public abstract class MovementHandler extends Handler {
                         if (platform.getPosition() == null) {
                             break;
                         }
-//                        GamePosition checkPos = new GamePosition(
-//                                position.getXPosition(),
-//                                position.getYPosition(), // position.getYPosition() + position.getHeight() / 2
-//                                position.getWidth(), position.getHeight()); // position.getHeight() / 2
                         GamePosition checkPos = new GamePosition(character.getXHitBox(), character.getYHitBox(),
                                 character.getWidthHitBox(), character.getHeightHitBox());
                         switch (state) {

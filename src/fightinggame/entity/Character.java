@@ -2,8 +2,12 @@ package fightinggame.entity;
 
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.Gameplay;
+import fightinggame.animation.player.PlayerCrouch;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.platform.Platform;
+import fightinggame.entity.platform.tile.BlankTile;
+import fightinggame.entity.platform.tile.Tile;
+import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.input.handler.Handler;
 import fightinggame.resource.SpriteSheet;
 import java.awt.Color;
@@ -93,6 +97,7 @@ public abstract class Character {
     public void checkPlatForm(List<List<Platform>> scene) {
         try {
             List<Platform> insidePlatforms = new ArrayList<>();
+            List<Platform> insideInvalidTiles = new ArrayList();
             if (scene != null && scene.size() > 0) {
                 boolean isSet = false;
                 for (int i = 0; i < scene.size(); i++) {
@@ -101,11 +106,18 @@ public abstract class Character {
                         for (int j = 0; j < platforms.size(); j++) {
                             Platform platform = platforms.get(j);
                             if (platform != null) {
-                                GamePosition playerPos = new GamePosition(getXHitBox(), getYHitBox() + getHeightHitBox() / 3,
-                                        getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
-                                if (platform.checkValidPosition(playerPos)) {
-                                    insidePlatforms.add(platform);
-                                    isSet = true;
+                                if (platform instanceof BlankTile) {
+                                    GamePosition charPos = new GamePosition(getXHitBox(), getYHitBox() + getHeightHitBox() / 3,
+                                            getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
+                                    if (platform.checkValidPosition(charPos)) {
+                                        insidePlatforms.add(platform);
+                                        isSet = true;
+                                    }
+                                } else if (platform instanceof Tile
+                                        || platform instanceof WallTile) {
+                                    if (platform.checkValidPosition(getHitBoxPosition())) {
+                                        insideInvalidTiles.add(platform);
+                                    }
                                 }
                             }
                         }
@@ -115,7 +127,8 @@ public abstract class Character {
                     }
                 }
             }
-            switch(insidePlatforms.size()) {
+            // check inside platform from platforms contain character
+            switch (insidePlatforms.size()) {
                 case 0:
                     break;
                 case 1:
@@ -124,12 +137,63 @@ public abstract class Character {
                 case 2:
                     Platform firstPlatform = insidePlatforms.get(0);
                     Platform secondPlatform = insidePlatforms.get(1);
-                    int amountXFirstPlatform = firstPlatform.getPosition().getMaxX() - position.getXPosition();
-                    int amountXSecondPlatform = position.getMaxX() - secondPlatform.getPosition().getXPosition();
-                    if(amountXFirstPlatform > amountXSecondPlatform) {
+                    int amountXFirstPlatform = firstPlatform.getPosition().getMaxX() - getXHitBox();
+                    int amountXSecondPlatform = getXMaxHitBox() - secondPlatform.getPosition().getXPosition();
+                    if (amountXFirstPlatform > amountXSecondPlatform) {
                         insidePlatform = firstPlatform;
-                    } else insidePlatform = secondPlatform;
+                    } else {
+                        insidePlatform = secondPlatform;
+                    }
                     break;
+                default:
+                    int middle = insidePlatforms.size() / 2;
+                    insidePlatform = insidePlatforms.get(middle);
+                    break;
+            }
+            // check invalid tile 
+            if (insideInvalidTiles.size() > 0) {
+                for (int i = 0; i < insideInvalidTiles.size(); i++) {
+                    Platform invalidTile = insideInvalidTiles.get(i);
+                    if (invalidTile.getPosition() != null) {
+                        // invalid tile is right or left 
+                        // if player is inside invalid platform push character out
+                        if (invalidTile.getColumn() > insidePlatform.getColumn()) {
+                            pushToLeftTile(invalidTile);
+                        } else {
+                            if (invalidTile.getColumn() < insidePlatform.getColumn()) {
+                                pushToRightTile(invalidTile);
+                            }
+                        }
+                        // check invalid tile above character
+                        // crouch when below invalid platform
+                        if (invalidTile.getRow() < insidePlatform.getRow()
+                                && invalidTile.getColumn() == insidePlatform.getColumn()) {
+                            boolean isLeftPlatform = false;
+                            if (checkIsLeftPlatform(invalidTile)) {
+                                isLeftPlatform = true;
+                            }
+                            boolean isStuck = false;
+                            if (isLeftPlatform && !position.isMoving()) {
+                                position.isCrouch = true;
+                                isStuck = true;
+                            }
+                            if (!isLeftPlatform && !position.isMoving()) {
+                                position.isCrouch = true;
+                                isStuck = true;
+                            }
+                            if (!isStuck) {
+                                if (currAnimation instanceof PlayerCrouch) {
+                                    if (isLTR) {
+                                        currAnimation = animations.get(CharacterState.IDLE_LTR);
+                                    } else {
+                                        currAnimation = animations.get(CharacterState.IDLE_RTL);
+                                    }
+                                }
+                                position.isCrouch = false;
+                            }
+                        }
+                    }
+                }
             }
             checkStandPlatform();
         } catch (Exception ex) {
@@ -142,6 +206,56 @@ public abstract class Character {
 //                currAnimation = animations.get(CharacterState.DEATH_RTL);
 //            }
         }
+    }
+
+    public boolean pushToLeftTile(Platform invalidTile) {
+        if (invalidTile == null) {
+            return false;
+        }
+        if (invalidTile.getPosition() == null) {
+            return false;
+        }
+        int distance = getXMaxHitBox() - invalidTile.getPosition().getXPosition();
+        distance = Math.abs(distance);
+        if (distance > 10) {
+            position.setXPosition(position.getXPosition() - distance);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean pushToRightTile(Platform invalidTile) {
+        if (invalidTile == null) {
+            return false;
+        }
+        if (invalidTile.getPosition() == null) {
+            return false;
+        }
+        int distance = getXHitBox() - invalidTile.getPosition().getMaxX();
+        distance = Math.abs(distance);
+        if (distance > 10) {
+            position.setXPosition(position.getXPosition() + distance);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkIsLeftPlatform(Platform centerPlatform) {
+        try {
+            Platform leftPlatform = gameplay.getPlatforms().get(centerPlatform.getRow()).get(centerPlatform.getColumn() - 1);
+            if (leftPlatform == null) {
+                return false;
+            }
+            if (leftPlatform.getPosition() == null) {
+                return false;
+            }
+            if (leftPlatform.checkValidPosition(getHitBoxPosition())) {
+                return true;
+            }
+        } catch (Exception ex) {
+
+        }
+        return false;
     }
 
     public void checkStandPlatform() {
@@ -193,6 +307,7 @@ public abstract class Character {
 //        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
 //                getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
 //                getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
+        // Draw damage taken
         if (receiveDamage > 0) {
             receiveDamageRenderTick++;
             if (receiveDamageRenderTick > 80) {
@@ -265,10 +380,6 @@ public abstract class Character {
 
     public GamePosition getHitBoxPosition() {
         return new GamePosition(getXHitBox(), getYHitBox(), getWidthHitBox(), getHeightHitBox());
-    }
-
-    public boolean moveDown() {
-        return position.moveDown(stats.getSpeed());
     }
 
     public int getId() {

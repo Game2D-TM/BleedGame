@@ -55,14 +55,6 @@ public class GamePosition {
         return false;
     }
 
-    public boolean moveDown(int speed) {
-        if (isCrouch) {
-            yPosition = yPosition + speed;
-            return true;
-        }
-        return false;
-    }
-
     public boolean moveLeft(int speed) {
         if (isMoveLeft) {
             xPosition = xPosition - speed;
@@ -103,14 +95,6 @@ public class GamePosition {
         return false;
     }
 
-    public boolean moveDown(int speed, boolean isMoveDown) {
-        if (isMoveDown) {
-            yPosition = yPosition + speed;
-            return true;
-        }
-        return false;
-    }
-
     public boolean moveLeft(int speed, boolean isMoveLeft) {
         if (isMoveLeft) {
             xPosition = xPosition - speed;
@@ -125,6 +109,14 @@ public class GamePosition {
             return true;
         }
         return false;
+    }
+
+    public boolean isCrouch() {
+        return isCrouch;
+    }
+
+    public void setIsCrouch(boolean isCrouch) {
+        this.isCrouch = isCrouch;
     }
 
     public int getMaxY() {
