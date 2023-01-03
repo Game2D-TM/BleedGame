@@ -5,7 +5,7 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.image.BufferedImage;
 
 public abstract class Heal extends Ability {

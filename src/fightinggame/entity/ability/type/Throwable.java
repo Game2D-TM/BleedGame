@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.image.BufferedImage;
 import fightinggame.entity.Character;
 public abstract class Throwable extends Ability {

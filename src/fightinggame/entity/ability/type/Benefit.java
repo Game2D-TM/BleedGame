@@ -5,7 +5,7 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.image.BufferedImage;
 
 public abstract class Benefit extends Ability {

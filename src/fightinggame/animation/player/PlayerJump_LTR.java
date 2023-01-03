@@ -1,7 +1,7 @@
 package fightinggame.animation.player;
 
 import fightinggame.entity.Animation;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 
 public class PlayerJump_LTR extends Animation{
     

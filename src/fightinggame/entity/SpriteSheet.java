@@ -1,5 +1,6 @@
-package fightinggame.resource;
+package fightinggame.entity;
 
+import fightinggame.resource.ImageManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;

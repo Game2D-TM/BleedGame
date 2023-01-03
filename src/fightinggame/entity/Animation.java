@@ -1,6 +1,5 @@
 package fightinggame.entity;
 
-import fightinggame.resource.SpriteSheet;
 import java.awt.Graphics;
 
 public abstract class Animation {

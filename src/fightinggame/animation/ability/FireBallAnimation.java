@@ -1,7 +1,7 @@
 package fightinggame.animation.ability;
 
 import fightinggame.entity.Animation;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 
 public class FireBallAnimation extends Animation {
     

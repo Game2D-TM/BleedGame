@@ -8,7 +8,7 @@ import fightinggame.entity.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.throwable.Fireball;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package fightinggame.animation.character;
 
 import fightinggame.entity.Animation;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 
 public abstract class CharacterIdle extends Animation{
     

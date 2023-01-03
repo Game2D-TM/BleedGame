@@ -9,7 +9,6 @@ import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.input.handler.Handler;
-import fightinggame.resource.SpriteSheet;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;

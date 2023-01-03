@@ -2,7 +2,6 @@ package fightinggame.entity;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
-import fightinggame.resource.SpriteSheet;
 import fightinggame.animation.player.*;
 import fightinggame.resource.ImageManager;
 import java.awt.Color;

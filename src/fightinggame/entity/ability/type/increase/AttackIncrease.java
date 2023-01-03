@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.IncreaseStat;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.util.List;
 
 public class AttackIncrease extends IncreaseStat{

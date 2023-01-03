@@ -1,7 +1,7 @@
 package fightinggame.animation.item;
 
 import fightinggame.entity.Animation;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 
 public class HealthPotionAnimation extends Animation{
     

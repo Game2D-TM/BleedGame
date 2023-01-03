@@ -1,7 +1,7 @@
 package fightinggame.animation.item;
 
 import fightinggame.entity.Animation;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 
 public class SlotAnimation extends Animation{

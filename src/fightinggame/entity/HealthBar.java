@@ -1,6 +1,5 @@
 package fightinggame.entity;
 
-import fightinggame.resource.SpriteSheet;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;

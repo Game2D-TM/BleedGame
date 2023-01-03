@@ -22,7 +22,7 @@ import fightinggame.entity.enemy.dior.DiorColor;
 import fightinggame.entity.enemy.dior.DiorEnemy;
 import fightinggame.resource.EnemyAnimationResources;
 import fightinggame.resource.ImageManager;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +35,6 @@ import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
-import fightinggame.entity.background.GameObject;
 import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
@@ -49,8 +48,11 @@ import fightinggame.input.handler.MouseHandler;
 import fightinggame.input.handler.PlayerAbilityHandler;
 import fightinggame.input.handler.PlayerMovementHandler;
 import fightinggame.resource.AudioPlayer;
+import fightinggame.resource.DataManager;
+import fightinggame.resource.Utils;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
@@ -73,29 +75,31 @@ public class Gameplay extends JPanel implements Runnable {
     public Gameplay(Game game, int width, int height) {
         setSize(width, height);
         this.game = game;
+        DataManager.loadSceneData();
         camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
-        initScene("Scene 1", "data/scene_1.txt");
+        File scene = DataManager.getFile("scene_1");
+        initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
     }
 
     public void initBackgroundMusic() {
-        if(audioPlayer != null) {
-          audioPlayer.closeThread();
+        if (audioPlayer != null) {
+            audioPlayer.closeThread();
         }
-        audioPlayer = new AudioPlayer("assets/res/sound");
+        audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
         audioPlayer.startThread("background_music", true, 0.75f);
     }
 
     public void initScene(String sceneName, String sceneDataFilePath) {
         background = new Background(0, sceneName,
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Wallpaper"),
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Tiles"),
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Objects"), this,
+                ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
+                ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
+                ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH), this,
                 sceneDataFilePath, 250, 180);
         map = new GameMap(1, "Map", this,
                 new GamePosition(0, 0, 0, 0),
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Wallpaper"),
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Tiles"),
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Objects"),
+                ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
+                ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
+                ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH),
                 sceneDataFilePath, 15, 15);
         initObjects();
         enemies.clear();
@@ -110,19 +114,73 @@ public class Gameplay extends JPanel implements Runnable {
 //        spawnEnemiesThread.start();
         initBackgroundMusic();
     }
-    
+
     public void initObjects() {
+        // resource loaded
         List<List<Platform>> scene = getPlatforms();
         Map<String, BufferedImage> objects = background.getObjects();
-        Platform platform = scene.get(4).get(10);
-        if (platform != null) {
-            Chest obj = new Chest(objects.get("open_chest"), objects.get("close_chest"), "chest", platform.middlePlatform(), this);
-            platform.getObjects().add(obj);
-        }
-        platform = scene.get(12).get(3);
-        if (platform != null) {
-            GameObject obj = new GameObject(objects.get("box_1"), "close_chest", platform.rightCornerPlatform(300, 500), this);
-            platform.getObjects().add(obj);
+
+        // Create Object
+        File objectsFile = DataManager.getFile("objects_1");
+        if (objectsFile != null) {
+            List<String> lines = DataManager.readFileToList(objectsFile);
+            if (lines != null && lines.size() > 0) {
+                for (int i = 0; i < lines.size(); i++) {
+                    String line = lines.get(i);
+                    String[] splits = line.split(":");
+                    if (splits.length != 2) {
+                        continue;
+                    }
+                    String type = splits[0];
+                    String gameObjStr = splits[1];
+                    switch (type) {
+                        case "chest":
+                            splits = gameObjStr.split(",");
+                            if (splits.length == 8) {
+                                String imgAfterTouchStr = splits[0];
+                                String imgDefaultStr = splits[1];
+                                String objName = splits[2];
+                                String platformPosStr = splits[3];
+                                String platformRow = splits[4];
+                                String platformColumn = splits[5];
+                                String widthStr = splits[6];
+                                String heightStr = splits[7];
+                                int row = Utils.getInt(platformRow);
+                                int column = Utils.getInt(platformColumn);
+                                if (row < 0 || column < 0) {
+                                    continue;
+                                }
+                                int width = Utils.getInt(widthStr);
+                                int height = Utils.getInt(heightStr);
+                                Platform platform = scene.get(row).get(column);
+                                GamePosition position = null;
+                                if (platform != null) {
+                                    if (width > 0 && height > 0) {
+                                        if (platformPosStr.equalsIgnoreCase("mid")) {
+                                            position = platform.middlePlatform(width, height);
+                                        } else if (platformPosStr.equalsIgnoreCase("left")) {
+                                            position = platform.leftCornerPlatform(width, height);
+                                        } else if (platformPosStr.equalsIgnoreCase("right")) {
+                                            position = platform.rightCornerPlatform(width, height);
+                                        }
+                                    } else {
+                                        if (platformPosStr.equalsIgnoreCase("mid")) {
+                                            position = platform.middlePlatform();
+                                        } else if (platformPosStr.equalsIgnoreCase("left")) {
+                                            position = platform.leftCornerPlatform();
+                                        } else if (platformPosStr.equalsIgnoreCase("right")) {
+                                            position = platform.rightCornerPlatform();
+                                        }
+                                    }
+                                    if(position == null) continue;
+                                    Chest obj = new Chest(objects.get(imgAfterTouchStr), objects.get(imgDefaultStr), objName, position, this);
+                                    platform.getObjects().add(obj);
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
         }
     }
 

@@ -17,7 +17,7 @@ import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.util.List;
 
 public abstract class Enemy extends Character {

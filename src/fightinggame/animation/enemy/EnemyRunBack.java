@@ -1,7 +1,7 @@
 package fightinggame.animation.enemy;
 
 import fightinggame.entity.Animation;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 
 public class EnemyRunBack extends Animation {
 

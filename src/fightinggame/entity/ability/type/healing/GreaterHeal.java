@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.Heal;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import fightinggame.entity.Character;

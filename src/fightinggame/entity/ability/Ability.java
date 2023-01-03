@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.input.handler.Handler;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.Character;
 import java.awt.Color;
 import java.awt.Font;

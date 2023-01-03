@@ -6,7 +6,7 @@ import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.item.Item;
-import fightinggame.resource.SpriteSheet;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
