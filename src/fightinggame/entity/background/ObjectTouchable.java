@@ -3,10 +3,10 @@ package fightinggame.entity.background;
 import fightinggame.Gameplay;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
-import fightinggame.entity.background.BackgroundObject;
+import fightinggame.entity.background.GameObject;
 import java.awt.image.BufferedImage;
 
-public abstract class ObjectTouchable extends BackgroundObject {
+public abstract class ObjectTouchable extends GameObject {
 
     protected BufferedImage imageAfterTouch;
     protected BufferedImage imageBeforeTouch;

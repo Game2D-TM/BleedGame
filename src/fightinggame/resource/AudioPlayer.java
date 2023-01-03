@@ -26,6 +26,7 @@ public class AudioPlayer implements Runnable {
     private float volume;
     private String folderPath;
     private String name;
+    private Thread thread;
 
     // constructor to initialize streams and clip
     public AudioPlayer(String folder) {
@@ -81,7 +82,17 @@ public class AudioPlayer implements Runnable {
         this.name = name;
         this.isLoop = isLoop;
         this.volume = volume;
-        new Thread(this).start();
+        thread = new Thread(this);
+        thread.start();
+    }
+
+    public boolean closeThread() {
+        if (thread != null) {
+            restart();
+            thread.interrupt();
+            return true;
+        }
+        return false;
     }
 
     public void play(String name) {

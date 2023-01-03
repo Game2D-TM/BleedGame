@@ -91,6 +91,9 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                         player.getInventory().open();
                     }
                     break;
+                case KeyEvent.VK_SLASH:
+                    gameplay.initScene("Scene 2", "data/scene_2.txt");
+                    break;
             }
         }
     }

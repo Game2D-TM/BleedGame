@@ -5,14 +5,14 @@ import fightinggame.entity.GamePosition;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-public class BackgroundObject {
+public class GameObject {
 
     protected BufferedImage image;
     protected String name;
     protected final Gameplay gameplay;
     protected GamePosition position;
 
-    public BackgroundObject(BufferedImage image, String name, GamePosition position, Gameplay gameplay) {
+    public GameObject(BufferedImage image, String name, GamePosition position, Gameplay gameplay) {
         this.image = image;
         this.name = name;
         this.position = position;

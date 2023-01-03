@@ -36,10 +36,10 @@ public class Game extends JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {
         isRunning = false;
         if (gameplay.getThread() != null && gameplay.getThread().isAlive()) {
-            gameplay.getThread().suspend();
+            gameplay.getThread().interrupt();
         }
         if (gameThread != null && gameThread.isAlive()) {
-            gameThread.suspend();
+            gameThread.interrupt();
         }
     }
 

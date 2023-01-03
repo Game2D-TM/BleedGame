@@ -1,7 +1,7 @@
 package fightinggame.entity.platform;
 
 import fightinggame.Gameplay;
-import fightinggame.entity.background.BackgroundObject;
+import fightinggame.entity.background.GameObject;
 import fightinggame.entity.GamePosition;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -19,7 +19,7 @@ public abstract class Platform {
     protected int column;
     protected boolean canRender = false;
     protected boolean isMapRender = false;
-    protected List<BackgroundObject> objects = new ArrayList<>();
+    protected List<GameObject> objects = new ArrayList<>();
 
     public Platform(String name, BufferedImage image, boolean canStand, GamePosition position, Gameplay gameplay,
             int row, int column) {
@@ -39,7 +39,7 @@ public abstract class Platform {
         if (canRender || isMapRender) {
             if (objects.size() > 0) {
                 for (int i = 0; i < objects.size(); i++) {
-                    BackgroundObject obj = objects.get(i);
+                    GameObject obj = objects.get(i);
                     if (obj != null) {
                         obj.tick();
                     }
@@ -55,7 +55,7 @@ public abstract class Platform {
                     position.getHeight(), null);
             if (objects.size() > 0) {
                 for (int i = 0; i < objects.size(); i++) {
-                    BackgroundObject obj = objects.get(i);
+                    GameObject obj = objects.get(i);
                     if (obj != null) {
                         obj.render(g);
                     }
@@ -133,11 +133,11 @@ public abstract class Platform {
         this.canRender = canRender;
     }
 
-    public List<BackgroundObject> getObjects() {
+    public List<GameObject> getObjects() {
         return objects;
     }
 
-    public void setObjects(List<BackgroundObject> objects) {
+    public void setObjects(List<GameObject> objects) {
         this.objects = objects;
     }
 

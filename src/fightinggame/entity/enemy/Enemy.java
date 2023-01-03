@@ -90,7 +90,6 @@ public abstract class Enemy extends Character {
                 gameplay.getPlayer().getStats().addExperience(experience);
                 gameplay.getPlayer().addScore(point);
                 gameplay.getEnemies().remove(this);
-                gameplay.getPositions().remove(name);
                 deathCounter = 0;
             }
         }

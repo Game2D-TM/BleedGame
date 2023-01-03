@@ -35,6 +35,7 @@ import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
+import fightinggame.entity.background.GameObject;
 import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
@@ -59,7 +60,6 @@ public class Gameplay extends JPanel implements Runnable {
     private boolean renderMap = true;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
-    private final Map<String, GamePosition> positions = new HashMap<String, GamePosition>();
     private Game game;
     private int itemCount = 0;
     private int enemyCount = 0;
@@ -72,20 +72,34 @@ public class Gameplay extends JPanel implements Runnable {
 
     public Gameplay(Game game, int width, int height) {
         setSize(width, height);
+        this.game = game;
         camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
-        background = new Background(0, "Scene 1",
-                ImageManager.loadImagesFromFolderToMap("assets/res/background/Wallpaper"), width, height,
+        initScene("Scene 1", "data/scene_1.txt");
+    }
+
+    public void initBackgroundMusic() {
+        if(audioPlayer != null) {
+          audioPlayer.closeThread();
+        }
+        audioPlayer = new AudioPlayer("assets/res/sound");
+        audioPlayer.startThread("background_music", true, 0.75f);
+    }
+
+    public void initScene(String sceneName, String sceneDataFilePath) {
+        background = new Background(0, sceneName,
+                ImageManager.loadImagesFromFolderToMap("assets/res/background/Wallpaper"),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Tiles"),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Objects"), this,
-                "data/scene_1.txt", 250, 180);
+                sceneDataFilePath, 250, 180);
         map = new GameMap(1, "Map", this,
                 new GamePosition(0, 0, 0, 0),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Wallpaper"),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Tiles"),
                 ImageManager.loadImagesFromFolderToMap("assets/res/background/Objects"),
-                "data/scene_1.txt", 15, 15);
-        this.game = game;
-        audioPlayer = new AudioPlayer("assets/res/sound");
+                sceneDataFilePath, 15, 15);
+        initObjects();
+        enemies.clear();
+        itemsOnGround.clear();
         Platform firstPlatform = getPlatforms().get(10).get(3);
         playerInit(firstPlatform);
         firstPlatform = background.getScene().get(9).get(8);
@@ -94,7 +108,22 @@ public class Gameplay extends JPanel implements Runnable {
 //        diorInit(firstPlatform);
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
-        audioPlayer.startThread("background_music", true, 0.75f);
+        initBackgroundMusic();
+    }
+    
+    public void initObjects() {
+        List<List<Platform>> scene = getPlatforms();
+        Map<String, BufferedImage> objects = background.getObjects();
+        Platform platform = scene.get(4).get(10);
+        if (platform != null) {
+            Chest obj = new Chest(objects.get("open_chest"), objects.get("close_chest"), "chest", platform.middlePlatform(), this);
+            platform.getObjects().add(obj);
+        }
+        platform = scene.get(12).get(3);
+        if (platform != null) {
+            GameObject obj = new GameObject(objects.get("box_1"), "close_chest", platform.rightCornerPlatform(300, 500), this);
+            platform.getObjects().add(obj);
+        }
     }
 
     @Override
@@ -232,7 +261,6 @@ public class Gameplay extends JPanel implements Runnable {
         itemInit(enemy.getInventory(), enemy);
         enemyCount++;
         enemies.add(enemy);
-        positions.put(enemy.getName(), enemy.getPosition());
         // level up to 8
 //        enemy.getStats().addExperience(50000);
     }
@@ -243,7 +271,7 @@ public class Gameplay extends JPanel implements Runnable {
                 firstPlatform.getPosition().getYPosition()
                 - 280 - 400, 350, 259);
         Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
-        
+
         SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01").clone();
         SpriteSheet attackSpecialRTL = spriteSheetMap.get("Attack01").convertRTL();
         // Add special attack new sheet
@@ -251,7 +279,7 @@ public class Gameplay extends JPanel implements Runnable {
         attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack03").getImages());
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack02").convertRTL().getImages());
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack03").convertRTL().getImages());
-        
+
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
@@ -444,7 +472,6 @@ public class Gameplay extends JPanel implements Runnable {
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
 
-        positions.put(player.getName(), player.getPosition());
         camera.setPlayer(player);
         // level up to 8
 //        player.getStats().addExperience(50000);
@@ -672,10 +699,6 @@ public class Gameplay extends JPanel implements Runnable {
 
     public List<Enemy> getEnemies() {
         return enemies;
-    }
-
-    public Map<String, GamePosition> getPositions() {
-        return positions;
     }
 
     public Game getGame() {

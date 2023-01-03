@@ -1,8 +1,6 @@
 package fightinggame.entity;
 
-import fightinggame.entity.background.BackgroundObject;
 import fightinggame.Gameplay;
-import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
@@ -42,8 +40,8 @@ public class Background {
     }
 
     public Background(int id, String name, Map<String, BufferedImage> backgrounds,
-            int width, int height, Map<String, BufferedImage> tiles,
-            Map<String, BufferedImage> objects, Gameplay gameplay, String fileNameScene,
+             Map<String, BufferedImage> tiles, Map<String, BufferedImage> objects,
+            Gameplay gameplay, String fileNameScene,
             int tileWidth, int tileHeight) {
         this.id = id;
         this.name = name;
@@ -54,10 +52,9 @@ public class Background {
         this.gameplay = gameplay;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
-        this.position = new GamePosition(-15, 0, width, height);
+        this.position = new GamePosition(-15, 0, 0, 0);
         loadImagesToScene();
         initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
-        initObjects();
     }
 
     public Background(int id, String name, Gameplay gameplay,
@@ -77,20 +74,6 @@ public class Background {
         this.tileHeight = tileHeight;
         loadImagesToScene();
         initScene(position.getXPosition(), position.getYPosition(), tileWidth, tileHeight);
-        initObjects();
-    }
-
-    public void initObjects() {
-        Platform platform = scene.get(4).get(10);
-        if (platform != null) {
-            Chest obj = new Chest(objects.get("open_chest"), objects.get("close_chest"), "chest", platform.middlePlatform(), gameplay);
-            platform.getObjects().add(obj);
-        }
-        platform = scene.get(12).get(3);
-        if (platform != null) {
-            BackgroundObject obj = new BackgroundObject(objects.get("box_1"), "close_chest", platform.rightCornerPlatform(300, 500), gameplay);
-            platform.getObjects().add(obj);
-        }
     }
 
     public void initScene(int x, int y, int width, int height) {
