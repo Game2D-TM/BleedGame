@@ -1,12 +1,9 @@
 package fightinggame.entity.platform;
 
 import fightinggame.Gameplay;
-import fightinggame.entity.background.GameObject;
 import fightinggame.entity.GamePosition;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class Platform {
 
@@ -19,7 +16,6 @@ public abstract class Platform {
     protected int column;
     protected boolean canRender = false;
     protected boolean isMapRender = false;
-    protected List<GameObject> objects = new ArrayList<>();
 
     public Platform(String name, BufferedImage image, boolean canStand, GamePosition position, Gameplay gameplay,
             int row, int column) {
@@ -36,16 +32,6 @@ public abstract class Platform {
 
     public void tick() {
         canRender = gameplay.getCamera().checkPositionRelateToCamera(position);
-        if (canRender || isMapRender) {
-            if (objects.size() > 0) {
-                for (int i = 0; i < objects.size(); i++) {
-                    GameObject obj = objects.get(i);
-                    if (obj != null) {
-                        obj.tick();
-                    }
-                }
-            }
-        }
     }
 
     public void render(Graphics g) {
@@ -53,14 +39,6 @@ public abstract class Platform {
             g.drawImage(image, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
                     position.getHeight(), null);
-            if (objects.size() > 0) {
-                for (int i = 0; i < objects.size(); i++) {
-                    GameObject obj = objects.get(i);
-                    if (obj != null) {
-                        obj.render(g);
-                    }
-                }
-            }
 //      hitbox
 //            g.setColor(Color.red);
 //            g.drawRect(position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
@@ -76,10 +54,15 @@ public abstract class Platform {
 
     public GamePosition middlePlatform(int width, int height) {
         int nX = position.getMaxX() - width;
-        int distance = Math.abs((nX - position.getXPosition()) / 2);
+        int nY = position.getYPosition() - height;
+        int distance = -1;
+        if (nX < position.getXPosition()) {
+            distance = 0;
+        } else {
+            distance = Math.abs((nX - position.getXPosition()) / 2);
+        }
         return new GamePosition(nX - distance,
-                position.getYPosition() - height,
-                width, height);
+                nY, width, height);
     }
 
     public GamePosition leftCornerPlatform() {
@@ -88,11 +71,16 @@ public abstract class Platform {
 
     public GamePosition leftCornerPlatform(int width, int height) {
         int nX = position.getMaxX() - width;
-        int equalDistance = Math.abs((nX - position.getXPosition()) / 2);
-        int distance = Math.abs(equalDistance + equalDistance / 2);
+        int nY = position.getYPosition() - height;
+        int distance = -1;
+        if (nX < position.getXPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nX - position.getXPosition()) / 2);
+            distance = Math.abs(equalDistance + equalDistance / 2);
+        }
         return new GamePosition(nX - distance,
-                position.getYPosition() - height,
-                width, height);
+                nY, width, height);
     }
 
     public GamePosition rightCornerPlatform() {
@@ -101,11 +89,16 @@ public abstract class Platform {
 
     public GamePosition rightCornerPlatform(int width, int height) {
         int nX = position.getMaxX() - width;
-        int equalDistance = Math.abs((nX - position.getXPosition()) / 2);
-        int distance = equalDistance / 2;
+        int nY = position.getYPosition() - height;
+        int distance = -1;
+        if (nX < position.getXPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nX - position.getXPosition()) / 2);
+            distance = equalDistance / 2;
+        }
         return new GamePosition(nX - distance,
-                position.getYPosition() - height,
-                width, height);
+                nY, width, height);
     }
 
     @Override
@@ -131,14 +124,6 @@ public abstract class Platform {
 
     public void setCanRender(boolean canRender) {
         this.canRender = canRender;
-    }
-
-    public List<GameObject> getObjects() {
-        return objects;
-    }
-
-    public void setObjects(List<GameObject> objects) {
-        this.objects = objects;
     }
 
     public void setName(String name) {

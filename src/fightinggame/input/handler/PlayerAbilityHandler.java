@@ -6,8 +6,10 @@ import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
+import fightinggame.resource.DataManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -92,7 +94,9 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_SLASH:
-                    gameplay.initScene("Scene 2", "data/scene_2.txt");
+                    File scene = DataManager.getNextScene();
+                    if(scene == null) break;
+                    gameplay.initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                     break;
             }
         }

@@ -1,0 +1,13 @@
+dior:9,8
+dior:10,16
+dior:10,14
+dior:10,18
+dior:8,27
+dior:9,5
+dior:8,25
+dior:1,43
+dior:1,40
+dior:1,37
+dior:1,45
+dior:6,7
+dior:2,9

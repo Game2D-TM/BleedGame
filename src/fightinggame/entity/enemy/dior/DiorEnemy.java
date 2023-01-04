@@ -83,9 +83,9 @@ public class DiorEnemy extends Enemy {
             int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
             int attackHeight = position.getHeight() / 2 - 10;
             if (!isLTR) {
-                xAttack = position.getXPosition();
+                xAttack = position.getXPosition() - 30;
             } else {
-                xAttack = position.getMaxX();
+                xAttack = position.getMaxX() + 30;
             }
             if (gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, false, null)) {
                 if (isLTR) {
@@ -140,21 +140,19 @@ public class DiorEnemy extends Enemy {
                 if (animateChange) {
                     if (!isLTR) {
                         position.setXPosition(position.getXPosition() + 30);
-                        position.setWidth(position.getWidth() - 30);
                     } else {
                         position.setXPosition(position.getXPosition() - 30);
-                        position.setWidth(position.getWidth() + 30);
                     }
+                    position.setWidth(position.getWidth() - 30);
                     animateChange = false;
                 }
                 if (isAttack) {
                     if (!isLTR) {
                         position.setXPosition(position.getXPosition() - 30);
-                        position.setWidth(position.getWidth() + 30);
                     } else {
                         position.setXPosition(position.getXPosition() + 30);
-                        position.setWidth(position.getWidth() - 30);
                     }
+                    position.setWidth(position.getWidth() + 30);
                     isAttack = false;
                     animateChange = true;
                 }

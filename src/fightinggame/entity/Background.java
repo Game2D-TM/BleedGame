@@ -1,10 +1,12 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
+import fightinggame.entity.background.GameObject;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
+import fightinggame.entity.platform.tile.WaterTile;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +33,8 @@ public class Background {
     protected Map<String, BufferedImage> backgrounds;
     protected Map<String, BufferedImage> tiles;
     protected Map<String, BufferedImage> objects;
+    protected final Map<String, GameObject> gameObjectsTouchable = new HashMap<>();
+    protected final Map<String, GameObject> gameObjectsNonTouchable = new HashMap<>();
     protected final List<List<Platform>> scene = new ArrayList<>();
     protected String fileNameScene;
     protected int tileWidth;
@@ -40,7 +45,7 @@ public class Background {
     }
 
     public Background(int id, String name, Map<String, BufferedImage> backgrounds,
-             Map<String, BufferedImage> tiles, Map<String, BufferedImage> objects,
+            Map<String, BufferedImage> tiles, Map<String, BufferedImage> objects,
             Gameplay gameplay, String fileNameScene,
             int tileWidth, int tileHeight) {
         this.id = id;
@@ -151,26 +156,23 @@ public class Background {
                                 if (!tilesStr[i].isBlank()) {
                                     String key = tilesStr[i];
                                     Platform nPlatform;
-                                    if (key.equals("0")) {
-                                        nPlatform = new BlankTile("Blank " + (row + col),
+                                    if (col < NUMBER_WALL_COL) {
+                                        nPlatform = new WallTile("Wall " + (row + col),
                                                 tiles.get(key), null, gameplay, row, col);
                                     } else {
-                                        if (col < NUMBER_WALL_COL) {
-                                            nPlatform = new WallTile("Wall " + (row + col),
-                                                    tiles.get(key), null, gameplay, row, col);
-                                        } else {
-                                            if (row < NUMBER_SKY_ROW) {
-                                                if (key.equals("0")) {
-                                                    nPlatform = new BlankTile("Blank " + (row + col),
-                                                            tiles.get(key), null, gameplay, row, col);
-                                                } else {
-                                                    nPlatform = new Tile("Tile " + (row + col),
-                                                            tiles.get(key), null, gameplay, row, col);
-                                                }
-                                            } else {
+                                        switch (key) {
+                                            case "0":
+                                                nPlatform = new BlankTile("Blank " + (row + col),
+                                                        tiles.get(key), null, gameplay, row, col);
+                                                break;
+                                            case "3", "4":
+                                                nPlatform = new WaterTile("Tile " + (row + col),
+                                                        tiles.get(key), null, gameplay, row, col);
+                                                break;
+                                            default:
                                                 nPlatform = new Tile("Tile " + (row + col),
                                                         tiles.get(key), null, gameplay, row, col);
-                                            }
+                                                break;
                                         }
                                     }
                                     platforms.add(nPlatform);
@@ -224,6 +226,14 @@ public class Background {
                 }
             }
         }
+        if (gameObjectsTouchable.size() > 0) {
+            for (String key : gameObjectsTouchable.keySet()) {
+                GameObject obj = gameObjectsTouchable.get(key);
+                if (obj != null) {
+                    obj.tick();
+                }
+            }
+        }
     }
 
     public void render(Graphics g) {
@@ -234,6 +244,14 @@ public class Background {
                         position.getHeight(), null);
             }
         }
+        if (gameObjectsNonTouchable.size() > 0) {
+            for (String key : gameObjectsNonTouchable.keySet()) {
+                GameObject obj = gameObjectsNonTouchable.get(key);
+                if (obj != null) {
+                    obj.render(g);
+                }
+            }
+        }
         if (scene != null && scene.size() > 0) {
             for (int i = 0; i < scene.size(); i++) {
                 List<Platform> platforms = scene.get(i);
@@ -241,9 +259,19 @@ public class Background {
                     for (int j = 0; j < platforms.size(); j++) {
                         Platform platform = platforms.get(j);
                         if (platform != null) {
-                            platform.render(g);
+                            if (platform.isCanRender()) {
+                                platform.render(g);
+                            }
                         }
                     }
+                }
+            }
+        }
+        if (gameObjectsTouchable.size() > 0) {
+            for (String key : gameObjectsTouchable.keySet()) {
+                GameObject obj = gameObjectsTouchable.get(key);
+                if (obj != null) {
+                    obj.render(g);
                 }
             }
         }
@@ -297,6 +325,14 @@ public class Background {
             return platforms;
         }
         return null;
+    }
+
+    public Map<String, GameObject> getGameObjectsTouchable() {
+        return gameObjectsTouchable;
+    }
+
+    public Map<String, GameObject> getGameObjectsNonTouchable() {
+        return gameObjectsNonTouchable;
     }
 
     public int getId() {

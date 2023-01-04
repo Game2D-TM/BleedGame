@@ -49,6 +49,7 @@ public abstract class ObjectTouchable extends GameObject {
                 && attackMaxY > position.getMaxY())
                 || (attackMaxY > position.getYPosition() && attackMaxY <= position.getMaxY()
                 && attackY < position.getYPosition())))) {
+            if(imageAfterTouch == null) return false;
             image = imageAfterTouch;
             return true;
         }

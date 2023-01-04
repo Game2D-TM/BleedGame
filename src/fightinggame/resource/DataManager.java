@@ -17,8 +17,10 @@ public class DataManager {
     public static final String GAME_OBJECTS_PATH = "assets/res/background/Objects";
     public static final String SOUNDS_PATH = "assets/res/sound";
     public static final String DATA_FOLDER = "data/";
+    public static final String SCENE_FILENAME = "scene_";
 
     private static final Map<String, File> sceneData = new HashMap<>();
+    private static int sceneIndex = 0;
 
     public static File getFile(String name) {
         if (sceneData.isEmpty()) {
@@ -27,27 +29,50 @@ public class DataManager {
         return sceneData.get(name);
     }
 
-    public static File getFile(int index) {
-        if (sceneData.isEmpty()) {
-            return null;
-        }
-        int i = sceneData.size() - 1;
-        for (String key : sceneData.keySet()) {
-            if (i == index) {
-                System.out.println(key);
-                return sceneData.get(key);
+    public static File getFirstScene(int index) {
+        if (sceneIndex < 1 && index > 0) {
+            File firstScene = sceneData.get(SCENE_FILENAME + index);
+            if(firstScene == null) {
+                return null;
             }
-            i--;
+            sceneIndex = index;
+            return firstScene;
         }
         return null;
     }
 
+    public static File getNextScene() {
+        sceneIndex++;
+        File file = sceneData.get(SCENE_FILENAME + sceneIndex);
+        if(file == null) {
+            sceneIndex = 0;
+            return null;
+        }
+        return file;
+    }
+
+//    public static File getFile(int index) {
+//        if (sceneData.isEmpty()) {
+//            return null;
+//        }
+//        int i = sceneData.size() - 1;
+//        for (String key : sceneData.keySet()) {
+//            if (i == index) {
+//                System.out.println(key);
+//                return sceneData.get(key);
+//            }
+//            i--;
+//        }
+//        return null;
+//    }
     public static List<String> readFileToList(File file) {
         if (file == null) {
             return null;
         }
         if (file.exists()) {
-            if(file.isDirectory()) return null;
+            if (file.isDirectory()) {
+                return null;
+            }
             try {
                 return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
             } catch (IOException ex) {
@@ -55,6 +80,11 @@ public class DataManager {
             }
         }
         return null;
+    }
+    
+    public static int getCurrentSceneIndex() {
+        if(sceneIndex <= 0) return -1;
+        return sceneIndex;
     }
 
     public static boolean loadSceneData() {

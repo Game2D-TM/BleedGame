@@ -8,6 +8,7 @@ import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
+import fightinggame.entity.platform.tile.WaterTile;
 import fightinggame.input.handler.Handler;
 import java.awt.Color;
 import java.awt.Font;
@@ -90,6 +91,17 @@ public abstract class Character {
         }
         if (inventory != null) {
             inventory.tick();
+        }
+        if (standPlatform != null) {
+            if (standPlatform instanceof WaterTile) {
+                isDeath = true;
+                stats.setHealth(0);
+                if (isLTR) {
+                    currAnimation = animations.get(CharacterState.DEATH_LTR);
+                } else {
+                    currAnimation = animations.get(CharacterState.DEATH_RTL);
+                }
+            }
         }
     }
 

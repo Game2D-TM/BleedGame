@@ -6,4 +6,5 @@ public class fightinggame {
         Game game = new Game(1650, 950);
         game.start();
     }
+    
 }

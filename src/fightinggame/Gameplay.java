@@ -35,6 +35,9 @@ import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
+import fightinggame.entity.background.GameObject;
+import fightinggame.entity.background.GameObjectType;
+import fightinggame.entity.background.ObjectNonTouchable;
 import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
@@ -77,7 +80,7 @@ public class Gameplay extends JPanel implements Runnable {
         this.game = game;
         DataManager.loadSceneData();
         camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
-        File scene = DataManager.getFile("scene_1");
+        File scene = DataManager.getNextScene();
         initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
     }
 
@@ -106,13 +109,49 @@ public class Gameplay extends JPanel implements Runnable {
         itemsOnGround.clear();
         Platform firstPlatform = getPlatforms().get(10).get(3);
         playerInit(firstPlatform);
-        firstPlatform = background.getScene().get(9).get(8);
-        diorInit(firstPlatform);
-//        firstPlatform = background.getScene().get(9).get(9);
-//        diorInit(firstPlatform);
-//        spawnEnemiesThread = new Thread(spawnEnemies());
-//        spawnEnemiesThread.start();
+        initEnemies();
+        spawnEnemiesThread = new Thread(spawnEnemies());
+        spawnEnemiesThread.start();
         initBackgroundMusic();
+    }
+
+    public void initEnemies() {
+        int currSceneIndex = DataManager.getCurrentSceneIndex();
+        if (currSceneIndex <= 0) {
+            return;
+        }
+        File enemiesLocation = DataManager.getFile("enemies_" + currSceneIndex);
+        if (enemiesLocation != null) {
+            List<String> lines = DataManager.readFileToList(enemiesLocation);
+            if (lines != null && lines.size() > 0) {
+                Platform firstPlatform;
+                for (int i = 0; i < lines.size(); i++) {
+                    String line = lines.get(i);
+                    String[] splits = line.split(":");
+                    if (splits.length != 2) {
+                        continue;
+                    }
+                    String enemyType = splits[0].trim();
+                    enemyType = enemyType.toLowerCase();
+                    String location = splits[1].trim();
+                    splits = location.split(",");
+                    if (splits.length == 2) {
+                        String rowStr = splits[0].trim();
+                        String columnStr = splits[1].trim();
+                        int row = Utils.getInt(rowStr);
+                        int column = Utils.getInt(columnStr);
+                        if (row > 0 && column > 0) {
+                            switch (enemyType) {
+                                case "dior":
+                                    firstPlatform = background.getScene().get(row).get(column);
+                                    diorInit(firstPlatform);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void initObjects() {
@@ -121,7 +160,11 @@ public class Gameplay extends JPanel implements Runnable {
         Map<String, BufferedImage> objects = background.getObjects();
 
         // Create Object
-        File objectsFile = DataManager.getFile("objects_1");
+        int currSceneIndex = DataManager.getCurrentSceneIndex();
+        if (currSceneIndex <= 0) {
+            return;
+        }
+        File objectsFile = DataManager.getFile("objects_" + currSceneIndex);
         if (objectsFile != null) {
             List<String> lines = DataManager.readFileToList(objectsFile);
             if (lines != null && lines.size() > 0) {
@@ -131,53 +174,86 @@ public class Gameplay extends JPanel implements Runnable {
                     if (splits.length != 2) {
                         continue;
                     }
-                    String type = splits[0];
-                    String gameObjStr = splits[1];
-                    switch (type) {
-                        case "chest":
-                            splits = gameObjStr.split(",");
-                            if (splits.length == 8) {
-                                String imgAfterTouchStr = splits[0];
-                                String imgDefaultStr = splits[1];
-                                String objName = splits[2];
-                                String platformPosStr = splits[3];
-                                String platformRow = splits[4];
-                                String platformColumn = splits[5];
-                                String widthStr = splits[6];
-                                String heightStr = splits[7];
-                                int row = Utils.getInt(platformRow);
-                                int column = Utils.getInt(platformColumn);
-                                if (row < 0 || column < 0) {
-                                    continue;
+                    String type = splits[0].trim();
+                    String gameObjStr = splits[1].trim();
+                    splits = gameObjStr.split(",");
+                    if (splits.length == 8) {
+                        String imgAfterTouchStr = splits[0].trim();
+                        String imgDefaultStr = splits[1].trim();
+                        String objName = splits[2].trim();
+                        String platformPosStr = splits[3].trim();
+                        String platformRow = splits[4].trim();
+                        String platformColumn = splits[5].trim();
+                        String widthStr = splits[6].trim();
+                        String heightStr = splits[7].trim();
+                        int row = Utils.getInt(platformRow);
+                        int column = Utils.getInt(platformColumn);
+                        if (row < 0 || column < 0) {
+                            continue;
+                        }
+                        int width = Utils.getInt(widthStr);
+                        int height = Utils.getInt(heightStr);
+                        Platform platform = scene.get(row).get(column);
+                        GamePosition position = null;
+                        if (platform != null) {
+                            if (width > 0 && height > 0) {
+                                if (platformPosStr.equalsIgnoreCase("mid")) {
+                                    position = platform.middlePlatform(width, height);
+                                } else if (platformPosStr.equalsIgnoreCase("left")) {
+                                    position = platform.leftCornerPlatform(width, height);
+                                } else if (platformPosStr.equalsIgnoreCase("right")) {
+                                    position = platform.rightCornerPlatform(width, height);
                                 }
-                                int width = Utils.getInt(widthStr);
-                                int height = Utils.getInt(heightStr);
-                                Platform platform = scene.get(row).get(column);
-                                GamePosition position = null;
-                                if (platform != null) {
-                                    if (width > 0 && height > 0) {
-                                        if (platformPosStr.equalsIgnoreCase("mid")) {
-                                            position = platform.middlePlatform(width, height);
-                                        } else if (platformPosStr.equalsIgnoreCase("left")) {
-                                            position = platform.leftCornerPlatform(width, height);
-                                        } else if (platformPosStr.equalsIgnoreCase("right")) {
-                                            position = platform.rightCornerPlatform(width, height);
-                                        }
-                                    } else {
-                                        if (platformPosStr.equalsIgnoreCase("mid")) {
-                                            position = platform.middlePlatform();
-                                        } else if (platformPosStr.equalsIgnoreCase("left")) {
-                                            position = platform.leftCornerPlatform();
-                                        } else if (platformPosStr.equalsIgnoreCase("right")) {
-                                            position = platform.rightCornerPlatform();
-                                        }
-                                    }
-                                    if(position == null) continue;
-                                    Chest obj = new Chest(objects.get(imgAfterTouchStr), objects.get(imgDefaultStr), objName, position, this);
-                                    platform.getObjects().add(obj);
+                            } else {
+                                if (platformPosStr.equalsIgnoreCase("mid")) {
+                                    position = platform.middlePlatform();
+                                } else if (platformPosStr.equalsIgnoreCase("left")) {
+                                    position = platform.leftCornerPlatform();
+                                } else if (platformPosStr.equalsIgnoreCase("right")) {
+                                    position = platform.rightCornerPlatform();
                                 }
                             }
-                            break;
+                            if (position == null) {
+                                continue;
+                            }
+                            GameObjectType objType = GameObjectType.valueOf(type.toUpperCase());
+                            GameObject gameObj = null;
+                            int index = -1;
+                            String key = "";
+                            if (objType != GameObjectType.NONTOUCH) {
+                                index = Utils.getNextIndexDuplicateKey(background.getGameObjectsTouchable(), objName);
+                                key = objName + index;
+                            } else {
+                                index = Utils.getNextIndexDuplicateKey(background.getGameObjectsNonTouchable(), objName);
+                                key = objName + index;
+                            }
+                            if (index <= 0) {
+                                continue;
+                            }
+                            switch (objType) {
+                                case GAMEOBJECT:
+                                    gameObj = new GameObject(objects.get(imgDefaultStr), objName, position, this);
+                                    if (gameObj == null) {
+                                        continue;
+                                    }
+                                    background.getGameObjectsTouchable().put(key, gameObj);
+                                    break;
+                                case CHEST:
+                                    gameObj = new Chest(objects.get(imgAfterTouchStr), objects.get(imgDefaultStr), objName, position, this);
+                                    if (gameObj == null) {
+                                        continue;
+                                    }
+                                    background.getGameObjectsTouchable().put(key, gameObj);
+                                    break;
+                                case NONTOUCH:
+                                    gameObj = new ObjectNonTouchable(objects.get(imgDefaultStr), objName, position, this);
+                                    if (gameObj == null) {
+                                        continue;
+                                    }
+                                    background.getGameObjectsNonTouchable().put(key, gameObj);
+                                    break;
+                            }
+                        }
                     }
                 }
             }
@@ -261,13 +337,13 @@ public class Gameplay extends JPanel implements Runnable {
         // Init enemy position
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition(), 300, 200);
-        SpriteSheet enemyIdleSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+        SpriteSheet idleRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 0, 192, 160,
                 23, 55, 160, 90, 4);
-        SpriteSheet enemyHit = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+        SpriteSheet enemyHitRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 480, 192, 160,
                 0, 55, 177, 90, 4);
-        SpriteSheet enemyDeath = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+        SpriteSheet enemyDeathRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 1920, 192, 160,
                 23, 55, 167, 90, 4);
         SpriteSheet enemyRunForward = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
@@ -276,9 +352,13 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet enemyRunBack = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 1440, 192, 160,
                 10, 55, 160, 90, 4);
-        SpriteSheet enemyAttack = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+        SpriteSheet enemyAttackRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
                 0, 640, 192, 160,
                 0, 55, 180, 90, 4);
+        SpriteSheet idleLTRSheet = idleRTLSheet.convertRTL();
+        SpriteSheet enemyHitLTRSheet = enemyHitRTLSheet.convertRTL();
+        SpriteSheet enemyDeathLTRSheet = enemyDeathRTLSheet.convertRTL();
+        SpriteSheet enemyAttackLTRSheet = enemyAttackRTLSheet.convertRTL();
 //        Export bufferedimage to file
 //        ImageManager.writeImages(enemyIdleSheet.getImages(), "assets/res/enemy/dior_firor/idle", "Idle_RTL", ImageManager.EXTENSION_PNG);
 //        ImageManager.writeImages(enemyHit.getImages(), "assets/res/enemy/dior_firor/hit", "Hit_RTL", ImageManager.EXTENSION_PNG);
@@ -286,29 +366,37 @@ public class Gameplay extends JPanel implements Runnable {
 //        ImageManager.writeImages(enemyRunForward.getImages(), "assets/res/enemy/dior_firor/run_rtl", "Run_RTL", ImageManager.EXTENSION_PNG);
 //        ImageManager.writeImages(enemyRunBack.getImages(), "assets/res/enemy/dior_firor/run_ltr", "Run_LTR", ImageManager.EXTENSION_PNG);
 //        ImageManager.writeImages(enemyAttack.getImages(), "assets/res/enemy/dior_firor/attack", "Attack_RTL", ImageManager.EXTENSION_PNG);
-        EnemyIdle idle = new EnemyIdle(enemyAnimationCount, enemyIdleSheet);
+        EnemyIdle idleRTL = new EnemyIdle(enemyAnimationCount, idleRTLSheet);
         enemyAnimationCount++;
-        EnemyHit hit = new EnemyHit(enemyAnimationCount, enemyHit);
+        EnemyIdle idleLTR = new EnemyIdle(enemyAnimationCount, idleLTRSheet);
         enemyAnimationCount++;
-        EnemyDeath death = new EnemyDeath(enemyAnimationCount, enemyDeath);
+        EnemyHit hitRTL = new EnemyHit(enemyAnimationCount, enemyHitRTLSheet);
+        enemyAnimationCount++;
+        EnemyHit hitLTR = new EnemyHit(enemyAnimationCount, enemyHitLTRSheet);
+        enemyAnimationCount++;
+        EnemyDeath deathRTL = new EnemyDeath(enemyAnimationCount, enemyDeathRTLSheet);
+        enemyAnimationCount++;
+        EnemyDeath deathLTR = new EnemyDeath(enemyAnimationCount, enemyDeathLTRSheet);
         enemyAnimationCount++;
         EnemyRunForward runForward = new EnemyRunForward(enemyAnimationCount, enemyRunForward, 40);
         enemyAnimationCount++;
         EnemyRunBack runBack = new EnemyRunBack(enemyAnimationCount, enemyRunBack, 40);
         enemyAnimationCount++;
-        EnemyAttack attack = new EnemyAttack(enemyAnimationCount, enemyAttack, 25);
+        EnemyAttack attackRTL = new EnemyAttack(enemyAnimationCount, enemyAttackRTLSheet, 25);
+        enemyAnimationCount++;
+        EnemyAttack attackLTR = new EnemyAttack(enemyAnimationCount, enemyAttackLTRSheet, 25);
         enemyAnimationCount++;
         Map<CharacterState, Animation> enemyAnimations = new HashMap();
-        enemyAnimations.put(CharacterState.IDLE_RTL, idle);
-        enemyAnimations.put(CharacterState.IDLE_LTR, idle);
-        enemyAnimations.put(CharacterState.GET_HIT_RTL, hit);
-        enemyAnimations.put(CharacterState.GET_HIT_LTR, hit);
-        enemyAnimations.put(CharacterState.DEATH_RTL, death);
-        enemyAnimations.put(CharacterState.DEATH_LTR, death);
+        enemyAnimations.put(CharacterState.IDLE_RTL, idleRTL);
+        enemyAnimations.put(CharacterState.IDLE_LTR, idleLTR);
+        enemyAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
+        enemyAnimations.put(CharacterState.GET_HIT_LTR, hitLTR);
+        enemyAnimations.put(CharacterState.DEATH_RTL, deathRTL);
+        enemyAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         enemyAnimations.put(CharacterState.RUNFORWARD, runForward);
         enemyAnimations.put(CharacterState.RUNBACK, runBack);
-        enemyAnimations.put(CharacterState.ATTACK01_RTL, attack);
-        enemyAnimations.put(CharacterState.ATTACK01_LTR, attack);
+        enemyAnimations.put(CharacterState.ATTACK01_RTL, attackRTL);
+        enemyAnimations.put(CharacterState.ATTACK01_LTR, attackLTR);
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
                 enemyAnimations, null, this, 200, null);
@@ -511,9 +599,15 @@ public class Gameplay extends JPanel implements Runnable {
 //        itemsOnGround.add(fireSword);
         Platform platform = getPlatforms().get(4).get(10);
         if (platform != null) {
-            fireSword.setPosition(platform.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
-            fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
-            ((Chest) platform.getObjects().get(0)).getItems().add(fireSword);
+            GameObject gameObject = background.getGameObjectsTouchable().get("chest1");
+            if (gameObject != null) {
+                if (gameObject instanceof Chest) {
+                    Chest chest = (Chest) gameObject;
+                    fireSword.setPosition(platform.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
+                    fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
+                    chest.getItems().add(fireSword);
+                }
+            }
         }
 
         itemInit(player.getInventory(), player);
@@ -616,7 +710,7 @@ public class Gameplay extends JPanel implements Runnable {
                         try {
                             Random random = new Random();
                             int numberOfEnemies = random.nextInt(5);
-                            int platformStandSize = getPlatforms().get(9).size() - 1;
+                            int platformStandSize = getPlatforms().get(9).size() - 5;
                             int platformColumn = platformStandSize;
                             for (int i = 0; i < numberOfEnemies; i++) {
                                 Platform platform = getPlatforms().get(9).get(platformColumn);
