@@ -41,8 +41,9 @@ public class Chest extends ObjectTouchable {
                                 , Item.ITEM_WIDTH, Item.ITEM_HEIGHT);
                         item.setPosition(itemPos);
                     }
-                    gameplay.getItemsOnGround().add(item);
                     item.setSpawnForever(true);
+                    gameplay.getItemsOnGround().add(item);
+                    items.remove(item);
                 }
             }
             return true;

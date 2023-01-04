@@ -10,6 +10,7 @@ public abstract class ObjectTouchable extends GameObject {
 
     protected BufferedImage imageAfterTouch;
     protected BufferedImage imageBeforeTouch;
+    protected boolean isTouch;
 
     public ObjectTouchable(BufferedImage imageAfterTouch, BufferedImage image, String name, GamePosition position, Gameplay gameplay) {
         super(image, name, position, gameplay);
@@ -19,24 +20,25 @@ public abstract class ObjectTouchable extends GameObject {
 
     @Override
     public void tick() {
-        Player player = gameplay.getPlayer();
-        if (player.isAttack() || player.isAirAttack()) {
-            int attackX = -1, attackY = -1, attackHeight = -1, x = player.getPosition().getXPosition()
-                    , width = player.getPosition().getWidth();
-            if (player.isLTR()) {
-                width = width + 20; // 120
-            } else {
-                x = x - 20;
-                width = width + 20;
+        if (!isTouch) {
+            Player player = gameplay.getPlayer();
+            if (player.isAttack() || player.isAirAttack()) {
+                int attackX = -1, attackY = -1, attackHeight = -1, x = player.getPosition().getXPosition(), width = player.getPosition().getWidth();
+                if (player.isLTR()) {
+                    width = width + 20; // 120
+                } else {
+                    x = x - 20;
+                    width = width + 20;
+                }
+                if (player.isLTR()) {
+                    attackX = x + width + 20 - 2;
+                } else {
+                    attackX = x + 2;
+                }
+                attackY = player.getPosition().getYPosition() + player.getPosition().getHeight() / 3 - 10;
+                attackHeight = player.getPosition().getHeight() / 2 - 10;
+                checkHit(attackX, attackY, attackHeight);
             }
-            if (player.isLTR()) {
-                attackX = x + width + 20 - 2;
-            } else {
-                attackX = x + 2;
-            }
-            attackY = player.getPosition().getYPosition() + player.getPosition().getHeight() / 3 - 10;
-            attackHeight = player.getPosition().getHeight() / 2 - 10;
-            checkHit(attackX, attackY, attackHeight);
         }
     }
 
@@ -49,8 +51,11 @@ public abstract class ObjectTouchable extends GameObject {
                 && attackMaxY > position.getMaxY())
                 || (attackMaxY > position.getYPosition() && attackMaxY <= position.getMaxY()
                 && attackY < position.getYPosition())))) {
-            if(imageAfterTouch == null) return false;
+            if (imageAfterTouch == null) {
+                return false;
+            }
             image = imageAfterTouch;
+            isTouch = true;
             return true;
         }
         return false;
@@ -72,4 +77,11 @@ public abstract class ObjectTouchable extends GameObject {
         this.imageAfterTouch = imageAfterTouch;
     }
 
+    public boolean isTouch() {
+        return isTouch;
+    }
+
+    public void setIsTouch(boolean isTouch) {
+        this.isTouch = isTouch;
+    }
 }

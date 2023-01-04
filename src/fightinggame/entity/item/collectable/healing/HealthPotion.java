@@ -1,4 +1,4 @@
-package fightinggame.entity.item.healing;
+package fightinggame.entity.item.collectable.healing;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
@@ -6,8 +6,9 @@ import fightinggame.entity.Character;
 import fightinggame.entity.ability.type.Heal;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
+import fightinggame.entity.item.collectable.CollectableItem;
 
-public class HealthPotion extends Item {
+public class HealthPotion extends CollectableItem {
 
     public HealthPotion(int id, String name, Animation animation, Character character,
             Gameplay gameplay, int amount) {

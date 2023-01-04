@@ -8,7 +8,7 @@ public class Camera {
 
     private Player player;
     private GamePosition position;
-    private Gameplay gameplay;
+    private final Gameplay gameplay;
 
     public Camera(Player player, GamePosition position, int windowWidth, int windowHeight, Gameplay gameplay) {
         this.player = player;

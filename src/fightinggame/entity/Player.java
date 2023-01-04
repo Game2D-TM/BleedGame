@@ -4,7 +4,6 @@ import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
 import fightinggame.animation.player.*;
 import fightinggame.resource.ImageManager;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -93,7 +92,7 @@ public class Player extends Character {
         healthBar.render(g);
         g.drawString("Score: " + score, getPlayerScorePos().getXPosition(),
                 getPlayerScorePos().getYPosition());
-        g.setColor(Color.red);
+//        g.setColor(Color.red);
         // hitbox
 //        g.setColor(Color.red);
 //        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),

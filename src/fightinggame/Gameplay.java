@@ -8,6 +8,7 @@ import fightinggame.animation.enemy.EnemyIdle;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.animation.item.HealthPotionAnimation;
+import fightinggame.animation.item.KeyAnimation;
 import fightinggame.animation.item.equipment.FireSwordAnimation;
 import fightinggame.animation.player.*;
 import fightinggame.entity.Animation;
@@ -42,7 +43,8 @@ import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.equipment.weapon.Sword;
-import fightinggame.entity.item.healing.HealthPotion;
+import fightinggame.entity.item.collectable.healing.HealthPotion;
+import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
@@ -107,7 +109,7 @@ public class Gameplay extends JPanel implements Runnable {
         initObjects();
         enemies.clear();
         itemsOnGround.clear();
-        Platform firstPlatform = getPlatforms().get(10).get(3);
+        Platform firstPlatform = getPlatforms().get(11).get(3);
         playerInit(firstPlatform);
         initEnemies();
         spawnEnemiesThread = new Thread(spawnEnemies());
@@ -413,9 +415,9 @@ public class Gameplay extends JPanel implements Runnable {
 
     public void playerInit(Platform firstPlatform) {
         // init player position
-        GamePosition defPlayerPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
-                firstPlatform.getPosition().getYPosition()
-                - 280 - 400, 350, 259);
+        GamePosition middlePlatform = firstPlatform.middlePlatform(350, 259);
+        GamePosition defPlayerPosition = new GamePosition(middlePlatform.getXPosition(),
+                middlePlatform.getYPosition(), 350, 259);
         Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
 
         SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01").clone();
@@ -580,6 +582,7 @@ public class Gameplay extends JPanel implements Runnable {
         abilitiesCharacterInit(player.getAbilities(), player);
 
         //Init Items
+        //Init Fire Sword
         SpriteSheet fireSwordSheet = new SpriteSheet();
         fireSwordSheet.add("assets/res/item/icon_items/Swords/Fire_Sworld.png");
         FireSwordAnimation fireSwordAnimation = new FireSwordAnimation(1, fireSwordSheet, -1);
@@ -591,13 +594,27 @@ public class Gameplay extends JPanel implements Runnable {
         Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, 1, itemEquipAnimations);
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
+        //Init Key
+        SpriteSheet keySheet = new SpriteSheet();
+        keySheet.add("assets/res/item/key.png");
+        KeyAnimation keyAnimation = new KeyAnimation(1, keySheet, -1);
+        Key keyItem = new Key(1, "Key Item", keyAnimation, null, this, 1);
+        Platform platform = getPlatforms().get(3).get(42);
+        if (platform != null) {
+            GameObject gameObject = background.getGameObjectsTouchable().get("chest3");
+            if (gameObject != null) {
+                Chest chest = (Chest) gameObject;
+                keyItem.setPosition(platform.middlePlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
+                chest.getItems().add(keyItem);
+            }
+        }
 //        platform spawn
 //        Platform spawnArea = getPlatforms().get(4).get(10);
 //        fireSword.setPosition(spawnArea.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
 //        fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
 //        fireSword.setSpawnForever(true);
 //        itemsOnGround.add(fireSword);
-        Platform platform = getPlatforms().get(4).get(10);
+        platform = getPlatforms().get(4).get(10);
         if (platform != null) {
             GameObject gameObject = background.getGameObjectsTouchable().get("chest1");
             if (gameObject != null) {

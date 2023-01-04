@@ -4,7 +4,9 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.CharacterState;
+import fightinggame.entity.ability.Ability;
 import fightinggame.entity.item.Item;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Equipment extends Item {
@@ -37,7 +39,7 @@ public abstract class Equipment extends Item {
         this.itemEquipAnimations = itemEquipAnimations;
     }
 
-    public boolean isIsEquip() {
+    public boolean isEquip() {
         return isEquip;
     }
 
@@ -49,14 +51,31 @@ public abstract class Equipment extends Item {
     public boolean checkHit(Character character) {
         boolean result = super.checkHit(character);
         if (result) {
-            result = use();
-            if (result) {
-                if (itemEquipAnimations != null && itemEquipAnimations.size() > 0) {
-                    for (CharacterState state : itemEquipAnimations.keySet()) {
-                        character.getAnimations().put(state, itemEquipAnimations.get(state));
+            List<Item> itemsOnGround = gameplay.getItemsOnGround();
+            if (itemsOnGround.size() > 0) {
+                if (itemsOnGround.contains(this)) {
+                    this.character = character;
+                    if (abilities.size() > 0) {
+                        for (int i = 0; i < abilities.size(); i++) {
+                            Ability ability = abilities.get(i);
+                            if (ability != null) {
+                                ability.setCharacter(character);
+                            }
+                        }
+                    }
+                    itemsOnGround.remove(this);
+                    spawnDrop = false;
+                    dropExpireCounter = 0;
+                    result = use();
+                    if (result) {
+                        if (itemEquipAnimations != null && itemEquipAnimations.size() > 0) {
+                            for (CharacterState state : itemEquipAnimations.keySet()) {
+                                character.getAnimations().put(state, itemEquipAnimations.get(state));
+                            }
+                        }
+                        return true;
                     }
                 }
-                return true;
             }
         }
         return false;

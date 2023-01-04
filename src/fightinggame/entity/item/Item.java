@@ -6,7 +6,6 @@ import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.Handler;
 import fightinggame.entity.Character;
-import fightinggame.entity.inventory.Inventory;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -117,26 +116,7 @@ public abstract class Item {
                     || (charPostion.getMaxY() >= getYHitBox() && charPostion.getMaxY() <= getYMaxHitBox()
                     && charPostion.getYPosition() < getYHitBox()))
                     || (charPostion.getYPosition() >= getYHitBox() && charPostion.getMaxY() <= getYMaxHitBox()))) {
-                List<Item> itemsOnGround = gameplay.getItemsOnGround();
-                if (itemsOnGround.size() > 0) {
-                    if (itemsOnGround.contains(this)) {
-                        this.character = character;
-                        if (abilities.size() > 0) {
-                            for (int i = 0; i < abilities.size(); i++) {
-                                Ability ability = abilities.get(i);
-                                if (ability != null) {
-                                    ability.setCharacter(character);
-                                }
-                            }
-                        }
-                        itemsOnGround.remove(this);
-                        Inventory inventory = character.getInventory();
-                        inventory.addItemToInventory(this);
-                        spawnDrop = false;
-                        dropExpireCounter = 0;
-                        return true;
-                    }
-                }
+                return true;
             }
         }
         return false;
