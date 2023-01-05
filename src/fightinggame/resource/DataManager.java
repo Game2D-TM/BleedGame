@@ -50,6 +50,14 @@ public class DataManager {
         }
         return file;
     }
+    public static File getCurrentScene() {
+        File file = sceneData.get(SCENE_FILENAME + sceneIndex);
+        if(file == null) {
+            sceneIndex = 0;
+            return null;
+        }
+        return file;
+    }
 
 //    public static File getFile(int index) {
 //        if (sceneData.isEmpty()) {

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
 import fightinggame.entity.GameMap;
+import fightinggame.entity.Rule;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
@@ -46,8 +47,6 @@ import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.item.collectable.healing.HealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.platform.Platform;
-import fightinggame.entity.platform.tile.Tile;
-import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.input.handler.EnemyMovementHandler;
 import fightinggame.input.handler.MouseHandler;
 import fightinggame.input.handler.PlayerAbilityHandler;
@@ -76,6 +75,7 @@ public class Gameplay extends JPanel implements Runnable {
     private final List<Item> itemsOnGround = new ArrayList<Item>();
     private Camera camera;
     public int gravity = 7;
+    private Rule rule;
 
     public Gameplay(Game game, int width, int height) {
         setSize(width, height);
@@ -87,11 +87,14 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void initBackgroundMusic() {
+        boolean isCloseThread = true;
         if (audioPlayer != null) {
-            audioPlayer.closeThread();
+            isCloseThread = audioPlayer.closeThread("background_music");
         }
-        audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
-        audioPlayer.startThread("background_music", true, 0.75f);
+        if (isCloseThread) {
+            audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
+            audioPlayer.startThread("background_music", true, 0.75f);
+        }
     }
 
     public void initScene(String sceneName, String sceneDataFilePath) {
@@ -107,14 +110,52 @@ public class Gameplay extends JPanel implements Runnable {
                 ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH),
                 sceneDataFilePath, 15, 15);
         initObjects();
+        initVictoryPosition();
         enemies.clear();
         itemsOnGround.clear();
         Platform firstPlatform = getPlatforms().get(11).get(3);
         playerInit(firstPlatform);
         initEnemies();
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         initBackgroundMusic();
+    }
+
+    public void initVictoryPosition() {
+        int currSceneIndex = DataManager.getCurrentSceneIndex();
+        if (currSceneIndex <= 0) {
+            return;
+        }
+        File victoryPosFile = DataManager.getFile("victory_position");
+        if (victoryPosFile != null) {
+            List<String> lines = DataManager.readFileToList(victoryPosFile);
+            if (lines != null && lines.size() > 0) {
+                try {
+                    String pos = lines.get(currSceneIndex - 1);
+                    String[] splits = pos.split(",");
+                    if (splits.length == 4) {
+                        int row1 = Utils.getInt(splits[0].trim());
+                        int column1 = Utils.getInt(splits[1].trim());
+                        int row2 = Utils.getInt(splits[2].trim());
+                        int column2 = Utils.getInt(splits[3].trim());
+                        Platform platform1 = getPlatforms().get(row1).get(column1);
+                        Platform platform2 = getPlatforms().get(row2).get(column2);
+                        if (platform1 == null) {
+                            return;
+                        }
+                        if (platform2 == null) {
+                            return;
+                        }
+                        GamePosition nPos = new GamePosition(platform1.getPosition().getXPosition(), platform1.getPosition().getYPosition(),
+                                platform1.getPosition().getWidth() + platform2.getPosition().getWidth(),
+                                platform1.getPosition().getHeight() + platform2.getPosition().getHeight() + 10);
+                        rule = new Rule(nPos, this);
+                    }
+                } catch (Exception ex) {
+
+                }
+            }
+        }
     }
 
     public void initEnemies() {
@@ -795,6 +836,9 @@ public class Gameplay extends JPanel implements Runnable {
         if (player != null) {
             player.tick();
         }
+        if (rule != null) {
+            rule.tick();
+        }
     }
 
     public void render(Graphics g) {
@@ -830,6 +874,9 @@ public class Gameplay extends JPanel implements Runnable {
                     }
                 }
             }
+        }
+        if (rule != null) {
+            rule.render(g);
         }
         if (player != null) {
             player.render(g2);

@@ -16,7 +16,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class AudioPlayer implements Runnable {
 
     // to store current position
-    public Map<String, Clip> audios = new HashMap();
+    public static Map<String, Clip> audios = new HashMap();
+    public static final Map<String, Thread> threads = new HashMap<>();
+    
     private Long currentFrame;
     private Clip clip;
 
@@ -26,7 +28,6 @@ public class AudioPlayer implements Runnable {
     private float volume;
     private String folderPath;
     private String name;
-    private Thread thread;
 
     // constructor to initialize streams and clip
     public AudioPlayer(String folder) {
@@ -82,11 +83,13 @@ public class AudioPlayer implements Runnable {
         this.name = name;
         this.isLoop = isLoop;
         this.volume = volume;
-        thread = new Thread(this);
+        Thread thread = new Thread(this);
         thread.start();
+        threads.put(name, thread);
     }
 
-    public boolean closeThread() {
+    public boolean closeThread(String name) {
+        Thread thread = threads.get(name);
         if (thread != null) {
             restart();
             thread.interrupt();

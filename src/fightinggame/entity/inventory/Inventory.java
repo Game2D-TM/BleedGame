@@ -196,8 +196,34 @@ public class Inventory {
 
     public Item getItemAscending() {
         SlotInventory slot = getSlotInventoryAscending();
-        if(slot == null) return null;
+        if (slot == null) {
+            return null;
+        }
         return slot.getItem();
+    }
+
+    public Item getItemByName(String name) {
+        try {
+            if (inventorySlots.size() > 0) {
+                for (int i = 0; i < inventorySlots.size(); i++) {
+                    if (inventorySlots.get(i) != null && inventorySlots.get(i).size() > 0) {
+                        for (int j = 0; j < inventorySlots.get(i).size(); j++) {
+                            SlotInventory slot = inventorySlots.get(i).get(j);
+                            if (slot != null) {
+                                if (slot.getItem() != null) {
+                                    if (slot.getItem().getName().equalsIgnoreCase(name)) {
+                                        return slot.getItem();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+        return null;
     }
 
     public SlotInventory getEmptySlotInventory() {
