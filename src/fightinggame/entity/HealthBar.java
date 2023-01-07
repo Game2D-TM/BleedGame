@@ -1,5 +1,6 @@
 package fightinggame.entity;
 
+import fightinggame.entity.state.HealthBarState;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;

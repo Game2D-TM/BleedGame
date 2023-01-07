@@ -14,7 +14,7 @@ import fightinggame.animation.player.*;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Background;
 import fightinggame.entity.Camera;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
@@ -47,10 +47,14 @@ import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.item.collectable.healing.HealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.platform.Platform;
-import fightinggame.input.handler.EnemyMovementHandler;
-import fightinggame.input.handler.MouseHandler;
-import fightinggame.input.handler.PlayerAbilityHandler;
-import fightinggame.input.handler.PlayerMovementHandler;
+import fightinggame.entity.platform.tile.Tile;
+import fightinggame.entity.platform.tile.WallTile;
+import fightinggame.entity.state.GameState;
+import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
+import fightinggame.input.handler.game.player.PlayerMouseHandler;
+import fightinggame.input.handler.game.player.PlayerAbilityHandler;
+import fightinggame.input.handler.game.player.PlayerMovementHandler;
+import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.Utils;
@@ -61,12 +65,14 @@ import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
 
+    public static int GRAVITY = 7;
+
     private Background background;
     private Background map;
     private boolean renderMap = true;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
-    private Game game;
+    private final Game game;
     private int itemCount = 0;
     private int enemyCount = 0;
     private int enemyAnimationCount = 0;
@@ -74,15 +80,22 @@ public class Gameplay extends JPanel implements Runnable {
     private AudioPlayer audioPlayer;
     private final List<Item> itemsOnGround = new ArrayList<Item>();
     private Camera camera;
-    public int gravity = 7;
     private Rule rule;
 
-    public Gameplay(Game game, int width, int height) {
-        setSize(width, height);
+    public Gameplay(Game game) {
         this.game = game;
-        DataManager.loadSceneData();
+        game.addKeyListener(new OptionKeyboardHandler(this));
+    }
+
+    public void initCamera() {
         camera = new Camera(player, new GamePosition(0, 0, 0, 0), getWidth(), getHeight(), this);
-        File scene = DataManager.getNextScene();
+    }
+
+    public void initFirstScene() {
+        File scene = DataManager.getFirstScene(1);
+        if (scene == null) {
+            return;
+        }
         initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
     }
 
@@ -323,14 +336,14 @@ public class Gameplay extends JPanel implements Runnable {
                 lastFpsCheck = System.nanoTime();
                 currentFps = totalFrames;
                 totalFrames = 0;
-//                System.out.println("Current Fps: " + currentFps);
+                System.out.println("Current Fps: " + currentFps);
             }
-            revalidate();
             try {
                 tick();
+                revalidate();
                 render(g);
             } catch (Exception ex) {
-//                System.out.println(ex.toString());
+                System.out.println(ex.toString());
             }
             updateTime = System.nanoTime() - now;
             wait = (OPTIMAL_TIME - updateTime) / 1000000;
@@ -676,7 +689,7 @@ public class Gameplay extends JPanel implements Runnable {
         player.getAbility(1).getHandlers().add(abilityHandler);
         game.addKeyListener(abilityHandler);
         PlayerMovementHandler keyBoardHandler = new PlayerMovementHandler(player, "player_movement", this);
-        MouseHandler mouseHandler = new MouseHandler(player, "player_mouse", this);
+        PlayerMouseHandler mouseHandler = new PlayerMouseHandler(player, "player_mouse", this);
         player.getController().add(keyBoardHandler);
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
@@ -814,35 +827,36 @@ public class Gameplay extends JPanel implements Runnable {
                 map.tick();
             }
         }
-        if (camera != null) {
-            camera.tick();
-        }
-        if (enemies != null) {
-            if (enemies.size() > 0) {
-                for (int i = 0; i < enemies.size(); i++) {
-                    Enemy enemy = enemies.get(i);
-                    enemy.tick();
+        if (Game.STATE == GameState.GAME_STATE) {
+            if (camera != null) {
+                camera.tick();
+            }
+            if (enemies != null) {
+                if (enemies.size() > 0) {
+                    for (int i = 0; i < enemies.size(); i++) {
+                        Enemy enemy = enemies.get(i);
+                        enemy.tick();
+                    }
                 }
             }
-        }
-        if (itemsOnGround.size() > 0) {
-            for (int i = 0; i < itemsOnGround.size(); i++) {
-                Item item = itemsOnGround.get(i);
-                if (item != null) {
-                    item.tick();
+            if (itemsOnGround.size() > 0) {
+                for (int i = 0; i < itemsOnGround.size(); i++) {
+                    Item item = itemsOnGround.get(i);
+                    if (item != null) {
+                        item.tick();
+                    }
                 }
             }
-        }
-        if (player != null) {
-            player.tick();
-        }
-        if (rule != null) {
-            rule.tick();
+            if (player != null) {
+                player.tick();
+            }
+            if (rule != null) {
+                rule.tick();
+            }
         }
     }
 
     public void render(Graphics g) {
-        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         if (background != null) {
             background.render(g2);
@@ -921,10 +935,6 @@ public class Gameplay extends JPanel implements Runnable {
         return game;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
     public boolean isRenderMap() {
         return renderMap;
     }
@@ -937,20 +947,16 @@ public class Gameplay extends JPanel implements Runnable {
         return spawnEnemiesThread;
     }
 
-    public void setThread(Thread thread) {
-        this.spawnEnemiesThread = thread;
-    }
-
     public AudioPlayer getAudioPlayer() {
         return audioPlayer;
     }
 
-    public void setAudioPlayer(AudioPlayer audioPlayer) {
-        this.audioPlayer = audioPlayer;
-    }
-
     public List<Item> getItemsOnGround() {
         return itemsOnGround;
+    }
+
+    public Rule getRule() {
+        return rule;
     }
 
 }

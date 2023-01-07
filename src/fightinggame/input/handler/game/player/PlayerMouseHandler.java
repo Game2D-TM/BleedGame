@@ -1,25 +1,28 @@
-package fightinggame.input.handler;
+package fightinggame.input.handler.game.player;
 
+import fightinggame.Game;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.entity.Animation;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.Player;
 import fightinggame.entity.enemy.Enemy;
+import fightinggame.entity.state.GameState;
+import fightinggame.input.handler.GameHandler;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MouseHandler extends Handler implements MouseListener {
+public class PlayerMouseHandler extends GameHandler implements MouseListener {
 
     private final Player player;
-    private Gameplay gameplay;
+    private final Gameplay gameplay;
     private boolean isClicked = false;
     private boolean canClick = false;
     private int mouseCounter = 0;
 
-    public MouseHandler(Player player, String name, Gameplay gameplay) {
+    public PlayerMouseHandler(Player player, String name, Gameplay gameplay) {
         super(name);
         this.player = player;
         this.gameplay = gameplay;
@@ -35,7 +38,7 @@ public class MouseHandler extends Handler implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() >= 1 && !isClicked) {
+        if (e.getClickCount() >= 1 && !isClicked && Game.STATE != GameState.OPTION_STATE) {
             isClicked = true;
         }
     }

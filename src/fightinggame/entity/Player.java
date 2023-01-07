@@ -1,5 +1,6 @@
 package fightinggame.entity;
 
+import fightinggame.entity.state.CharacterState;
 import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
 import fightinggame.animation.player.*;

@@ -1,22 +1,23 @@
-package fightinggame.input.handler;
+package fightinggame.input.handler.game.player;
 
+import fightinggame.Game;
 import fightinggame.Gameplay;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
-import fightinggame.resource.DataManager;
+import fightinggame.entity.state.GameState;
+import fightinggame.input.handler.GameHandler;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PlayerAbilityHandler extends Handler implements KeyListener {
+public class PlayerAbilityHandler extends GameHandler implements KeyListener {
 
-    private Player player;
-    private Gameplay gameplay;
+    private final Player player;
+    private final Gameplay gameplay;
 
     public PlayerAbilityHandler(Player player, String name, Gameplay gameplay) {
         super(name);
@@ -30,7 +31,7 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (!player.isDeath()) {
+        if (!player.isDeath() && Game.STATE != GameState.OPTION_STATE) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_1:
                     if (!player.isDeath()) {
@@ -94,9 +95,10 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_SLASH:
-                    File scene = DataManager.getNextScene();
-                    if(scene == null) break;
-                    gameplay.initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
+//                    File scene = DataManager.getNextScene();
+//                    if(scene == null) break;
+//                    gameplay.initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
+//                    gameplay.getGame().changeWindowMode(Game.ScreenState.borderless);
                     break;
             }
         }
@@ -104,9 +106,9 @@ public class PlayerAbilityHandler extends Handler implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        switch(e.getKeyCode()) {
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_2:
-                if(player.isAttack()) {
+                if (player.isAttack()) {
                     player.setIsAttack(false);
                 }
                 break;

@@ -27,7 +27,7 @@ public class GameMap extends Background {
     public static int DEF_MINUS_UP = 0;
     public static int DEF_MINUS_RIGHT = 0;
     public static int DEF_MINUS_LEFT = 0;
-    
+
     public GameMap(int id, String name, Gameplay gameplay, GamePosition position,
             Map<String, BufferedImage> backgrounds,
             Map<String, BufferedImage> tiles,
@@ -183,10 +183,12 @@ public class GameMap extends Background {
                                 if (checkExistPlatformInSurroundList(surroundPlatforms, enemyInsidePlatform)) {
                                     Platform mapPlatform = scene.get(enemyInsidePlatform.getRow()).get(enemyInsidePlatform.getColumn());
                                     if (mapPlatform != null) {
-                                        g.setColor(Color.red);
-                                        g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                                                mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
-                                                tileWidth, tileHeight);
+                                        if (mapPlatform.getPosition() != null) {
+                                            g.setColor(Color.red);
+                                            g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                                                    mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                                                    tileWidth, tileHeight);
+                                        }
                                     }
                                 }
                             }

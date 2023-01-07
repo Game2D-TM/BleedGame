@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
 import fightinggame.entity.Player;

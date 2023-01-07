@@ -1,5 +1,6 @@
-package fightinggame.input.handler;
+package fightinggame.input.handler.game;
 
+import fightinggame.entity.state.MoveState;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerFallDown_LTR;
 import fightinggame.animation.player.PlayerFallDown_RTL;
@@ -12,11 +13,12 @@ import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.entity.Character;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.Player;
+import fightinggame.input.handler.GameHandler;
 import java.util.List;
 
-public abstract class MovementHandler extends Handler {
+public abstract class MovementHandler extends GameHandler {
 
     protected Gameplay gameplay;
 
@@ -119,7 +121,7 @@ public abstract class MovementHandler extends Handler {
                 } else if (character.isGrapEdge()) {
                     dropSpeed = 0;
                 }
-                if (character.getStats().getVely() < gameplay.gravity) {
+                if (character.getStats().getVely() < gameplay.GRAVITY) {
                     character.getStats().setVely(character.getStats().getVely() + dropSpeed);
                 }
                 float vely = character.getStats().getVely();

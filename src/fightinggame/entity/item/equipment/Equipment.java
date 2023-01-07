@@ -3,7 +3,7 @@ package fightinggame.entity.item.equipment;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.item.Item;
 import java.util.List;

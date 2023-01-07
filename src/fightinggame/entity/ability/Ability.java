@@ -3,7 +3,7 @@ package fightinggame.entity.ability;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
-import fightinggame.input.handler.Handler;
+import fightinggame.input.handler.GameHandler;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.Character;
 import java.awt.Color;
@@ -27,7 +27,7 @@ public abstract class Ability {
     protected Animation currAnimation;
     protected BufferedImage border;
     protected GamePosition position;
-    protected List<Handler> handlers = new ArrayList<>();
+    protected List<GameHandler> handlers = new ArrayList<>();
     protected Gameplay gameplay;
     protected Character character;
     protected boolean isLTR;
@@ -191,11 +191,11 @@ public abstract class Ability {
         this.position = position;
     }
 
-    public List<Handler> getHandlers() {
+    public List<GameHandler> getHandlers() {
         return handlers;
     }
 
-    public void setHandlers(List<Handler> handlers) {
+    public void setHandlers(List<GameHandler> handlers) {
         this.handlers = handlers;
     }
 

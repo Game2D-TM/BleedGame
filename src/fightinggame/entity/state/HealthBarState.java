@@ -1,4 +1,4 @@
-package fightinggame.entity;
+package fightinggame.entity.state;
 
 public enum HealthBarState {
     MAX,

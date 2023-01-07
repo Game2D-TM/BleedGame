@@ -1,9 +1,9 @@
 package fightinggame.input.handler;
 
-public abstract class Handler{
+public abstract class GameHandler{
     protected String name;
     
-    public Handler(String name) {
+    public GameHandler(String name) {
         this.name = name;
     }
 

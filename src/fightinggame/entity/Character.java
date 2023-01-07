@@ -1,5 +1,6 @@
 package fightinggame.entity;
 
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerCrouch;
@@ -9,7 +10,7 @@ import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.entity.platform.tile.WaterTile;
-import fightinggame.input.handler.Handler;
+import fightinggame.input.handler.GameHandler;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -26,7 +27,7 @@ public abstract class Character {
     protected GamePosition position;
     protected Animation currAnimation;
     protected Map<CharacterState, Animation> animations;
-    protected List<Handler> controller = new ArrayList<>();
+    protected List<GameHandler> controller = new ArrayList<>();
     protected Map<String, BufferedImage> characterAssets;
     protected final Inventory inventory;
     protected final List<Ability> abilities = new ArrayList<>();
@@ -79,7 +80,7 @@ public abstract class Character {
         }
         if (controller.size() > 0) {
             for (int i = 0; i < controller.size(); i++) {
-                Handler handler = controller.get(i);
+                GameHandler handler = controller.get(i);
                 handler.tick();
             }
         }
@@ -477,11 +478,11 @@ public abstract class Character {
         this.characterAssets = characterAssets;
     }
 
-    public List<Handler> getController() {
+    public List<GameHandler> getController() {
         return controller;
     }
 
-    public void setController(List<Handler> controller) {
+    public void setController(List<GameHandler> controller) {
         this.controller = controller;
     }
 

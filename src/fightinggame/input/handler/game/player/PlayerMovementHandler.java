@@ -1,16 +1,20 @@
-package fightinggame.input.handler;
+package fightinggame.input.handler.game.player;
 
+import fightinggame.Game;
+import fightinggame.entity.state.MoveState;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerCrouch;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.entity.Animation;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.Player;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.BlankTile;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
+import fightinggame.entity.state.GameState;
+import fightinggame.input.handler.game.MovementHandler;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
@@ -120,7 +124,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (player.isAttacked() || player.isDeath() || player.isSpecialAttack()) {
+        if (player.isAttacked() || player.isDeath() || player.isSpecialAttack() || Game.STATE == GameState.OPTION_STATE) {
             return;
         }
         pressedKeys.add(e.getKeyCode());

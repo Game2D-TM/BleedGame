@@ -1,7 +1,9 @@
-package fightinggame.input.handler;
+package fightinggame.input.handler.game.enemy;
 
+import fightinggame.entity.state.MoveState;
 import fightinggame.Gameplay;
 import fightinggame.entity.enemy.Enemy;
+import fightinggame.input.handler.game.MovementHandler;
 
 public class EnemyMovementHandler extends MovementHandler{
     

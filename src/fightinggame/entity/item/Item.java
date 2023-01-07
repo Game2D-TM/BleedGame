@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
-import fightinggame.input.handler.Handler;
+import fightinggame.input.handler.GameHandler;
 import fightinggame.entity.Character;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -22,7 +22,7 @@ public abstract class Item {
     protected Character character;
     protected GamePosition position;
     protected int amount;
-    protected final List<Handler> handlers = new ArrayList<>();
+    protected final List<GameHandler> handlers = new ArrayList<>();
     protected final List<Ability> abilities = new ArrayList<>();
     protected Gameplay gameplay;
     protected boolean spawnDrop;
@@ -43,7 +43,7 @@ public abstract class Item {
     public void tick() {
         if (handlers.size() > 0) {
             for (int i = 0; i < handlers.size(); i++) {
-                Handler handler = handlers.get(i);
+                GameHandler handler = handlers.get(i);
                 handler.tick();
             }
         }
@@ -191,7 +191,7 @@ public abstract class Item {
         this.amount = amount;
     }
 
-    public List<Handler> getHandlers() {
+    public List<GameHandler> getHandlers() {
         return handlers;
     }
 

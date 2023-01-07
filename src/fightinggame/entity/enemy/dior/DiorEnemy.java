@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.animation.enemy.EnemyAttack;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.entity.Animation;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.throwable.Fireball;

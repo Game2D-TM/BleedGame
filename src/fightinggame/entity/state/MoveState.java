@@ -1,4 +1,4 @@
-package fightinggame.input.handler;
+package fightinggame.entity.state;
 
 public enum MoveState {
     CROUCH,

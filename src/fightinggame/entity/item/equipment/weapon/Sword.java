@@ -3,7 +3,7 @@ package fightinggame.entity.item.equipment.weapon;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.CharacterState;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.ability.type.IncreaseStat;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.equipment.Equipment;

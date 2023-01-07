@@ -45,8 +45,8 @@ public class DataManager {
         sceneIndex++;
         File file = sceneData.get(SCENE_FILENAME + sceneIndex);
         if(file == null) {
-            sceneIndex = 0;
-            return null;
+            sceneIndex = 1;
+            return sceneData.get(SCENE_FILENAME + sceneIndex);
         }
         return file;
     }
@@ -128,4 +128,9 @@ public class DataManager {
     public static String getSceneDataName(File file) {
         return Utils.firstCharCapital(Utils.getFileNameOnly(file.getName()));
     }
+
+    public static Map<String, File> getSceneData() {
+        return sceneData;
+    }
+    
 }
