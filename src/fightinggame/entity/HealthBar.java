@@ -1,15 +1,12 @@
 package fightinggame.entity;
 
 import fightinggame.entity.state.HealthBarState;
+import fightinggame.resource.DataManager;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,18 +37,7 @@ public class HealthBar {
                 healthBarPos.getMaxY() + 25, 0, 0));
         positions.put("character_health", new GamePosition(healthBarPos.getXPosition() + healthBarPos.getWidth() / 2 - 50,
                 healthBarPos.getYPosition() + healthBarPos.getHeight() / 2 + 8, 0, 0));
-        //Init font
-        try {
-            //create the font to use. Specify the size!
-            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("assets/res/gui/font/AbaddonBold.ttf")).deriveFont(25f);
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            //register the font
-            ge.registerFont(customFont);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (FontFormatException e) {
-            e.printStackTrace();
-        }
+        customFont = DataManager.getFont(30);
     }
 
     public void tick() {

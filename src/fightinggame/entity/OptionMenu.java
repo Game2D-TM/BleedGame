@@ -1,6 +1,7 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
+import fightinggame.resource.DataManager;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -27,12 +28,14 @@ public class OptionMenu {
     private String[] options = {"exit", "sub_options"};
     private int subOptionIndex = 0;
     private int optionIndex = 0;
+    private Font customFont;
 
     public OptionMenu(Map<String, BufferedImage> optionGuis, Gameplay gameplay) {
         this.optionGuis = optionGuis;
         this.gameplay = gameplay;
         mainPosition = new GamePosition(0, 0, OPTION_WIDTH, OPTION_HEIGHT);
         fullscreenCheck = optionGuis.get("wrong");
+        customFont = DataManager.getFont(60);
     }
 
     public void tick() {
@@ -92,7 +95,8 @@ public class OptionMenu {
                             60, 60, null);
                     
                     // Titles
-                    g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 60));
+//                    g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 60));
+                    g.setFont(customFont);
                     g.drawString("Resume", mainPosition.getXPosition() + 150 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 100 - gameplay.getCamera().getPosition().getYPosition());
                     g.drawString("Fullscreen", mainPosition.getXPosition() + 150 - gameplay.getCamera().getPosition().getXPosition(),

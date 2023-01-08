@@ -1,5 +1,7 @@
 package fightinggame.resource;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -19,9 +21,25 @@ public class DataManager {
     public static final String SOUNDS_PATH = "assets/res/sound";
     public static final String DATA_FOLDER = "data/";
     public static final String SCENE_FILENAME = "scene_";
+    public static File CUSTOM_FONT_FILE = new File("assets/res/gui/font/AbaddonBold.ttf");
 
     private static final Map<String, File> sceneData = new HashMap<>();
     private static int sceneIndex = 0;
+    
+    public static Font getFont(float size) {
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, CUSTOM_FONT_FILE).deriveFont(size);
+//            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//            //register the font
+//            ge.registerFont(customFont);
+            return customFont;
+        } catch (FontFormatException ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(DataManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     public static File getFile(String name) {
         if (sceneData.isEmpty()) {
@@ -33,7 +51,7 @@ public class DataManager {
     public static File getFirstScene(int index) {
         if (index > 0) {
             File firstScene = sceneData.get(SCENE_FILENAME + index);
-            if(firstScene == null) {
+            if (firstScene == null) {
                 return null;
             }
             sceneIndex = index;
@@ -45,15 +63,16 @@ public class DataManager {
     public static File getNextScene() {
         sceneIndex++;
         File file = sceneData.get(SCENE_FILENAME + sceneIndex);
-        if(file == null) {
+        if (file == null) {
             sceneIndex = 1;
             return sceneData.get(SCENE_FILENAME + sceneIndex);
         }
         return file;
     }
+
     public static File getCurrentScene() {
         File file = sceneData.get(SCENE_FILENAME + sceneIndex);
-        if(file == null) {
+        if (file == null) {
             sceneIndex = 0;
             return null;
         }
@@ -90,9 +109,11 @@ public class DataManager {
         }
         return null;
     }
-    
+
     public static int getCurrentSceneIndex() {
-        if(sceneIndex <= 0) return -1;
+        if (sceneIndex <= 0) {
+            return -1;
+        }
         return sceneIndex;
     }
 
@@ -133,5 +154,5 @@ public class DataManager {
     public static Map<String, File> getSceneData() {
         return sceneData;
     }
-    
+
 }

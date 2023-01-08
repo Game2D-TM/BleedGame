@@ -3,19 +3,12 @@ package fightinggame;
 import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.menu.MenuKeyboardHandler;
 import fightinggame.resource.DataManager;
-import fightinggame.resource.ImageManager;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
-import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
 import javax.swing.JFrame;
 
 public class Game extends JFrame {
@@ -27,7 +20,7 @@ public class Game extends JFrame {
     public static ScreenState current;
     private static GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private static GraphicsDevice ev = env.getDefaultScreenDevice();
-    public static final int FPS = 150;
+    public static final int FPS = 144;
     public static GameState STATE = GameState.MENU_STATE;
 
     private Gameplay gameplay;
@@ -101,7 +94,7 @@ public class Game extends JFrame {
         STATE = GameState.MENU_STATE;
         menuHandler = new MenuKeyboardHandler(this, getWidth(), getHeight());
         addKeyListener(menuHandler);
-        paint(getGraphics());
+        repaint();
     }
 
     public void start() {

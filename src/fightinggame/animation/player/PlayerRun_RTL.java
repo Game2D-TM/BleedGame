@@ -9,4 +9,8 @@ public class PlayerRun_RTL extends Animation{
         super(id, sheet, tickToExecute);
     }
     
+    public PlayerRun_RTL(int id, SpriteSheet sheet) {
+        super(id, sheet);
+    }
+    
 }

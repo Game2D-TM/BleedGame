@@ -3,17 +3,14 @@ package fightinggame.input.handler.menu;
 import fightinggame.Game;
 import static fightinggame.Game.STATE;
 import fightinggame.entity.state.GameState;
+import fightinggame.resource.DataManager;
 import fightinggame.resource.ImageManager;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
 
 public class MenuKeyboardHandler implements KeyListener {
 
@@ -21,15 +18,20 @@ public class MenuKeyboardHandler implements KeyListener {
     private String[] buttons = {"Start", "Options", "Quit"};
     private int currIndex = 0;
     private Image image;
-    private Font customFont;
     private int width, height;
-    private int x = width / 3 + 190 , firstY = height / 2 - 50 , y = firstY + 80;
+    private int firstY;
+    private int x, y;
+    private Font customFont;
 
     public MenuKeyboardHandler(Game game, int width, int height) {
         this.width = width;
         this.height = height;
         this.game = game;
+        firstY = height / 2 - 50;
+        x = width / 3 + 190;
+        y = firstY + 80;
         image = ImageManager.loadImage("assets/res/background/Menu/Background.png");
+        customFont = DataManager.getFont(55);
     }
 
     @Override
@@ -38,14 +40,6 @@ public class MenuKeyboardHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(currIndex == 1) {
-            y = firstY + height / 8 + 40 + 80;
-        }
-        else if(currIndex == 2) {
-            y = (firstY + (height / 8 + 40) * 2 + 80);
-        }
-        else y = firstY + 80;
-        
         if (Game.STATE == GameState.MENU_STATE) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP:
@@ -54,13 +48,16 @@ public class MenuKeyboardHandler implements KeyListener {
                     } else {
                         currIndex = buttons.length - 1;
                     }
+                    game.repaint();
                     break;
+
                 case KeyEvent.VK_DOWN:
                     if (currIndex < buttons.length - 1) {
                         currIndex++;
                     } else {
                         currIndex = 0;
                     }
+                    game.repaint();
                     break;
                 case KeyEvent.VK_ENTER:
                     String button = buttons[currIndex];
@@ -86,17 +83,6 @@ public class MenuKeyboardHandler implements KeyListener {
     }
 
     public void render(Graphics g) {
-        try {
-            //create the font to use. Specify the size!
-            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("assets/res/gui/font/AbaddonBold.ttf")).deriveFont(50f);
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            //register the font
-            ge.registerFont(customFont);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (FontFormatException e) {
-            e.printStackTrace();
-        }
         if (STATE == GameState.MENU_STATE) {
             g.setColor(Color.white);
             g.fillRect(0, 0, width, height);
@@ -107,12 +93,24 @@ public class MenuKeyboardHandler implements KeyListener {
             g.drawRect(width / 3 + 50, firstY + (height / 8 + 40) * 2, width / 4, height / 8);
             g.setFont(customFont);
             g.drawString("Start", width / 3 + 190, firstY + 80);
-            g.drawString("Options", width / 3 + 190, firstY + height / 8 + 40 + 80);
-            g.drawString("Quit", width / 3 + 190, firstY + (height / 8 + 40) * 2 + 80);
+            g.drawString("Options", width / 3 + 170, firstY + height / 8 + 40 + 80);
+            g.drawString("Quit", width / 3 + 200, firstY + (height / 8 + 40) * 2 + 80);
             g.setColor(Color.WHITE);
+            switch (currIndex) {
+                case 1:
+                    x = width / 3 + 170;
+                    y = firstY + height / 8 + 40 + 80;
+                    break;
+                case 2:
+                    x = width / 3 + 200;
+                    y = firstY + (height / 8 + 40) * 2 + 80;
+                    break;
+                default:
+                    x = width / 3 + 190;
+                    y = firstY + 80;
+                    break;
+            }
             g.drawString(buttons[currIndex], x, y);
         }
-
     }
 }
-

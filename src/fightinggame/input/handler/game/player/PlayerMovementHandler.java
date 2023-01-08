@@ -5,6 +5,8 @@ import fightinggame.entity.state.MoveState;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerCrouch;
 import fightinggame.animation.player.PlayerHit;
+import fightinggame.animation.player.PlayerRun_LTR;
+import fightinggame.animation.player.PlayerRun_RTL;
 import fightinggame.entity.Animation;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.Player;
@@ -171,7 +173,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         }
                         player.setIsLTR(false);
                         if (!player.isInAir() && !player.isFallDown()) {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                            if (player.getCurrAnimation() instanceof PlayerRun_RTL); else {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                            }
                         }
                         player.getPosition().isMoveLeft = true;
                         break;
@@ -189,7 +193,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         }
                         player.setIsLTR(true);
                         if (!player.isInAir() && !player.isFallDown()) {
-                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                            if (player.getCurrAnimation() instanceof PlayerRun_LTR); else {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                            }
                         }
                         player.getPosition().isMoveRight = true;
                         break;
@@ -290,12 +296,12 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
 //                            player.getPosition().setYPosition(player.getPosition().getYPosition() - 50);
 //                            player.getPosition().setHeight(player.getPosition().getHeight() + 50);
                             }
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(PlayerMovementHandler.class
-                                        .getName()).log(Level.SEVERE, null, ex);
-                            }
+//                            try {
+//                                Thread.sleep(500);
+//                            } catch (InterruptedException ex) {
+//                                Logger.getLogger(PlayerMovementHandler.class
+//                                        .getName()).log(Level.SEVERE, null, ex);
+//                            }
 
                         }
                         canAttack = false;

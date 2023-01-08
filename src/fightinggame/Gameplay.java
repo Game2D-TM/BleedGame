@@ -58,7 +58,6 @@ import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.Utils;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -114,9 +113,10 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void resolutionChange(int width, int height) {
-        setPreferredSize(new Dimension(width - 16, height - 39));
-        initCamera();
-        initFirstScene();
+        // error
+//        setPreferredSize(new Dimension(width - 16, height - 39));
+//        initCamera();
+//        initFirstScene();
     }
 
     public void initScene(String sceneName, String sceneDataFilePath) {
@@ -327,7 +327,6 @@ public class Gameplay extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        Graphics g = getGraphics();
         long now;
         long updateTime;
         long wait;
@@ -350,7 +349,7 @@ public class Gameplay extends JPanel implements Runnable {
             try {
                 tick();
                 revalidate();
-                render(g);
+                repaint();
             } catch (Exception ex) {
                 System.out.println(ex.toString());
             }
@@ -362,6 +361,11 @@ public class Gameplay extends JPanel implements Runnable {
 //                System.out.println(e.toString());
             }
         }
+    }
+    
+    @Override
+    public void paint(Graphics g) {
+        render(g);
     }
 
     public void diorInit(Platform firstPlatform) {
@@ -495,9 +499,9 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
         PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"));
-        PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01"), 0);
-        PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 12);
-        PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12);
+        PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01")); // 0
+        PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 15); // 12
+        PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12); // 12
         PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, 15);
         PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), 12);
         PlayerAttack fireAttack02LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack02"), 12);
@@ -530,7 +534,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
         PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
         PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL());
-        PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL(), 0);
+        PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL());
         PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
         PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, 15);
