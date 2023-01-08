@@ -65,8 +65,7 @@ public class Game extends JFrame {
 
     public void init() {
         gameplay = new Gameplay(this);
-        gameplay.setSize(getWidth(), getHeight());
-        gameplay.setPreferredSize(new Dimension(getWidth(), getHeight()));
+        gameplay.setPreferredSize(new Dimension(getWidth() - 16, getHeight() - 39));
         add(gameplay, BorderLayout.CENTER);
         pack();
         gameplay.initCamera();
@@ -110,7 +109,7 @@ public class Game extends JFrame {
         init();
         STATE = GameState.GAME_STATE;
         if (gameplay != null) {
-            if(gameThread != null && gameThread.isAlive()) {
+            if (gameThread != null && gameThread.isAlive()) {
                 gameThread.interrupt();
             }
             gameThread = new Thread(gameplay);
@@ -143,15 +142,8 @@ public class Game extends JFrame {
             if (ev.isFullScreenSupported()) {
                 ev.setFullScreenWindow(null);
             }
-//            setSize(1650, 950);
-//            setLocationRelativeTo(null);
             current = ScreenState.windowed;
         }
-//        if (gameplay != null) {
-//            gameplay.setSize(getWidth(), getHeight());
-//            gameplay.setPreferredSize(new Dimension(getWidth(), getHeight()));
-//            gameplay.initCamera();
-//        }
         System.out.println(getWidth() + " " + getHeight());
     }
 

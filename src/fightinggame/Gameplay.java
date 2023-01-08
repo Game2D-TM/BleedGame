@@ -58,6 +58,7 @@ import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.Utils;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -81,10 +82,12 @@ public class Gameplay extends JPanel implements Runnable {
     private final List<Item> itemsOnGround = new ArrayList<Item>();
     private Camera camera;
     private Rule rule;
+    private OptionKeyboardHandler optionHandler;
 
     public Gameplay(Game game) {
         this.game = game;
-        game.addKeyListener(new OptionKeyboardHandler(this));
+        optionHandler = new OptionKeyboardHandler(ImageManager.loadImagesFromFolderToMap(DataManager.OPTION_GUIS), this);
+        game.addKeyListener(optionHandler);
     }
 
     public void initCamera() {
@@ -110,6 +113,12 @@ public class Gameplay extends JPanel implements Runnable {
         }
     }
 
+    public void resolutionChange(int width, int height) {
+        setPreferredSize(new Dimension(width - 16, height - 39));
+        initCamera();
+        initFirstScene();
+    }
+
     public void initScene(String sceneName, String sceneDataFilePath) {
         background = new Background(0, sceneName,
                 ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
@@ -128,7 +137,7 @@ public class Gameplay extends JPanel implements Runnable {
         itemsOnGround.clear();
         Platform firstPlatform = getPlatforms().get(11).get(3);
         playerInit(firstPlatform);
-        initEnemies();
+        //initEnemies();
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
         initBackgroundMusic();
@@ -336,7 +345,7 @@ public class Gameplay extends JPanel implements Runnable {
                 lastFpsCheck = System.nanoTime();
                 currentFps = totalFrames;
                 totalFrames = 0;
-                System.out.println("Current Fps: " + currentFps);
+//                System.out.println("Current Fps: " + currentFps);
             }
             try {
                 tick();
@@ -878,46 +887,57 @@ public class Gameplay extends JPanel implements Runnable {
                 rule.tick();
             }
         }
+        if (Game.STATE == GameState.OPTION_STATE) {
+            if (optionHandler != null) {
+                optionHandler.tick();
+            }
+        }
     }
 
     public void render(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        if (background != null) {
-            background.render(g2);
-        }
-        if (renderMap) {
-            if (map != null) {
-                map.render(g2);
+        if (Game.STATE == GameState.OPTION_STATE) {
+            if (optionHandler != null) {
+                optionHandler.render(g2);
             }
-        }
-        if (camera != null) {
-            camera.render(g2);
-        }
-        if (enemies != null) {
-            if (enemies.size() > 0) {
-                for (int i = 0; i < enemies.size(); i++) {
-                    Enemy enemy = enemies.get(i);
-                    if (camera.checkPositionRelateToCamera(enemy.getPosition())) {
-                        enemy.render(g2);
+        } else {
+            if (background != null) {
+                background.render(g2);
+            }
+            if (renderMap) {
+                if (map != null) {
+                    map.render(g2);
+                }
+            }
+            if (camera != null) {
+                camera.render(g2);
+            }
+            if (enemies != null) {
+                if (enemies.size() > 0) {
+                    for (int i = 0; i < enemies.size(); i++) {
+                        Enemy enemy = enemies.get(i);
+                        if (camera.checkPositionRelateToCamera(enemy.getPosition())) {
+                            enemy.render(g2);
+                        }
                     }
                 }
             }
-        }
-        if (itemsOnGround.size() > 0) {
-            for (int i = 0; i < itemsOnGround.size(); i++) {
-                Item item = itemsOnGround.get(i);
-                if (item != null) {
-                    if (camera.checkPositionRelateToCamera(item.getPosition())) {
-                        item.render(g2);
+            if (itemsOnGround.size() > 0) {
+                for (int i = 0; i < itemsOnGround.size(); i++) {
+                    Item item = itemsOnGround.get(i);
+                    if (item != null) {
+                        if (camera.checkPositionRelateToCamera(item.getPosition())) {
+                            item.render(g2);
+                        }
                     }
                 }
             }
-        }
-        if (rule != null) {
-            rule.render(g);
-        }
-        if (player != null) {
-            player.render(g2);
+            if (rule != null) {
+                rule.render(g2);
+            }
+            if (player != null) {
+                player.render(g2);
+            }
         }
     }
 

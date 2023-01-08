@@ -15,6 +15,7 @@ public class DataManager {
     public static final String WALLPAPER_PATH = "assets/res/background/Wallpaper";
     public static final String TILES_PATH = "assets/res/background/Tiles";
     public static final String GAME_OBJECTS_PATH = "assets/res/background/Objects";
+    public static final String OPTION_GUIS = "assets/res/gui/option_menu";
     public static final String SOUNDS_PATH = "assets/res/sound";
     public static final String DATA_FOLDER = "data/";
     public static final String SCENE_FILENAME = "scene_";
@@ -30,7 +31,7 @@ public class DataManager {
     }
 
     public static File getFirstScene(int index) {
-        if (sceneIndex < 1 && index > 0) {
+        if (index > 0) {
             File firstScene = sceneData.get(SCENE_FILENAME + index);
             if(firstScene == null) {
                 return null;
