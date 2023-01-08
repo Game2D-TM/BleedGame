@@ -27,11 +27,11 @@ public class MenuKeyboardHandler implements KeyListener {
                     if (currIndex > 0) {
                         currIndex--;
                     } else {
-                        currIndex = 2;
+                        currIndex = buttons.length - 1;
                     }
                     break;
                 case KeyEvent.VK_DOWN:
-                    if (currIndex < 2) {
+                    if (currIndex < buttons.length - 1) {
                         currIndex++;
                     } else {
                         currIndex = 0;
