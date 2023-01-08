@@ -491,7 +491,10 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12);
         PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, 15);
         PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), 12);
+        PlayerAttack fireAttack02LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack02"), 12);
+        PlayerAttack fireAttack03LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack03"), 12);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
+        PlayerDeath fireDeathLTR = new PlayerDeath(4, spriteSheetMap.get("FireDeath01"), 50);
         PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, spriteSheetMap.get("Jump02"), 30);
         PlayerFallDown_LTR fallDownLTR = new PlayerFallDown_LTR(6, spriteSheetMap.get("FallAnim01"), 50);
         PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), 40);
@@ -501,6 +504,9 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerAirAttack_LTR airAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack01"), 20);
         PlayerAirAttack_LTR airAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack02"), 20);
         PlayerAirAttack_LTR airAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03"), 20);
+        PlayerAirAttack_LTR fireAirAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack01"), 20);
+        PlayerAirAttack_LTR fireAirAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack02"), 20);
+        PlayerAirAttack_LTR fireAirAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack03"), 20);
         PlayerAirAttack_LTR airAttackLoopLTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03Loop"), 20);
         PlayerJumpRoll_LTR jumpRollLTR = new PlayerJumpRoll_LTR(12, spriteSheetMap.get("JumpRoll01"), 15);
         PlayerGetUp_LTR getUpLTR = new PlayerGetUp_LTR(13, spriteSheetMap.get("GetUp01"), 15);
@@ -520,8 +526,11 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
         PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, 15);
         PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), 12);
+        PlayerAttack fireAttack02RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), 12);
+        PlayerAttack fireAttack03RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack03").convertRTL(), 12);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
+        PlayerDeath fireDeathRTL = new PlayerDeath(4, spriteSheetMap.get("FireDeath01").convertRTL(), 50);
         PlayerJump_RTL jumpRTL = new PlayerJump_RTL(5, spriteSheetMap.get("Jump02").convertRTL(), 30);
         PlayerFallDown_RTL fallDownRTL = new PlayerFallDown_RTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
         PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), 40);
@@ -530,6 +539,9 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerAirAttack_RTL airAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
         PlayerAirAttack_RTL airAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack02").convertRTL(), 20);
         PlayerAirAttack_RTL airAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03").convertRTL(), 20);
+        PlayerAirAttack_RTL fireAirAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack01").convertRTL(), 20);
+        PlayerAirAttack_RTL fireAirAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack02").convertRTL(), 20);
+        PlayerAirAttack_RTL fireAirAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack03").convertRTL(), 20);
         PlayerAirAttack_RTL airAttackLoopRTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03Loop").convertRTL(), 20);
         PlayerJumpRoll_RTL jumpRollRTL = new PlayerJumpRoll_RTL(12, spriteSheetMap.get("JumpRoll01").convertRTL(), 15);
         PlayerGetUp_RTL getUpRTL = new PlayerGetUp_RTL(13, spriteSheetMap.get("GetUp01").convertRTL(), 15);
@@ -571,12 +583,22 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.ATTACK03_RTL, attack03RTL);
         playerAnimations.put(CharacterState.FIREATTACK01_LTR, fireAttack01LTR);
         playerAnimations.put(CharacterState.FIREATTACK01_RTL, fireAttack01RTL);
+        playerAnimations.put(CharacterState.FIREATTACK02_LTR, fireAttack02LTR);
+        playerAnimations.put(CharacterState.FIREATTACK02_RTL, fireAttack02RTL);
+        playerAnimations.put(CharacterState.FIREATTACK03_LTR, fireAttack03LTR);
+        playerAnimations.put(CharacterState.FIREATTACK03_RTL, fireAttack03RTL);
         playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR); //New
         playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);//New
         playerAnimations.put(CharacterState.AIRATTACK02_LTR, airAttack02LTR);//New
         playerAnimations.put(CharacterState.AIRATTACK02_RTL, airAttack02RTL);//New
         playerAnimations.put(CharacterState.AIRATTACK03_LTR, airAttack03LTR);//New
         playerAnimations.put(CharacterState.AIRATTACK03_RTL, airAttack03RTL);//New
+        playerAnimations.put(CharacterState.FIREAIRATTACK01_LTR, fireAirAttack01LTR); //New
+        playerAnimations.put(CharacterState.FIREAIRATTACK01_RTL, fireAirAttack01RTL);//New
+        playerAnimations.put(CharacterState.FIREAIRATTACK02_LTR, fireAirAttack02LTR);//New
+        playerAnimations.put(CharacterState.FIREAIRATTACK02_RTL, fireAirAttack02RTL);//New
+        playerAnimations.put(CharacterState.FIREAIRATTACK03_LTR, fireAirAttack03LTR);//New
+        playerAnimations.put(CharacterState.FIREAIRATTACK03_RTL, fireAirAttack03RTL);//New
         playerAnimations.put(CharacterState.AIRATTACKLOOP_LTR, airAttackLoopLTR);//New
         playerAnimations.put(CharacterState.AIRATTACKLOOP_RTL, airAttackLoopRTL);//New
 
@@ -587,6 +609,8 @@ public class Gameplay extends JPanel implements Runnable {
         //Death Animation
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
+        playerAnimations.put(CharacterState.FIREDEATH_LTR, deathLTR); //New
+        playerAnimations.put(CharacterState.FIREDEATH_RTL, deathRTL);//new
 
         //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);

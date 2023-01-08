@@ -8,11 +8,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.JFrame;
 
 public class Game extends JFrame {
@@ -30,7 +33,6 @@ public class Game extends JFrame {
     private Gameplay gameplay;
     private boolean isRunning = true;
     private Thread gameThread;
-    private Image image;
     private MenuKeyboardHandler menuHandler;
 
     public static void main(String[] args) {
@@ -49,29 +51,16 @@ public class Game extends JFrame {
             }
         });
         DataManager.loadSceneData();
-        image = ImageManager.loadImage("assets/res/background/Menu/Background.png");
 //        changeWindowMode(ScreenState.fullscreen);
-        menuHandler = new MenuKeyboardHandler(this);
+        menuHandler = new MenuKeyboardHandler(this, getWidth(), getHeight());
         addKeyListener(menuHandler);
         setVisible(true);
+
     }
 
     @Override
     public void paint(Graphics g) {
-        if (STATE == GameState.MENU_STATE) {
-            g.setColor(Color.white);
-            g.fillRect(0, 0, getWidth(), getHeight());
-            g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-            g.setColor(Color.red);
-            int firstY = getHeight() / 2 - 50;
-            g.drawRect(getWidth() / 3 + 50, firstY, getWidth() / 4, getHeight() / 8);
-            g.drawRect(getWidth() / 3 + 50, firstY + getHeight() / 8 + 40, getWidth() / 4, getHeight() / 8);
-            g.drawRect(getWidth() / 3 + 50, firstY + (getHeight() / 8 + 40) * 2, getWidth() / 4, getHeight() / 8);
-            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 80));
-            g.drawString("Start", getWidth() / 3 + 140, firstY + 80);
-            g.drawString("Options", getWidth() / 3 + 90, firstY + getHeight() / 8 + 40 + 80);
-            g.drawString("Quit", getWidth() / 3 + 160, firstY + (getHeight() / 8 + 40) * 2 + 80);
-        }
+        menuHandler.render(g);
     }
 
     public void init() {
@@ -111,7 +100,7 @@ public class Game extends JFrame {
         gameplay = null;
         gameThread = null;
         STATE = GameState.MENU_STATE;
-        menuHandler = new MenuKeyboardHandler(this);
+        menuHandler = new MenuKeyboardHandler(this, getWidth(), getHeight());
         addKeyListener(menuHandler);
         paint(getGraphics());
     }
