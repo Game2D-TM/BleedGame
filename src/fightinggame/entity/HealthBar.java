@@ -37,7 +37,7 @@ public class HealthBar {
                 healthBarPos.getMaxY() + 25, 0, 0));
         positions.put("character_health", new GamePosition(healthBarPos.getXPosition() + healthBarPos.getWidth() / 2 - 50,
                 healthBarPos.getYPosition() + healthBarPos.getHeight() / 2 + 8, 0, 0));
-        customFont = DataManager.getFont(30);
+        customFont = DataManager.getFont(20);
     }
 
     public void tick() {

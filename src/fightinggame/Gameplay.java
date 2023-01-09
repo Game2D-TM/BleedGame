@@ -33,6 +33,7 @@ import java.util.Random;
 import fightinggame.entity.Character;
 import fightinggame.entity.GameMap;
 import fightinggame.entity.Rule;
+import fightinggame.entity.TransitionScreen;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
@@ -47,8 +48,6 @@ import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.item.collectable.healing.HealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.platform.Platform;
-import fightinggame.entity.platform.tile.Tile;
-import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
 import fightinggame.input.handler.game.player.PlayerMouseHandler;
@@ -65,7 +64,7 @@ import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
 
-    public static int GRAVITY = 7;
+    public static int GRAVITY = 7; //7
 
     private Background background;
     private Background map;
@@ -82,11 +81,14 @@ public class Gameplay extends JPanel implements Runnable {
     private Camera camera;
     private Rule rule;
     private OptionKeyboardHandler optionHandler;
+    private TransitionScreen transitionScreen;
 
     public Gameplay(Game game) {
         this.game = game;
         optionHandler = new OptionKeyboardHandler(ImageManager.loadImagesFromFolderToMap(DataManager.OPTION_GUIS), this);
         game.addKeyListener(optionHandler);
+        setDoubleBuffered(true);
+        transitionScreen = new TransitionScreen(this);
     }
 
     public void initCamera() {
@@ -137,10 +139,11 @@ public class Gameplay extends JPanel implements Runnable {
         itemsOnGround.clear();
         Platform firstPlatform = getPlatforms().get(11).get(3);
         playerInit(firstPlatform);
-        //initEnemies();
+//
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
         initBackgroundMusic();
+        transitionScreen.startTransitionBackward();
     }
 
     public void initVictoryPosition() {
@@ -170,7 +173,7 @@ public class Gameplay extends JPanel implements Runnable {
                         }
                         GamePosition nPos = new GamePosition(platform1.getPosition().getXPosition(), platform1.getPosition().getYPosition(),
                                 platform1.getPosition().getWidth() + platform2.getPosition().getWidth(),
-                                platform1.getPosition().getHeight() + platform2.getPosition().getHeight() + 10);
+                                platform1.getPosition().getHeight() + platform2.getPosition().getHeight() + 20);
                         rule = new Rule(nPos, this);
                     }
                 } catch (Exception ex) {
@@ -334,7 +337,6 @@ public class Gameplay extends JPanel implements Runnable {
         long lastFpsCheck = 0;
         int currentFps = 0;
         int totalFrames = 0;
-
         final int TARGET_FPS = Game.FPS;
         final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
         while (game.isRunning()) {
@@ -495,75 +497,93 @@ public class Gameplay extends JPanel implements Runnable {
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack02").convertRTL().getImages());
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack03").convertRTL().getImages());
 
+        //Init animations tick
+        int hit_tick = 25, idle_tick = 10, fire_idle_tick = 10,
+        run_tick = 10, attack1_tick = 12, attack2_tick = 12,
+        attack3_tick = 15, fire_attack1_tick = 12,
+        fire_attack2_tick = 12, fire_attack3_tick = 12,
+        death_tick = 50, fireDeath_tick = 50,
+        jump_tick = 30, falldown_tick = 50,
+        spellcast_tick = 40, crouch_tick = 10,
+        spellcast_loop_tick = 15, slide_tick = 30,
+        airAttack1_tick = 20, airAttack2_tick = 20,
+        airAttack3_tick = 20, fireAirAttack1_tick = 20,
+        fireAirAttack2_tick = 20, fireAirAttack3_tick = 20,
+        airAttack_loop_tick = 20, jumpRoll_tick = 15,
+        getUp_tick = 15, knockDown_tick = 25,
+        ledgeClimb_tick = 15, ledgeGrap_tick = 15,
+        wallRun_tick = 15, wallSlide_tick = 15,
+        sprint_tick = 0;
+        
         //LTR
-        PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), 25);
-        PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"));
-        PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"));
-        PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01")); // 0
-        PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), 15); // 12
-        PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), 12); // 12
-        PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, 15);
-        PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), 12);
-        PlayerAttack fireAttack02LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack02"), 12);
-        PlayerAttack fireAttack03LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack03"), 12);
-        PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), 50);
-        PlayerDeath fireDeathLTR = new PlayerDeath(4, spriteSheetMap.get("FireDeath01"), 50);
-        PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, spriteSheetMap.get("Jump02"), 30);
-        PlayerFallDown_LTR fallDownLTR = new PlayerFallDown_LTR(6, spriteSheetMap.get("FallAnim01"), 50);
-        PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), 40);
-        PlayerCrouch crouchLTR = new PlayerCrouch(8, spriteSheetMap.get("Crouch01"), 10);
-        PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop"), 15);
-        PlayerSlide_LTR slideLTR = new PlayerSlide_LTR(10, spriteSheetMap.get("Slide01"), 30);
-        PlayerAirAttack_LTR airAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack01"), 20);
-        PlayerAirAttack_LTR airAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack02"), 20);
-        PlayerAirAttack_LTR airAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03"), 20);
-        PlayerAirAttack_LTR fireAirAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack01"), 20);
-        PlayerAirAttack_LTR fireAirAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack02"), 20);
-        PlayerAirAttack_LTR fireAirAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack03"), 20);
-        PlayerAirAttack_LTR airAttackLoopLTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03Loop"), 20);
-        PlayerJumpRoll_LTR jumpRollLTR = new PlayerJumpRoll_LTR(12, spriteSheetMap.get("JumpRoll01"), 15);
-        PlayerGetUp_LTR getUpLTR = new PlayerGetUp_LTR(13, spriteSheetMap.get("GetUp01"), 15);
-        PlayerFallDown_LTR knockDownLTR = new PlayerFallDown_LTR(14, spriteSheetMap.get("KnockDown01"), 25);
-        PlayerLedgeAction_LTR ledgeClimbLTR = new PlayerLedgeAction_LTR(15, spriteSheetMap.get("LedgeClimb01"), 15);
-        PlayerLedgeAction_LTR ledgeGrabLTR = new PlayerLedgeAction_LTR(16, spriteSheetMap.get("LedgeGrab01"), 15);
-        PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, spriteSheetMap.get("WallRun01"), 15);
-        PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, spriteSheetMap.get("WallSlide01"), 15);
-        PlayerRun_LTR sprintLTR = new PlayerRun_LTR(19, spriteSheetMap.get("Sprint01"), 0);
+        PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), hit_tick);
+        PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"), idle_tick);
+        PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"), fire_idle_tick);
+        PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01"), run_tick); // 0
+        PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), attack1_tick); // 12
+        PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), attack2_tick); // 12
+        PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, attack3_tick);
+        PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), fire_attack1_tick);
+        PlayerAttack fireAttack02LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack02"), fire_attack2_tick);
+        PlayerAttack fireAttack03LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack03"), fire_attack3_tick);
+        PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), death_tick);
+        PlayerDeath fireDeathLTR = new PlayerDeath(4, spriteSheetMap.get("FireDeath01"), fireDeath_tick);
+        PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, spriteSheetMap.get("Jump02"), jump_tick);
+        PlayerFallDown_LTR fallDownLTR = new PlayerFallDown_LTR(6, spriteSheetMap.get("FallAnim01"), falldown_tick);
+        PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), spellcast_tick);
+        PlayerCrouch crouchLTR = new PlayerCrouch(8, spriteSheetMap.get("Crouch01"), crouch_tick);
+        PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop"), spellcast_loop_tick);
+        PlayerSlide_LTR slideLTR = new PlayerSlide_LTR(10, spriteSheetMap.get("Slide01"), slide_tick);
+        PlayerAirAttack_LTR airAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack01"), airAttack1_tick);
+        PlayerAirAttack_LTR airAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack02"), airAttack2_tick);
+        PlayerAirAttack_LTR airAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03"), airAttack3_tick);
+        PlayerAirAttack_LTR fireAirAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack01"), fireAirAttack1_tick);
+        PlayerAirAttack_LTR fireAirAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack02"), fireAirAttack2_tick);
+        PlayerAirAttack_LTR fireAirAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack03"), fireAirAttack3_tick);
+        PlayerAirAttack_LTR airAttackLoopLTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03Loop"), airAttack_loop_tick);
+        PlayerJumpRoll_LTR jumpRollLTR = new PlayerJumpRoll_LTR(12, spriteSheetMap.get("JumpRoll01"), jumpRoll_tick);
+        PlayerGetUp_LTR getUpLTR = new PlayerGetUp_LTR(13, spriteSheetMap.get("GetUp01"), getUp_tick);
+        PlayerFallDown_LTR knockDownLTR = new PlayerFallDown_LTR(14, spriteSheetMap.get("KnockDown01"), knockDown_tick);
+        PlayerLedgeAction_LTR ledgeClimbLTR = new PlayerLedgeAction_LTR(15, spriteSheetMap.get("LedgeClimb01"), ledgeClimb_tick);
+        PlayerLedgeAction_LTR ledgeGrabLTR = new PlayerLedgeAction_LTR(16, spriteSheetMap.get("LedgeGrab01"), ledgeGrap_tick);
+        PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, spriteSheetMap.get("WallRun01"), wallRun_tick);
+        PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, spriteSheetMap.get("WallSlide01"), wallSlide_tick);
+        PlayerRun_LTR sprintLTR = new PlayerRun_LTR(19, spriteSheetMap.get("Sprint01"), sprint_tick);
 
         //RTL
-        PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), 25);
-        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL());
-        PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL());
-        PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL());
-        PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), 12);
-        PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), 12);
-        PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, 15);
-        PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), 12);
-        PlayerAttack fireAttack02RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), 12);
-        PlayerAttack fireAttack03RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack03").convertRTL(), 12);
-        PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), 10);
-        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), 50);
-        PlayerDeath fireDeathRTL = new PlayerDeath(4, spriteSheetMap.get("FireDeath01").convertRTL(), 50);
-        PlayerJump_RTL jumpRTL = new PlayerJump_RTL(5, spriteSheetMap.get("Jump02").convertRTL(), 30);
-        PlayerFallDown_RTL fallDownRTL = new PlayerFallDown_RTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), 50);
-        PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), 40);
-        PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), 15);
-        PlayerSlide_RTL slideRTL = new PlayerSlide_RTL(10, spriteSheetMap.get("Slide01").convertRTL(), 30);
-        PlayerAirAttack_RTL airAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack01").convertRTL(), 20);
-        PlayerAirAttack_RTL airAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack02").convertRTL(), 20);
-        PlayerAirAttack_RTL airAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03").convertRTL(), 20);
-        PlayerAirAttack_RTL fireAirAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack01").convertRTL(), 20);
-        PlayerAirAttack_RTL fireAirAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack02").convertRTL(), 20);
-        PlayerAirAttack_RTL fireAirAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack03").convertRTL(), 20);
-        PlayerAirAttack_RTL airAttackLoopRTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03Loop").convertRTL(), 20);
-        PlayerJumpRoll_RTL jumpRollRTL = new PlayerJumpRoll_RTL(12, spriteSheetMap.get("JumpRoll01").convertRTL(), 15);
-        PlayerGetUp_RTL getUpRTL = new PlayerGetUp_RTL(13, spriteSheetMap.get("GetUp01").convertRTL(), 15);
-        PlayerFallDown_RTL knockDownRTL = new PlayerFallDown_RTL(14, spriteSheetMap.get("KnockDown01").convertRTL(), 25);
-        PlayerLedgeAction_RTL ledgeClimbRTL = new PlayerLedgeAction_RTL(15, spriteSheetMap.get("LedgeClimb01").convertRTL(), 15);
-        PlayerLedgeAction_RTL ledgeGrabRTL = new PlayerLedgeAction_RTL(16, spriteSheetMap.get("LedgeGrab01").convertRTL(), 15);
-        PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, spriteSheetMap.get("WallRun01").convertRTL(), 15);
-        PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, spriteSheetMap.get("WallSlide01").convertRTL(), 15);
-        PlayerRun_RTL sprintRTL = new PlayerRun_RTL(19, spriteSheetMap.get("Sprint01").convertRTL(), 0);
+        PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), hit_tick);
+        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL(), idle_tick);
+        PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL(), fire_idle_tick);
+        PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL(), run_tick);
+        PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), attack1_tick);
+        PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), attack2_tick);
+        PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, attack3_tick);
+        PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), fire_attack1_tick);
+        PlayerAttack fireAttack02RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), fire_attack2_tick);
+        PlayerAttack fireAttack03RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack03").convertRTL(), fire_attack3_tick);
+        PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), crouch_tick);
+        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), death_tick);
+        PlayerDeath fireDeathRTL = new PlayerDeath(4, spriteSheetMap.get("FireDeath01").convertRTL(), fireDeath_tick);
+        PlayerJump_RTL jumpRTL = new PlayerJump_RTL(5, spriteSheetMap.get("Jump02").convertRTL(), jump_tick);
+        PlayerFallDown_RTL fallDownRTL = new PlayerFallDown_RTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), falldown_tick);
+        PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), spellcast_tick);
+        PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), spellcast_loop_tick);
+        PlayerSlide_RTL slideRTL = new PlayerSlide_RTL(10, spriteSheetMap.get("Slide01").convertRTL(), slide_tick);
+        PlayerAirAttack_RTL airAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack01").convertRTL(), airAttack1_tick);
+        PlayerAirAttack_RTL airAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack02").convertRTL(), airAttack2_tick);
+        PlayerAirAttack_RTL airAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03").convertRTL(), airAttack3_tick);
+        PlayerAirAttack_RTL fireAirAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack01").convertRTL(), fireAirAttack1_tick);
+        PlayerAirAttack_RTL fireAirAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack02").convertRTL(), fireAirAttack2_tick);
+        PlayerAirAttack_RTL fireAirAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack03").convertRTL(), fireAirAttack3_tick);
+        PlayerAirAttack_RTL airAttackLoopRTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03Loop").convertRTL(), airAttack_loop_tick);
+        PlayerJumpRoll_RTL jumpRollRTL = new PlayerJumpRoll_RTL(12, spriteSheetMap.get("JumpRoll01").convertRTL(), jumpRoll_tick);
+        PlayerGetUp_RTL getUpRTL = new PlayerGetUp_RTL(13, spriteSheetMap.get("GetUp01").convertRTL(), getUp_tick);
+        PlayerFallDown_RTL knockDownRTL = new PlayerFallDown_RTL(14, spriteSheetMap.get("KnockDown01").convertRTL(), knockDown_tick);
+        PlayerLedgeAction_RTL ledgeClimbRTL = new PlayerLedgeAction_RTL(15, spriteSheetMap.get("LedgeClimb01").convertRTL(), ledgeClimb_tick);
+        PlayerLedgeAction_RTL ledgeGrabRTL = new PlayerLedgeAction_RTL(16, spriteSheetMap.get("LedgeGrab01").convertRTL(), ledgeGrap_tick);
+        PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, spriteSheetMap.get("WallRun01").convertRTL(), wallRun_tick);
+        PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, spriteSheetMap.get("WallSlide01").convertRTL(), wallSlide_tick);
+        PlayerRun_RTL sprintRTL = new PlayerRun_RTL(19, spriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
         // reverse arrays animations
         jumpLTR.getSheet().reverseImages();
         jumpRTL.getSheet().reverseImages();
@@ -774,8 +794,8 @@ public class Gameplay extends JPanel implements Runnable {
             }
             sheetLTR.setImages(fireBallsLTR);
             sheetRTL.setImages(fireBallsRTL);
-            Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
-            Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
+            Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 10);
+            Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 10);
             Fireball fireball = new Fireball(150, 30, 2, 500, fireballIcon,
                     new GamePosition(firstSkillPosition.getMaxX() + 15,
                             firstSkillPosition.getYPosition(), firstSkillPosition.getWidth(), firstSkillPosition.getHeight()),
@@ -805,52 +825,53 @@ public class Gameplay extends JPanel implements Runnable {
 
             @Override
             public void run() {
-                long now;
-                long updateTime;
-                long wait;
-
-                final int TARGET_FPS = Game.FPS;
-                final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
-                while (game.isRunning()) {
-                    now = System.nanoTime();
-                    spawnCounter++;
-                    if (spawnCounter > 2000) {
-                        try {
-                            Random random = new Random();
-                            int numberOfEnemies = random.nextInt(5);
-                            int platformStandSize = getPlatforms().get(9).size() - 5;
-                            int platformColumn = platformStandSize;
-                            for (int i = 0; i < numberOfEnemies; i++) {
-                                Platform platform = getPlatforms().get(9).get(platformColumn);
-                                if (platform == null) {
-                                    continue;
-                                }
-                                if (platform instanceof Tile || platform instanceof WallTile) {
-                                    if (i > 0) {
-                                        i--;
-                                    }
-                                } else {
-                                    diorInit(platform);
-                                }
-                                if (platformColumn > 0) {
-                                    platformColumn--;
-                                } else {
-                                    platformColumn = platformStandSize;
-                                }
-                            }
-                        } catch (Exception ex) {
-                            System.out.println(ex.toString());
-                        }
-                        spawnCounter = 0;
-                    }
-                    updateTime = System.nanoTime() - now;
-                    wait = (OPTIMAL_TIME - updateTime) / 1000000;
-                    try {
-                        Thread.sleep(wait);
-                    } catch (Exception e) {
-
-                    }
-                }
+                initEnemies();
+//                long now;
+//                long updateTime;
+//                long wait;
+//
+//                final int TARGET_FPS = Game.FPS;
+//                final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+//                while (game.isRunning()) {
+//                    now = System.nanoTime();
+//                    spawnCounter++;
+//                    if (spawnCounter > 2000) {
+//                        try {
+//                            Random random = new Random();
+//                            int numberOfEnemies = random.nextInt(5);
+//                            int platformStandSize = getPlatforms().get(9).size() - 5;
+//                            int platformColumn = platformStandSize;
+//                            for (int i = 0; i < numberOfEnemies; i++) {
+//                                Platform platform = getPlatforms().get(9).get(platformColumn);
+//                                if (platform == null) {
+//                                    continue;
+//                                }
+//                                if (platform instanceof Tile || platform instanceof WallTile) {
+//                                    if (i > 0) {
+//                                        i--;
+//                                    }
+//                                } else {
+//                                    diorInit(platform);
+//                                }
+//                                if (platformColumn > 0) {
+//                                    platformColumn--;
+//                                } else {
+//                                    platformColumn = platformStandSize;
+//                                }
+//                            }
+//                        } catch (Exception ex) {
+//                            System.out.println(ex.toString());
+//                        }
+//                        spawnCounter = 0;
+//                    }
+//                    updateTime = System.nanoTime() - now;
+//                    wait = (OPTIMAL_TIME - updateTime) / 1000000;
+//                    try {
+//                        Thread.sleep(wait);
+//                    } catch (Exception e) {
+//
+//                    }
+//                }
             }
         };
     }
@@ -890,6 +911,7 @@ public class Gameplay extends JPanel implements Runnable {
             if (rule != null) {
                 rule.tick();
             }
+            transitionScreen.tick();
         }
         if (Game.STATE == GameState.OPTION_STATE) {
             if (optionHandler != null) {
@@ -942,6 +964,7 @@ public class Gameplay extends JPanel implements Runnable {
             if (player != null) {
                 player.render(g2);
             }
+            transitionScreen.render(g2);
         }
     }
 
@@ -963,6 +986,10 @@ public class Gameplay extends JPanel implements Runnable {
                 0, 0, 0, 0);
     }
 
+    public TransitionScreen getTransitionScreen() {
+        return transitionScreen;
+    }
+    
     public GamePosition getScenePosition() {
         return background.getPosition();
     }

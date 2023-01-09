@@ -11,8 +11,6 @@ import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.GameHandler;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PlayerAbilityHandler extends GameHandler implements KeyListener {
 
@@ -69,11 +67,11 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                                 player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCASTLOOP_RTL));
                             }
                         }
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(PlayerAbilityHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+//                try {
+//                    Thread.sleep(200);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(PlayerAbilityHandler.class.getName()).log(Level.SEVERE, null, ex);
+//                }
                     }
                     break;
                 case KeyEvent.VK_3:

@@ -14,6 +14,7 @@ public class Rule {
     private final Gameplay gameplay;
     private int resetGameCounter = 0;
     private int resetGameLimit = 1000;
+    private boolean isTransition;
 
     public Rule(GamePosition position, Gameplay gameplay) {
         this.victoryPosition = position;
@@ -41,14 +42,20 @@ public class Rule {
                                 && playerHitBox.getMaxX() <= victoryPosition.getMaxX()
                                 && playerHitBox.getYPosition() >= victoryPosition.getYPosition()
                                 && playerHitBox.getMaxY() <= victoryPosition.getMaxY()) {
-                            File scene = DataManager.getNextScene();
-                            if (scene != null) {
-                                Item key = player.getInventory().getItemByName("Key Item");
-                                if (key != null) {
-                                    player.getInventory().removeItemFromInventory(key);
+                            if(!isTransition) {
+                                gameplay.getTransitionScreen().startTransitionForward();
+                                isTransition = true;
+                            }
+                            if (!gameplay.getTransitionScreen().isTransition()) {
+                                File scene = DataManager.getNextScene();
+                                if (scene != null) {
+                                    Item key = player.getInventory().getItemByName("Key Item");
+                                    if (key != null) {
+                                        player.getInventory().removeItemFromInventory(key);
+                                    }
+                                    missionComplete = false;
+                                    gameplay.initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                                 }
-                                missionComplete = false;
-                                gameplay.initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                             }
                         }
                     }
@@ -56,6 +63,7 @@ public class Rule {
                     Item key = player.getInventory().getItemByName("Key Item");
                     if (key != null) {
                         missionComplete = true;
+                        isTransition = false;
                     }
                 }
             }

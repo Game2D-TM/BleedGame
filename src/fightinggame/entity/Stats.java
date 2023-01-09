@@ -23,7 +23,7 @@ public class Stats {
     private int jumpSpeed = 100;
     private float vely = 0;
     private int jumpFlySpeed = 4;
-    private float dropSpeed = 0.05f;
+    private float dropSpeed = 0.08f; // 0.05
 
     public Stats(Character character, int level, double levelExperience, int attackDamage, int defenceDamage, 
             int health, int speed, int levelUpPoint, int critDamage, float critChange) {

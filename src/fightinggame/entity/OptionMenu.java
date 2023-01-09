@@ -19,6 +19,8 @@ public class OptionMenu {
     private Map<String, BufferedImage> optionGuis;
     private boolean fullscreen;
     private BufferedImage fullscreenCheck;
+    private BufferedImage resumeCheck;
+    private BufferedImage backToMenuCheck;
     private float musicVolume;
     private float sfxVolume;
     private GamePosition mainPosition;
@@ -35,6 +37,8 @@ public class OptionMenu {
         this.gameplay = gameplay;
         mainPosition = new GamePosition(0, 0, OPTION_WIDTH, OPTION_HEIGHT);
         fullscreenCheck = optionGuis.get("wrong");
+        backToMenuCheck = optionGuis.get("empty");
+        resumeCheck = optionGuis.get("empty");
         customFont = DataManager.getFont(60);
     }
 
@@ -44,10 +48,40 @@ public class OptionMenu {
             mainPosition.setYPosition(gameplay.getCamera().getPosition().getYPosition() + DISTANCE_CAMERA_Y);
             switch (optionIndex) {
                 case 0:
+                    resumeCheck = optionGuis.get("empty");
+                    backToMenuCheck = optionGuis.get("empty");
+                    if (fullscreen) {
+                        fullscreenCheck = optionGuis.get("correct");
+                    } else {
+                        fullscreenCheck = optionGuis.get("wrong");
+                    }
                     selectPosition = new GamePosition(mainPosition.getXPosition() + 15,
                             mainPosition.getYPosition() + 15, 70, 70);
                     break;
                 case 1:
+                    if (subOptionIndex == 0) {
+                        resumeCheck = optionGuis.get("correct");
+                    } else {
+                        resumeCheck = optionGuis.get("empty");
+                    }
+                    if (subOptionIndex == 4) {
+                        backToMenuCheck = optionGuis.get("correct");
+                    } else {
+                        backToMenuCheck = optionGuis.get("empty");
+                    }
+                    if (subOptionIndex == 1) {
+                        if (fullscreen) {
+                            fullscreenCheck = optionGuis.get("wrong");
+                        } else {
+                            fullscreenCheck = optionGuis.get("correct");
+                        }
+                    } else {
+                        if (fullscreen) {
+                            fullscreenCheck = optionGuis.get("correct");
+                        } else {
+                            fullscreenCheck = optionGuis.get("wrong");
+                        }
+                    }
                     switch (subOptionIndex) {
                         case 0:
                             selectPosition = new GamePosition(mainPosition.getXPosition() + 875,
@@ -93,7 +127,7 @@ public class OptionMenu {
                     g.drawImage(optionGuis.get("wrong"), mainPosition.getXPosition() + 20 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 20 - gameplay.getCamera().getPosition().getYPosition(),
                             60, 60, null);
-                    
+
                     // Titles
 //                    g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 60));
                     g.setFont(customFont);
@@ -107,9 +141,9 @@ public class OptionMenu {
                             mainPosition.getYPosition() + 340 - gameplay.getCamera().getPosition().getYPosition());
                     g.drawString("Back To Main Menu", mainPosition.getXPosition() + 150 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 420 - gameplay.getCamera().getPosition().getYPosition());
-                    
+
                     // Choose Box
-                    g.drawImage(optionGuis.get("empty"), mainPosition.getXPosition() + 880 - gameplay.getCamera().getPosition().getXPosition(),
+                    g.drawImage(resumeCheck, mainPosition.getXPosition() + 880 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 50 - gameplay.getCamera().getPosition().getYPosition(), 70, 70, null);
                     g.drawImage(fullscreenCheck, mainPosition.getXPosition() + 880 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 130 - gameplay.getCamera().getPosition().getYPosition(), 70, 70, null);
@@ -117,7 +151,7 @@ public class OptionMenu {
                             mainPosition.getYPosition() + 228 - gameplay.getCamera().getPosition().getYPosition(), 350, 30, null);
                     g.drawImage(optionGuis.get("progress_bar"), mainPosition.getXPosition() + 600 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 308 - gameplay.getCamera().getPosition().getYPosition(), 350, 30, null);
-                    g.drawImage(optionGuis.get("empty"), mainPosition.getXPosition() + 880 - gameplay.getCamera().getPosition().getXPosition(),
+                    g.drawImage(backToMenuCheck, mainPosition.getXPosition() + 880 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 370 - gameplay.getCamera().getPosition().getYPosition(), 70, 70, null);
                     if (selectPosition != null) {
                         g.drawImage(optionGuis.get("selection"), selectPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),

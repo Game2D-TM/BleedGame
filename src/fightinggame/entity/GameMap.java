@@ -162,10 +162,12 @@ public class GameMap extends Background {
         if (playerInsidePlatform != null) {
             Platform mapPlatform = scene.get(playerInsidePlatform.getRow()).get(playerInsidePlatform.getColumn());
             if (mapPlatform != null) {
-                g.setColor(Color.white);
-                g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                        mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
-                        tileWidth, tileHeight);
+                if (mapPlatform.getPosition() != null) {
+                    g.setColor(Color.white);
+                    g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+                            mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                            tileWidth, tileHeight);
+                }
             }
         }
         List<Enemy> enemies = gameplay.getEnemies();
