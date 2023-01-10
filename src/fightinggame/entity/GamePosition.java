@@ -9,6 +9,7 @@ public class GamePosition {
 
     // new
     public boolean isSlide = false;
+    public boolean isSprint = false;
 
     private int xPosition;
     private int yPosition;
@@ -27,14 +28,18 @@ public class GamePosition {
                 || isCrouch && isMoveRight || isCrouch && isMoveLeft
                 || isJump && isCrouch || isJump && isMoveLeft && isMoveRight
                 || isCrouch && isMoveLeft && isMoveRight
-                || isJump && isMoveLeft && isMoveRight && isCrouch) {
+                || isJump && isMoveLeft && isMoveRight && isCrouch
+                || isSlide && isMoveRight || isSlide && isMoveLeft
+                || isSlide && isMoveRight && isMoveLeft
+                || isSprint && isMoveRight || isSprint && isMoveLeft
+                || isSprint && isMoveRight && isMoveLeft) {
             return true;
         }
         return false;
     }
 
     public boolean isNotPressKey() {
-        if (!isCrouch && !isJump && !isMoveLeft && !isMoveRight) {
+        if (!isCrouch && !isJump && !isMoveLeft && !isMoveRight && !isSlide && !isSprint) {
             return true;
         }
         return false;
@@ -57,6 +62,7 @@ public class GamePosition {
 
     public boolean moveLeft(int speed) {
         if (isMoveLeft) {
+            if(isSprint) speed *= 2;
             xPosition = xPosition - speed;
             return true;
         }
@@ -65,6 +71,7 @@ public class GamePosition {
 
     public boolean moveRight(int speed) {
         if (isMoveRight) {
+            if(isSprint) speed *= 2;
             xPosition = xPosition + speed;
             return true;
         }
@@ -97,6 +104,7 @@ public class GamePosition {
 
     public boolean moveLeft(int speed, boolean isMoveLeft) {
         if (isMoveLeft) {
+            if(isSprint) speed *= 2;
             xPosition = xPosition - speed;
             return true;
         }
@@ -105,6 +113,7 @@ public class GamePosition {
 
     public boolean moveRight(int speed, boolean isMoveRight) {
         if (isMoveRight) {
+            if(isSprint) speed *= 2;
             xPosition = xPosition + speed;
             return true;
         }

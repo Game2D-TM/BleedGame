@@ -275,6 +275,14 @@ public class Player extends Character {
         }
         return false;
     }
+    
+    public boolean isSlide() {
+        return position.isSlide;
+    }
+    
+    public boolean isSprint() {
+        return (position.isMoveRight || position.isMoveLeft) && position.isSprint;
+    }
 
     public boolean isSpecialAttack() {
         return isSpecialAttack;
@@ -317,7 +325,6 @@ public class Player extends Character {
     public void setIsDoubleJump(boolean isDoubleJump) {
         this.isDoubleJump = isDoubleJump;
     }
-    
 
     public GamePosition getPlayerScorePos() {
         return healthBar.getPositions().get("player_score");

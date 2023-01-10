@@ -521,7 +521,7 @@ public class Gameplay extends JPanel implements Runnable {
                 getUp_tick = 15, knockDown_tick = 25,
                 ledgeClimb_tick = 15, ledgeGrap_tick = 15,
                 wallRun_tick = 15, wallSlide_tick = 15,
-                sprint_tick = 0;
+                sprint_tick = 10;
 
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), hit_tick);
@@ -556,7 +556,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerLedgeAction_LTR ledgeGrabLTR = new PlayerLedgeAction_LTR(16, spriteSheetMap.get("LedgeGrab01"), ledgeGrap_tick);
         PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, spriteSheetMap.get("WallRun01"), wallRun_tick);
         PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, spriteSheetMap.get("WallSlide01"), wallSlide_tick);
-        PlayerRun_LTR sprintLTR = new PlayerRun_LTR(19, spriteSheetMap.get("Sprint01"), sprint_tick);
+        PlayerSprint_LTR sprintLTR = new PlayerSprint_LTR(19, spriteSheetMap.get("Sprint01"), sprint_tick);
 
         //RTL
         PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), hit_tick);
@@ -591,7 +591,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerLedgeAction_RTL ledgeGrabRTL = new PlayerLedgeAction_RTL(16, spriteSheetMap.get("LedgeGrab01").convertRTL(), ledgeGrap_tick);
         PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, spriteSheetMap.get("WallRun01").convertRTL(), wallRun_tick);
         PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, spriteSheetMap.get("WallSlide01").convertRTL(), wallSlide_tick);
-        PlayerRun_RTL sprintRTL = new PlayerRun_RTL(19, spriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
+        PlayerSprint_RTL sprintRTL = new PlayerSprint_RTL(19, spriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
         // reverse arrays animations
         jumpLTR.getSheet().reverseImages();
         jumpRTL.getSheet().reverseImages();

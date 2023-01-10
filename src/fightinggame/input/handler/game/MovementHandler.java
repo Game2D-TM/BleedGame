@@ -206,7 +206,15 @@ public abstract class MovementHandler extends GameHandler {
                             }
                         }
                         if (character instanceof Player) {
-                            ((Player) character).setIsAirAttack(false);
+                            Player player = ((Player) character);
+                            player.setIsAirAttack(false);
+                            if (player.isSlide()) {
+                                if (player.isLTR()) {
+                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.SLIDE_LTR));
+                                } else {
+                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.SLIDE_RTL));
+                                }
+                            }
                         }
                         character.getStats().setVely(0);
                         character.setFallDown(false);

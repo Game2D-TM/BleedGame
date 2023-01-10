@@ -7,6 +7,8 @@ import fightinggame.animation.player.PlayerCrouch;
 import fightinggame.animation.player.PlayerHit;
 import fightinggame.animation.player.PlayerRun_LTR;
 import fightinggame.animation.player.PlayerRun_RTL;
+import fightinggame.animation.player.PlayerSprint_LTR;
+import fightinggame.animation.player.PlayerSprint_RTL;
 import fightinggame.entity.Animation;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.Player;
@@ -103,6 +105,11 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             canMoveCheck(MoveState.LEFT, player);
             canMoveCheck(MoveState.RIGHT, player);
             canMoveCheck(MoveState.SLIDE, player);
+            if (player.isFallDown()) {
+                if (player.isSprint()) {
+                    player.getPosition().isSprint = false;
+                }
+            }
             checkIsCrouch();
         }
         if (!player.isInAir()) {
@@ -147,6 +154,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     if (player.isDoubleJump()) {
                         player.setIsDoubleJump(false);
                     }
+                    if (player.isSprint()) {
+                        player.getPosition().isSprint = false;
+                    }
                 }
             }
         }
@@ -187,7 +197,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             }
                             break;
                         }
-                        if (player.isAttack() || player.isInAir() || player.isFallDown()) {
+                        if (player.isAttack() || player.isInAir() || player.isFallDown() || player.isSlide()) {
                             break;
                         }
                         if (player.getStandPlatform() != null) {
@@ -201,13 +211,19 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         break;
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
-                        if (player.isAttack()) {
+                        if (player.isAttack() || player.isSlide()) {
                             break;
                         }
                         player.setIsLTR(false);
                         if (!player.isInAir() && !player.isFallDown()) {
-                            if (player.getCurrAnimation() instanceof PlayerRun_RTL); else {
-                                player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                            if (player.getPosition().isSprint) {
+                                if (player.getCurrAnimation() instanceof PlayerSprint_RTL); else {
+                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.SPRINT_RTL));
+                                }
+                            } else {
+                                if (player.getCurrAnimation() instanceof PlayerRun_RTL); else {
+                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                                }
                             }
                         }
                         player.getPosition().isMoveLeft = true;
@@ -221,19 +237,26 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         break;
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
-                        if (player.isAttack()) {
+                        if (player.isAttack() || player.isSlide()) {
                             break;
                         }
                         player.setIsLTR(true);
                         if (!player.isInAir() && !player.isFallDown()) {
-                            if (player.getCurrAnimation() instanceof PlayerRun_LTR); else {
-                                player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                            if (player.getPosition().isSprint) {
+                                if (player.getCurrAnimation() instanceof PlayerSprint_LTR); else {
+                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.SPRINT_LTR));
+                                }
+                            } else {
+                                if (player.getCurrAnimation() instanceof PlayerRun_LTR); else {
+                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                                }
                             }
                         }
                         player.getPosition().isMoveRight = true;
                         break;
                     case KeyEvent.VK_CONTROL:
-                        if (player.isAttack() || player.getPosition().isMoving() || player.isInAir()
+                        if (player.isAttack() || player.getPosition().isMoving()
+                                || player.isSlide() || player.isInAir()
                                 || player.isFallDown()) {
                             break;
                         }
@@ -243,6 +266,13 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                             player.setCurrAnimation(player.getAnimations().get(CharacterState.SLIDE_RTL));
                         }
                         player.getPosition().isSlide = true;
+                        break;
+                    case KeyEvent.VK_SHIFT:
+                        if (player.isAttack() || player.isSprint()
+                                || player.isInAir() || player.isFallDown()) {
+                            break;
+                        }
+                        player.getPosition().isSprint = true;
                         break;
                     case KeyEvent.VK_J:
                     case KeyEvent.VK_K:
@@ -263,7 +293,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                     break;
                                 }
                                 if (player.isLTR()) {
-                                    switch(keyCode) {
+                                    switch (keyCode) {
                                         case KeyEvent.VK_J:
                                             attack = player.getAnimations().get(CharacterState.AIRATTACK01_LTR);
                                             break;
@@ -275,7 +305,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                             break;
                                     }
                                 } else {
-                                    switch(keyCode) {
+                                    switch (keyCode) {
                                         case KeyEvent.VK_J:
                                             attack = player.getAnimations().get(CharacterState.AIRATTACK01_RTL);
                                             break;
@@ -413,6 +443,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
         switch (e.getKeyCode()) {
             case KeyEvent.VK_A:
             case KeyEvent.VK_LEFT:
+                if (player.isSprint()) {
+                    player.getPosition().isSprint = false;
+                }
                 player.getPosition().isMoveLeft = false;
                 break;
             case KeyEvent.VK_S:
@@ -421,6 +454,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_D:
             case KeyEvent.VK_RIGHT:
+                if (player.isSprint()) {
+                    player.getPosition().isSprint = false;
+                }
                 player.getPosition().isMoveRight = false;
                 break;
             case KeyEvent.VK_CONTROL:
