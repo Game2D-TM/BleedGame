@@ -139,9 +139,8 @@ public class Gameplay extends JPanel implements Runnable {
         itemsOnGround.clear();
         Platform firstPlatform = getPlatforms().get(11).get(3);
         playerInit(firstPlatform);
-//
-//        spawnEnemiesThread = new Thread(spawnEnemies());
-//        spawnEnemiesThread.start();
+        spawnEnemiesThread = new Thread(spawnEnemies());
+        spawnEnemiesThread.start();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
     }
@@ -174,7 +173,7 @@ public class Gameplay extends JPanel implements Runnable {
                         GamePosition nPos = new GamePosition(platform1.getPosition().getXPosition(), platform1.getPosition().getYPosition(),
                                 platform1.getPosition().getWidth() + platform2.getPosition().getWidth(),
                                 platform1.getPosition().getHeight() + platform2.getPosition().getHeight() + 20);
-                        rule = new Rule(nPos, this);
+                        rule = new Rule(nPos, platform1, platform2, this);
                     }
                 } catch (Exception ex) {
 
@@ -300,21 +299,22 @@ public class Gameplay extends JPanel implements Runnable {
                             }
                             switch (objType) {
                                 case GAMEOBJECT:
-                                    gameObj = new GameObject(objects.get(imgDefaultStr), objName, position, this);
+                                    gameObj = new GameObject(objects.get(imgDefaultStr), objName, platform, position, this);
                                     if (gameObj == null) {
                                         continue;
                                     }
                                     background.getGameObjectsTouchable().put(key, gameObj);
                                     break;
                                 case CHEST:
-                                    gameObj = new Chest(objects.get(imgAfterTouchStr), objects.get(imgDefaultStr), objName, position, this);
+                                    gameObj = new Chest(objects.get(imgAfterTouchStr), objects.get(imgDefaultStr), objName, platform, position, this);
                                     if (gameObj == null) {
                                         continue;
                                     }
                                     background.getGameObjectsTouchable().put(key, gameObj);
+                                    map.getGameObjectsTouchable().put(key, gameObj.clone());
                                     break;
                                 case NONTOUCH:
-                                    gameObj = new ObjectNonTouchable(objects.get(imgDefaultStr), objName, position, this);
+                                    gameObj = new ObjectNonTouchable(objects.get(imgDefaultStr), objName, platform, position, this);
                                     if (gameObj == null) {
                                         continue;
                                     }
@@ -364,7 +364,7 @@ public class Gameplay extends JPanel implements Runnable {
             }
         }
     }
-    
+
     @Override
     public void paint(Graphics g) {
         render(g);
@@ -489,6 +489,7 @@ public class Gameplay extends JPanel implements Runnable {
                 middlePlatform.getYPosition(), 350, 259);
         Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
 
+        //Init Attack Move
         SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01").clone();
         SpriteSheet attackSpecialRTL = spriteSheetMap.get("Attack01").convertRTL();
         // Add special attack new sheet
@@ -496,25 +497,32 @@ public class Gameplay extends JPanel implements Runnable {
         attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack03").getImages());
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack02").convertRTL().getImages());
         attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack03").convertRTL().getImages());
-
+        // Init Fire Attack Move
+        SpriteSheet fireAttackSpecialLTR = spriteSheetMap.get("FireAttack01").clone();
+        SpriteSheet fireAttackSpecialRTL = spriteSheetMap.get("FireAttack01").convertRTL();
+        // Add special attack new sheet
+        fireAttackSpecialLTR.getImages().addAll(spriteSheetMap.get("FireAttack02").getImages());
+        fireAttackSpecialLTR.getImages().addAll(spriteSheetMap.get("FireAttack03").getImages());
+        fireAttackSpecialRTL.getImages().addAll(spriteSheetMap.get("FireAttack02").convertRTL().getImages());
+        fireAttackSpecialRTL.getImages().addAll(spriteSheetMap.get("FireAttack03").convertRTL().getImages());
         //Init animations tick
         int hit_tick = 25, idle_tick = 10, fire_idle_tick = 10,
-        run_tick = 10, attack1_tick = 12, attack2_tick = 12,
-        attack3_tick = 15, fire_attack1_tick = 12,
-        fire_attack2_tick = 12, fire_attack3_tick = 12,
-        death_tick = 50, fireDeath_tick = 50,
-        jump_tick = 30, falldown_tick = 50,
-        spellcast_tick = 40, crouch_tick = 10,
-        spellcast_loop_tick = 15, slide_tick = 30,
-        airAttack1_tick = 20, airAttack2_tick = 20,
-        airAttack3_tick = 20, fireAirAttack1_tick = 20,
-        fireAirAttack2_tick = 20, fireAirAttack3_tick = 20,
-        airAttack_loop_tick = 20, jumpRoll_tick = 15,
-        getUp_tick = 15, knockDown_tick = 25,
-        ledgeClimb_tick = 15, ledgeGrap_tick = 15,
-        wallRun_tick = 15, wallSlide_tick = 15,
-        sprint_tick = 0;
-        
+                run_tick = 10, attack1_tick = 12, attack2_tick = 12,
+                attack3_tick = 15, fire_attack1_tick = 12,
+                fire_attack2_tick = 12, fire_attack3_tick = 12,
+                death_tick = 50, fireDeath_tick = 50,
+                jump_tick = 30, falldown_tick = 50,
+                spellcast_tick = 40, crouch_tick = 10,
+                spellcast_loop_tick = 15, slide_tick = 30,
+                airAttack1_tick = 20, airAttack2_tick = 20,
+                airAttack3_tick = 20, fireAirAttack1_tick = 20,
+                fireAirAttack2_tick = 20, fireAirAttack3_tick = 20,
+                airAttack_loop_tick = 20, jumpRoll_tick = 15,
+                getUp_tick = 15, knockDown_tick = 25,
+                ledgeClimb_tick = 15, ledgeGrap_tick = 15,
+                wallRun_tick = 15, wallSlide_tick = 15,
+                sprint_tick = 0;
+
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), hit_tick);
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"), idle_tick);
@@ -525,7 +533,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, attack3_tick);
         PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), fire_attack1_tick);
         PlayerAttack fireAttack02LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack02"), fire_attack2_tick);
-        PlayerAttack fireAttack03LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack03"), fire_attack3_tick);
+        PlayerAttackSpecial_LTR fireAttack03LTR = new PlayerAttackSpecial_LTR(2, fireAttackSpecialLTR, fire_attack3_tick);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), death_tick);
         PlayerDeath fireDeathLTR = new PlayerDeath(4, spriteSheetMap.get("FireDeath01"), fireDeath_tick);
         PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, spriteSheetMap.get("Jump02"), jump_tick);
@@ -560,7 +568,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, attack3_tick);
         PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), fire_attack1_tick);
         PlayerAttack fireAttack02RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), fire_attack2_tick);
-        PlayerAttack fireAttack03RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack03").convertRTL(), fire_attack3_tick);
+        PlayerAttackSpecial_RTL fireAttack03RTL = new PlayerAttackSpecial_RTL(2, fireAttackSpecialRTL, fire_attack3_tick);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), crouch_tick);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), death_tick);
         PlayerDeath fireDeathRTL = new PlayerDeath(4, spriteSheetMap.get("FireDeath01").convertRTL(), fireDeath_tick);
@@ -642,8 +650,8 @@ public class Gameplay extends JPanel implements Runnable {
         //Death Animation
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
-        playerAnimations.put(CharacterState.FIREDEATH_LTR, deathLTR); //New
-        playerAnimations.put(CharacterState.FIREDEATH_RTL, deathRTL);//new
+        playerAnimations.put(CharacterState.FIREDEATH_LTR, fireDeathLTR); //New
+        playerAnimations.put(CharacterState.FIREDEATH_RTL, fireDeathRTL);//new
 
         //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
@@ -702,6 +710,18 @@ public class Gameplay extends JPanel implements Runnable {
         itemEquipAnimations.put(CharacterState.IDLE_RTL, fireIdleRTL);
         itemEquipAnimations.put(CharacterState.ATTACK01_LTR, fireAttack01LTR);
         itemEquipAnimations.put(CharacterState.ATTACK01_RTL, fireAttack01RTL);
+        itemEquipAnimations.put(CharacterState.ATTACK02_LTR, fireAttack02LTR);
+        itemEquipAnimations.put(CharacterState.ATTACK02_RTL, fireAttack02RTL);
+        itemEquipAnimations.put(CharacterState.ATTACK03_LTR, fireAttack03LTR);
+        itemEquipAnimations.put(CharacterState.ATTACK03_RTL, fireAttack03RTL);
+        itemEquipAnimations.put(CharacterState.AIRATTACK01_LTR, fireAirAttack01LTR);
+        itemEquipAnimations.put(CharacterState.AIRATTACK01_RTL, fireAirAttack01RTL);
+        itemEquipAnimations.put(CharacterState.AIRATTACK02_LTR, fireAirAttack02LTR);
+        itemEquipAnimations.put(CharacterState.AIRATTACK02_RTL, fireAirAttack02RTL);
+        itemEquipAnimations.put(CharacterState.AIRATTACK03_LTR, fireAirAttack03LTR);
+        itemEquipAnimations.put(CharacterState.AIRATTACK03_RTL, fireAirAttack03RTL);
+        itemEquipAnimations.put(CharacterState.DEATH_LTR, fireDeathLTR);
+        itemEquipAnimations.put(CharacterState.DEATH_RTL, fireDeathRTL);
         Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, 1, itemEquipAnimations);
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
@@ -877,15 +897,15 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
-        if (background != null) {
-            background.tick();
-        }
-        if (renderMap) {
-            if (map != null) {
-                map.tick();
-            }
-        }
         if (Game.STATE == GameState.GAME_STATE) {
+            if (background != null) {
+                background.tick();
+            }
+            if (renderMap) {
+                if (map != null) {
+                    map.tick();
+                }
+            }
             if (camera != null) {
                 camera.tick();
             }
@@ -923,6 +943,14 @@ public class Gameplay extends JPanel implements Runnable {
     public void render(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         if (Game.STATE == GameState.OPTION_STATE) {
+            if (background != null) {
+                background.render(g2);
+            }
+            if (renderMap) {
+                if (map != null) {
+                    map.render(g2);
+                }
+            }
             if (optionHandler != null) {
                 optionHandler.render(g2);
             }
@@ -989,7 +1017,7 @@ public class Gameplay extends JPanel implements Runnable {
     public TransitionScreen getTransitionScreen() {
         return transitionScreen;
     }
-    
+
     public GamePosition getScenePosition() {
         return background.getPosition();
     }
@@ -1032,6 +1060,10 @@ public class Gameplay extends JPanel implements Runnable {
 
     public Rule getRule() {
         return rule;
+    }
+
+    public OptionKeyboardHandler getOptionHandler() {
+        return optionHandler;
     }
 
 }

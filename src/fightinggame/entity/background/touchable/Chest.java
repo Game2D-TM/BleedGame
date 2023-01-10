@@ -2,8 +2,10 @@ package fightinggame.entity.background.touchable;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.GamePosition;
+import fightinggame.entity.background.GameObject;
 import fightinggame.entity.background.ObjectTouchable;
 import fightinggame.entity.item.Item;
+import fightinggame.entity.platform.Platform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +14,15 @@ public class Chest extends ObjectTouchable {
 
     private List<Item> items;
 
-    public Chest(BufferedImage imageAfterTouch, List<Item> items, BufferedImage image, String name,
+    public Chest(BufferedImage imageAfterTouch, List<Item> items, BufferedImage image, String name, Platform platform,
             GamePosition position, Gameplay gameplay) {
-        super(imageAfterTouch, image, name, position, gameplay);
+        super(imageAfterTouch, image, name, platform, position, gameplay);
         this.items = items;
     }
 
-    public Chest(BufferedImage imageAfterTouch, BufferedImage image, String name,
+    public Chest(BufferedImage imageAfterTouch, BufferedImage image, String name, Platform platform,
             GamePosition position, Gameplay gameplay) {
-        super(imageAfterTouch, image, name, position, gameplay);
+        super(imageAfterTouch, image, name, platform, position, gameplay);
         this.items = new ArrayList<>();
     }
 
@@ -51,6 +53,11 @@ public class Chest extends ObjectTouchable {
         return false;
     }
 
+    @Override
+    public GameObject clone() {
+        return new Chest(imageAfterTouch, items, image, name, platform, position, gameplay);
+    }
+    
     public List<Item> getItems() {
         return items;
     }

@@ -1,7 +1,6 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
-import java.awt.Color;
 import java.awt.Graphics;
 
 public class Camera {
@@ -40,12 +39,12 @@ public class Camera {
     }
 
     public void render(Graphics g) {
-        if (position != null) {
-            g.setColor(Color.red);
-            g.drawRect(position.getXPosition() - position.getXPosition(),
-                    position.getYPosition() - position.getYPosition(),
-                    position.getWidth(), position.getHeight());
-        }
+//        if (position != null) {
+//            g.setColor(Color.red);
+//            g.drawRect(position.getXPosition() - position.getXPosition(),
+//                    position.getYPosition() - position.getYPosition(),
+//                    position.getWidth(), position.getHeight());
+//        }
     }
 
     public boolean checkPositionRelateToCamera(GamePosition position) {

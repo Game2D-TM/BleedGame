@@ -17,8 +17,8 @@ public class AudioPlayer implements Runnable {
 
     // to store current position
     public static Map<String, Clip> audios = new HashMap();
-    public static final Map<String, Thread> threads = new HashMap<>();
-    
+    public static final Map<String, AudioPlayer> audioPlayers = new HashMap<>();
+
     private Long currentFrame;
     private Clip clip;
 
@@ -28,6 +28,7 @@ public class AudioPlayer implements Runnable {
     private float volume;
     private String folderPath;
     private String name;
+    private Thread thread;
 
     // constructor to initialize streams and clip
     public AudioPlayer(String folder) {
@@ -83,16 +84,30 @@ public class AudioPlayer implements Runnable {
         this.name = name;
         this.isLoop = isLoop;
         this.volume = volume;
-        Thread thread = new Thread(this);
-        thread.start();
-        threads.put(name, thread);
+        AudioPlayer audioPlayer = audioPlayers.get(name);
+        if (audioPlayer != null) {
+            if (audioPlayer.closeThread(name)) {
+                thread = new Thread(this);
+                thread.start();
+                audioPlayers.put(name, this);
+            }
+        } else {
+            thread = new Thread(this);
+            thread.start();
+            audioPlayers.put(name, this);
+        }
     }
 
     public boolean closeThread(String name) {
-        Thread thread = threads.get(name);
-        if (thread != null) {
-            restart();
-            thread.interrupt();
+        AudioPlayer audioPlayer = audioPlayers.get(name);
+        if (audioPlayer != null) {
+            audioPlayer.close();
+            audioPlayer.getThread().interrupt();
+            try {
+                audioPlayer.getThread().join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(AudioPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
             return true;
         }
         return false;
@@ -150,7 +165,7 @@ public class AudioPlayer implements Runnable {
     }
 
     // Method to restart the audio
-    public void restart() {
+    public void close() {
         clip.stop();
         clip.close();
         currentFrame = 0L;
@@ -197,6 +212,46 @@ public class AudioPlayer implements Runnable {
         if (audios.size() > 0 && name != null && !name.isBlank()) {
             play(name);
         }
+    }
+
+    public Long getCurrentFrame() {
+        return currentFrame;
+    }
+
+    public Clip getClip() {
+        return clip;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public boolean isIsLoop() {
+        return isLoop;
+    }
+
+    public Thread getThread() {
+        return thread;
+    }
+
+    public void setCurrentFrame(Long currentFrame) {
+        this.currentFrame = currentFrame;
+    }
+
+    public void setClip(Clip clip) {
+        this.clip = clip;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setIsLoop(boolean isLoop) {
+        this.isLoop = isLoop;
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
     }
 
 }

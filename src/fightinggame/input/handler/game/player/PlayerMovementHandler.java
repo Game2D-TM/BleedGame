@@ -263,9 +263,29 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                     break;
                                 }
                                 if (player.isLTR()) {
-                                    attack = player.getAnimations().get(CharacterState.AIRATTACK01_LTR);
+                                    switch(keyCode) {
+                                        case KeyEvent.VK_J:
+                                            attack = player.getAnimations().get(CharacterState.AIRATTACK01_LTR);
+                                            break;
+                                        case KeyEvent.VK_K:
+                                            attack = player.getAnimations().get(CharacterState.AIRATTACK02_LTR);
+                                            break;
+                                        case KeyEvent.VK_L:
+                                            attack = player.getAnimations().get(CharacterState.AIRATTACK03_LTR);
+                                            break;
+                                    }
                                 } else {
-                                    attack = player.getAnimations().get(CharacterState.AIRATTACK01_RTL);
+                                    switch(keyCode) {
+                                        case KeyEvent.VK_J:
+                                            attack = player.getAnimations().get(CharacterState.AIRATTACK01_RTL);
+                                            break;
+                                        case KeyEvent.VK_K:
+                                            attack = player.getAnimations().get(CharacterState.AIRATTACK02_RTL);
+                                            break;
+                                        case KeyEvent.VK_L:
+                                            attack = player.getAnimations().get(CharacterState.AIRATTACK03_RTL);
+                                            break;
+                                    }
                                 }
                                 if (player.isLTR()) {
                                     player.getPosition().setWidth(player.getPosition().getWidth() + 20); // 120

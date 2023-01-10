@@ -4,6 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.background.GameObject;
+import fightinggame.entity.platform.Platform;
 import java.awt.image.BufferedImage;
 
 public abstract class ObjectTouchable extends GameObject {
@@ -12,8 +13,8 @@ public abstract class ObjectTouchable extends GameObject {
     protected BufferedImage imageBeforeTouch;
     protected boolean isTouch;
 
-    public ObjectTouchable(BufferedImage imageAfterTouch, BufferedImage image, String name, GamePosition position, Gameplay gameplay) {
-        super(image, name, position, gameplay);
+    public ObjectTouchable(BufferedImage imageAfterTouch, BufferedImage image, String name, Platform platform, GamePosition position, Gameplay gameplay) {
+        super(image, name, platform, position, gameplay);
         this.imageAfterTouch = imageAfterTouch;
         imageBeforeTouch = image;
     }
@@ -60,7 +61,7 @@ public abstract class ObjectTouchable extends GameObject {
         }
         return false;
     }
-
+    
     public BufferedImage getImageBeforeTouch() {
         return imageBeforeTouch;
     }

@@ -2,10 +2,13 @@ package fightinggame.entity;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.item.Item;
+import fightinggame.entity.platform.Platform;
 import fightinggame.resource.DataManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Rule {
 
@@ -15,10 +18,14 @@ public class Rule {
     private int resetGameCounter = 0;
     private int resetGameLimit = 1000;
     private boolean isTransition;
+    private Platform firstPlatform;
+    private Platform secondPlatform;
 
-    public Rule(GamePosition position, Gameplay gameplay) {
+    public Rule(GamePosition position, Platform firPlatform, Platform secondPlatform, Gameplay gameplay) {
         this.victoryPosition = position;
         this.gameplay = gameplay;
+        this.firstPlatform = firPlatform;
+        this.secondPlatform = secondPlatform;
     }
 
     public void tick() {
@@ -42,7 +49,7 @@ public class Rule {
                                 && playerHitBox.getMaxX() <= victoryPosition.getMaxX()
                                 && playerHitBox.getYPosition() >= victoryPosition.getYPosition()
                                 && playerHitBox.getMaxY() <= victoryPosition.getMaxY()) {
-                            if(!isTransition) {
+                            if (!isTransition) {
                                 gameplay.getTransitionScreen().startTransitionForward();
                                 isTransition = true;
                             }
@@ -77,12 +84,8 @@ public class Rule {
                 victoryPosition.getWidth(), victoryPosition.getHeight());
     }
 
-    public GamePosition getPosition() {
+    public GamePosition getVictoryPosition() {
         return victoryPosition;
-    }
-
-    public void setPosition(GamePosition position) {
-        this.victoryPosition = position;
     }
 
     public boolean isMissionComplete() {
@@ -91,5 +94,33 @@ public class Rule {
 
     public void setMissionComplete(boolean missionComplete) {
         this.missionComplete = missionComplete;
+    }
+
+    public List<Platform> getSurroundVictoryPlatforms() {
+        if (firstPlatform != null && secondPlatform != null) {
+            List<Platform> platforms = new ArrayList<>();
+            int row1 = firstPlatform.getRow();
+            int column1 = firstPlatform.getColumn();
+            int row2 = secondPlatform.getRow();
+            int column2 = secondPlatform.getColumn();
+            while (true) {
+                Platform platform = gameplay.getPlatforms().get(row1).get(column1);
+                if (platform != null) {
+                    platforms.add(platform);
+                }
+                if (column1 < column2) {
+                    column1++;
+                } else {
+                    if (row1 < row2) {
+                        row1++;
+                        column1 = firstPlatform.getColumn();
+                    } else {
+                        break;
+                    }
+                }
+            }
+            return platforms;
+        }
+        return null;
     }
 }
