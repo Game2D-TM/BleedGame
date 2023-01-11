@@ -44,21 +44,28 @@ public class Game extends JFrame {
             }
         });
         DataManager.loadSceneData();
-//        changeWindowMode(ScreenState.fullscreen);
+        changeWindowMode(ScreenState.fullscreen);
         menuHandler = new MenuKeyboardHandler(this, getWidth(), getHeight());
         addKeyListener(menuHandler);
+        repaint();
         setVisible(true);
 
     }
 
     @Override
     public void paint(Graphics g) {
-        menuHandler.render(g);
+        if (menuHandler != null) {
+            menuHandler.render(g);
+        }
     }
 
     public void init() {
         gameplay = new Gameplay(this);
-        gameplay.setPreferredSize(new Dimension(getWidth() - 16, getHeight() - 39));
+        if (current == ScreenState.fullscreen) {
+            gameplay.setPreferredSize(new Dimension(getWidth(), getHeight()));
+        } else {
+            gameplay.setPreferredSize(new Dimension(getWidth() - 16, getHeight() - 39));
+        } // 16, 39
         add(gameplay, BorderLayout.CENTER);
         pack();
         gameplay.initCamera();
@@ -87,6 +94,7 @@ public class Game extends JFrame {
 
     public void goBackToMenu() {
         exitGame();
+        removeKeyListener(gameplay.getOptionHandler());
         remove(gameplay);
         removeKeyListener(menuHandler);
         gameplay = null;

@@ -19,7 +19,7 @@ public class HealthPotion extends CollectableItem {
     public boolean checkHit(Character character) {
         boolean result = super.checkHit(character);
         if(result) {
-            gameplay.getAudioPlayer().startThread("health_pickup", false, 0.8f);
+            gameplay.getAudioPlayer().startThread("health_pickup", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
             return true;
         }
         return false;

@@ -44,7 +44,7 @@ public abstract class Heal extends Ability {
             }
             if (afterHeal > health) {
                 character.getStats().setHealth(afterHeal);
-                gameplay.getAudioPlayer().startThread("heal_sound", false, 0.8f);
+                gameplay.getAudioPlayer().startThread("heal_sound", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                 canUse = false;
                 return true;
             }

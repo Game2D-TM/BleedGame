@@ -47,7 +47,7 @@ public class Fireball extends Throwable {
                             for (int i = 0; i < gameplay.getEnemies().size(); i++) {
                                 Enemy enemy = gameplay.getEnemies().get(i);
                                 if (enemy.checkHit(attackX, attackY, attackHeight, true, character, attackDamage)) {
-                                    gameplay.getAudioPlayer().startThread("fireball_hit", false, 0.8f);
+                                    gameplay.getAudioPlayer().startThread("fireball_hit", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                                     spawnPosition = null;
                                     endPosition = null;
                                     isThrow = false;
@@ -58,7 +58,7 @@ public class Fireball extends Throwable {
                     } else {
                         attackX = spawnPosition.getXPosition();
                         if (gameplay.getPlayer().checkHit(attackX, attackY, attackHeight, true, character, attackDamage)) {
-                            gameplay.getAudioPlayer().startThread("fireball_hit", false, 0.8f);
+                            gameplay.getAudioPlayer().startThread("fireball_hit", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                             spawnPosition = null;
                             endPosition = null;
                             isThrow = false;
@@ -126,7 +126,7 @@ public class Fireball extends Throwable {
             }
             isThrow = true;
             canUse = false;
-            gameplay.getAudioPlayer().startThread("fireball_throw", false, 0.8f);
+            gameplay.getAudioPlayer().startThread("fireball_throw", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
             return true;
         }
         return false;

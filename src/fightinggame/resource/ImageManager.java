@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class ImageManager {
-    
+
     public static String EXTENSION_PNG = ".png";
     public static String EXTENSION_JPG = ".jpg";
 
@@ -22,10 +22,12 @@ public class ImageManager {
         }
         String extension = Utils.getFileExtension(fileName);
         File outputfile = new File(fileName);
-        if(outputfile.exists()) return false;
+        if (outputfile.exists()) {
+            return false;
+        }
         try {
             boolean result = outputfile.createNewFile();
-            if(result) {
+            if (result) {
                 return ImageIO.write(image, extension, outputfile);
             }
         } catch (IOException ex) {
@@ -33,21 +35,23 @@ public class ImageManager {
         }
         return false;
     }
-    
-    public static boolean writeImages(List<BufferedImage> images, String folderPath
-                            , String defFileName, String extension) {
-        if(images == null) {
+
+    public static boolean writeImages(List<BufferedImage> images, String folderPath,
+             String defFileName, String extension) {
+        if (images == null) {
             return false;
         }
         File folder = new File(folderPath);
-        if(!folder.exists()) {
+        if (!folder.exists()) {
             folder.mkdir();
         }
-        if(images.size() > 0) {
+        if (images.size() > 0) {
             int count = 0;
-            for(int i = 0; i < images.size(); i++) {
+            for (int i = 0; i < images.size(); i++) {
                 BufferedImage image = images.get(i);
-                if(image == null) continue;
+                if (image == null) {
+                    continue;
+                }
                 String fileName = folder.getAbsolutePath() + "/" + defFileName + "_" + count + extension;
                 writeImage(image, fileName);
                 count++;
@@ -122,7 +126,7 @@ public class ImageManager {
         return null;
     }
 
-    public static List<BufferedImage> loadImagesFromFolderToList(String folderName) {
+    public static List<BufferedImage> loadImagesFromFoldersToList(String folderName) {
         try {
             File file = new File(folderName);
             if (file.exists()) {
@@ -140,7 +144,7 @@ public class ImageManager {
                             if (imageFile.getName().equals("Raw")) {
                                 continue;
                             }
-                            images.addAll(loadImagesFromFolderToList(imageFile.getAbsolutePath()));
+                            images.addAll(loadImagesFromFoldersToList(imageFile.getAbsolutePath()));
                         } else {
                             String fileName = imageFile.getName();
                             if (fileName.contains(".png")) {

@@ -397,7 +397,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             int attackY, int attackHeight, int stunTime, int attackDamage) {
         player.setCurrAnimation(attack);
         player.setIsAttack(true);
-        gameplay.getAudioPlayer().startThread("swing_sword", false, 0.8f);
+        gameplay.getAudioPlayer().startThread("swing_sword", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
 //        int additionAttackX = 30;
 //        int stunTime = 50;
 //        for (int i = 0; i < attackCount; i++) {
@@ -416,18 +416,18 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     if (enemy.checkHit(attackX, attackY, attackHeight, true, player, attackDamage)) {
                         enemy.setStunTime(stunTime);
                         if (enemy.getStats().getHealth() <= 0) {
-                            gameplay.getAudioPlayer().startThread("kill_sound", false, 0.8f);
+                            gameplay.getAudioPlayer().startThread("kill_sound", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                         } else {
-                            gameplay.getAudioPlayer().startThread("hit_dior_firror", false, 0.8f);
+                            gameplay.getAudioPlayer().startThread("hit_dior_firror", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                         }
                     }
                 } else {
                     if (enemy.checkHit(attackX, attackY, attackHeight, true, player)) {
                         enemy.setStunTime(stunTime);
                         if (enemy.getStats().getHealth() <= 0) {
-                            gameplay.getAudioPlayer().startThread("kill_sound", false, 0.8f);
+                            gameplay.getAudioPlayer().startThread("kill_sound", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                         } else {
-                            gameplay.getAudioPlayer().startThread("hit_dior_firror", false, 0.8f);
+                            gameplay.getAudioPlayer().startThread("hit_dior_firror", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                         }
                     }
                 }

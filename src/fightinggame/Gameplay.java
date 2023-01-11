@@ -89,6 +89,7 @@ public class Gameplay extends JPanel implements Runnable {
         game.addKeyListener(optionHandler);
         setDoubleBuffered(true);
         transitionScreen = new TransitionScreen(this);
+        audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
     }
 
     public void initCamera() {
@@ -104,14 +105,7 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void initBackgroundMusic() {
-        boolean isCloseThread = true;
-        if (audioPlayer != null) {
-            isCloseThread = audioPlayer.closeThread("background_music");
-        }
-        if (isCloseThread) {
-            audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
-            audioPlayer.startThread("background_music", true, 0.75f);
-        }
+        audioPlayer.startThread("background_music", true, optionHandler.getOptionMenu().getMusicVolume());
     }
 
     public void resolutionChange(int width, int height) {
@@ -141,6 +135,7 @@ public class Gameplay extends JPanel implements Runnable {
         playerInit(firstPlatform);
         spawnEnemiesThread = new Thread(spawnEnemies());
         spawnEnemiesThread.start();
+        AudioPlayer.audioPlayers.clear();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
     }
@@ -622,24 +617,12 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.ATTACK02_RTL, attack02RTL);
         playerAnimations.put(CharacterState.ATTACK03_LTR, attack03LTR);
         playerAnimations.put(CharacterState.ATTACK03_RTL, attack03RTL);
-        playerAnimations.put(CharacterState.FIREATTACK01_LTR, fireAttack01LTR);
-        playerAnimations.put(CharacterState.FIREATTACK01_RTL, fireAttack01RTL);
-        playerAnimations.put(CharacterState.FIREATTACK02_LTR, fireAttack02LTR);
-        playerAnimations.put(CharacterState.FIREATTACK02_RTL, fireAttack02RTL);
-        playerAnimations.put(CharacterState.FIREATTACK03_LTR, fireAttack03LTR);
-        playerAnimations.put(CharacterState.FIREATTACK03_RTL, fireAttack03RTL);
         playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR); //New
         playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);//New
         playerAnimations.put(CharacterState.AIRATTACK02_LTR, airAttack02LTR);//New
         playerAnimations.put(CharacterState.AIRATTACK02_RTL, airAttack02RTL);//New
         playerAnimations.put(CharacterState.AIRATTACK03_LTR, airAttack03LTR);//New
         playerAnimations.put(CharacterState.AIRATTACK03_RTL, airAttack03RTL);//New
-        playerAnimations.put(CharacterState.FIREAIRATTACK01_LTR, fireAirAttack01LTR); //New
-        playerAnimations.put(CharacterState.FIREAIRATTACK01_RTL, fireAirAttack01RTL);//New
-        playerAnimations.put(CharacterState.FIREAIRATTACK02_LTR, fireAirAttack02LTR);//New
-        playerAnimations.put(CharacterState.FIREAIRATTACK02_RTL, fireAirAttack02RTL);//New
-        playerAnimations.put(CharacterState.FIREAIRATTACK03_LTR, fireAirAttack03LTR);//New
-        playerAnimations.put(CharacterState.FIREAIRATTACK03_RTL, fireAirAttack03RTL);//New
         playerAnimations.put(CharacterState.AIRATTACKLOOP_LTR, airAttackLoopLTR);//New
         playerAnimations.put(CharacterState.AIRATTACKLOOP_RTL, airAttackLoopRTL);//New
 
@@ -650,8 +633,6 @@ public class Gameplay extends JPanel implements Runnable {
         //Death Animation
         playerAnimations.put(CharacterState.DEATH_LTR, deathLTR);
         playerAnimations.put(CharacterState.DEATH_RTL, deathRTL);
-        playerAnimations.put(CharacterState.FIREDEATH_LTR, fireDeathLTR); //New
-        playerAnimations.put(CharacterState.FIREDEATH_RTL, fireDeathRTL);//new
 
         //Jump Animation
         playerAnimations.put(CharacterState.JUMP_LTR, jumpLTR);
@@ -689,7 +670,7 @@ public class Gameplay extends JPanel implements Runnable {
 
         //Init Inventory
         SpriteSheet inventorySheet = new SpriteSheet();
-        inventorySheet.setImages(ImageManager.loadImagesFromFolderToList("assets/res/inventory"));
+        inventorySheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/inventory"));
 
         //Init Player
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
@@ -934,6 +915,9 @@ public class Gameplay extends JPanel implements Runnable {
             transitionScreen.tick();
         }
         if (Game.STATE == GameState.OPTION_STATE) {
+            if (background != null) {
+                background.tick();
+            }
             if (optionHandler != null) {
                 optionHandler.tick();
             }

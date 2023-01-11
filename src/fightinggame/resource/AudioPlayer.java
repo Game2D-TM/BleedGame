@@ -17,7 +17,7 @@ public class AudioPlayer implements Runnable {
 
     // to store current position
     public static Map<String, Clip> audios = new HashMap();
-    public static final Map<String, AudioPlayer> audioPlayers = new HashMap<>();
+    public static Map<String, AudioPlayer> audioPlayers = new HashMap<>();
 
     private Long currentFrame;
     private Clip clip;
@@ -80,35 +80,58 @@ public class AudioPlayer implements Runnable {
         }
     }
 
+    private AudioPlayer(Long currentFrame, Clip clip, String status, boolean isLoop, float volume, String folderPath, String name, Thread thread) {
+        this.currentFrame = currentFrame;
+        this.clip = clip;
+        this.status = status;
+        this.isLoop = isLoop;
+        this.volume = volume;
+        this.folderPath = folderPath;
+        this.name = name;
+        this.thread = thread;
+    }
+
+    public AudioPlayer clone() {
+        return new AudioPlayer(currentFrame, clip, status, isLoop, volume, folderPath, name, thread);
+    }
+    
+    public boolean isPlaying(String name) {
+        AudioPlayer audioPlayer = audioPlayers.get(name);
+        if(audioPlayer != null) {
+            return audioPlayer.getThread().isAlive();
+        }
+        return false;
+    }
+
     public void startThread(String name, boolean isLoop, float volume) {
         this.name = name;
         this.isLoop = isLoop;
         this.volume = volume;
+        currentFrame = 0L;
+        clip = null;
         AudioPlayer audioPlayer = audioPlayers.get(name);
         if (audioPlayer != null) {
-            if (audioPlayer.closeThread(name)) {
-                thread = new Thread(this);
-                thread.start();
-                audioPlayers.put(name, this);
-            }
-        } else {
-            thread = new Thread(this);
-            thread.start();
-            audioPlayers.put(name, this);
+            closeThread(name);
         }
+        thread = new Thread(this.clone());
+        thread.start();
     }
 
     public boolean closeThread(String name) {
         AudioPlayer audioPlayer = audioPlayers.get(name);
         if (audioPlayer != null) {
             audioPlayer.close();
-            audioPlayer.getThread().interrupt();
-            try {
-                audioPlayer.getThread().join();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(AudioPlayer.class.getName()).log(Level.SEVERE, null, ex);
+            Thread thread = audioPlayer.getThread();
+            if (thread != null && thread.isAlive()) {
+                thread.interrupt();
+                try {
+                    thread.join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(AudioPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return true;
             }
-            return true;
+            audioPlayers.remove(name);
         }
         return false;
     }
@@ -125,6 +148,7 @@ public class AudioPlayer implements Runnable {
         status = "play";
         if (isLoop) {
             clip.loop(Clip.LOOP_CONTINUOUSLY);
+            audioPlayers.put(name, this);
         }
     }
 

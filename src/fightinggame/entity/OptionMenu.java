@@ -1,11 +1,14 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
+import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
+import fightinggame.resource.ImageManager;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Map;
 
 public class OptionMenu {
@@ -21,8 +24,6 @@ public class OptionMenu {
     private BufferedImage fullscreenCheck;
     private BufferedImage resumeCheck;
     private BufferedImage backToMenuCheck;
-    private float musicVolume;
-    private float sfxVolume;
     private GamePosition mainPosition;
     private GamePosition selectPosition;
     private final Gameplay gameplay;
@@ -31,6 +32,10 @@ public class OptionMenu {
     private int subOptionIndex = 0;
     private int optionIndex = 0;
     private Font customFont;
+    private ProgressBar musicProgressBar;
+    private ProgressBar sfxProgressBar;
+    private float musicVolume;
+    private float sfxVolume;
 
     public OptionMenu(Map<String, BufferedImage> optionGuis, Gameplay gameplay) {
         this.optionGuis = optionGuis;
@@ -40,6 +45,7 @@ public class OptionMenu {
         backToMenuCheck = optionGuis.get("empty");
         resumeCheck = optionGuis.get("empty");
         customFont = DataManager.getFont(60);
+        initProgressBars();
     }
 
     public void tick() {
@@ -147,10 +153,14 @@ public class OptionMenu {
                             mainPosition.getYPosition() + 50 - gameplay.getCamera().getPosition().getYPosition(), 70, 70, null);
                     g.drawImage(fullscreenCheck, mainPosition.getXPosition() + 880 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 130 - gameplay.getCamera().getPosition().getYPosition(), 70, 70, null);
-                    g.drawImage(optionGuis.get("progress_bar"), mainPosition.getXPosition() + 600 - gameplay.getCamera().getPosition().getXPosition(),
-                            mainPosition.getYPosition() + 228 - gameplay.getCamera().getPosition().getYPosition(), 350, 30, null);
-                    g.drawImage(optionGuis.get("progress_bar"), mainPosition.getXPosition() + 600 - gameplay.getCamera().getPosition().getXPosition(),
-                            mainPosition.getYPosition() + 308 - gameplay.getCamera().getPosition().getYPosition(), 350, 30, null);
+                    if(musicProgressBar != null) {
+                        musicProgressBar.render(g, mainPosition.getXPosition() + 600 - gameplay.getCamera().getPosition().getXPosition(),
+                            mainPosition.getYPosition() + 228 - gameplay.getCamera().getPosition().getYPosition(), 350, 30);
+                    }
+                    if(sfxProgressBar != null) {
+                        sfxProgressBar.render(g, mainPosition.getXPosition() + 600 - gameplay.getCamera().getPosition().getXPosition(),
+                            mainPosition.getYPosition() + 308 - gameplay.getCamera().getPosition().getYPosition(), 350, 30);
+                    }
                     g.drawImage(backToMenuCheck, mainPosition.getXPosition() + 880 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 370 - gameplay.getCamera().getPosition().getYPosition(), 70, 70, null);
                     if (selectPosition != null) {
@@ -165,6 +175,86 @@ public class OptionMenu {
     public void resetOptionsIndex() {
         optionIndex = 0;
         subOptionIndex = 0;
+    }
+
+    void initProgressBars() {
+        List<BufferedImage> images = ImageManager.loadImagesFromFoldersToList("assets/res/gui/option_menu/Progressbar");
+        musicProgressBar = new ProgressBar(images);
+        sfxProgressBar = new ProgressBar(images);
+        musicProgressBar.setDefaultIndex(11);
+        musicVolume = 0.75f;
+        sfxProgressBar.setDefaultIndex(12);
+        sfxVolume = 0.8f;
+    }
+
+    public void increaseMusicVolume() {
+        if (musicProgressBar == null) {
+            return;
+        }
+        if (musicProgressBar.isEmpty()) {
+            return;
+        }
+        float nVolume = musicVolume + 0.05f;
+        if (nVolume > 1f) {
+            return;
+        }
+        musicProgressBar.next();
+        musicVolume = nVolume;
+        AudioPlayer backgroundMusic = AudioPlayer.audioPlayers.get("background_music");
+        if(backgroundMusic != null) {
+            System.out.println(backgroundMusic.getName());
+            backgroundMusic.setVolume(musicVolume);
+        }
+    }
+
+    public void increaseSfxVolume() {
+        if (sfxProgressBar == null) {
+            return;
+        }
+        if (sfxProgressBar.isEmpty()) {
+            return;
+        }
+        float nVolume = sfxVolume + 0.05f;
+        if (nVolume > 1f) {
+            return;
+        }
+        sfxProgressBar.next();
+        sfxVolume = nVolume;
+    }
+
+    public void decreaseMusicVolume() {
+        if (musicProgressBar == null) {
+            return;
+        }
+        if (musicProgressBar.isEmpty()) {
+            return;
+        }
+        float nVolume = musicVolume - 0.05f;
+        if (nVolume < 0f) {
+            return;
+        }
+        musicProgressBar.back();
+        musicVolume = nVolume;
+        AudioPlayer backgroundMusic = AudioPlayer.audioPlayers.get("background_music");
+        if(backgroundMusic != null) {
+            System.out.println(backgroundMusic.getName());
+            backgroundMusic.setVolume(musicVolume);
+        }
+    }
+
+    public void decreaseSfxVolume() {
+        if (sfxProgressBar == null) {
+            return;
+        }
+        if (sfxProgressBar.isEmpty()) {
+            return;
+        }
+        float nVolume = sfxVolume - 0.05f;
+        if (nVolume < 0f) {
+            return;
+        }
+        sfxProgressBar.back();
+        sfxVolume = nVolume;
     }
 
     public void setOpen(boolean isOpen) {
@@ -189,6 +279,34 @@ public class OptionMenu {
 
     public boolean isFullscreen() {
         return fullscreen;
+    }
+
+    public BufferedImage getFullscreenCheck() {
+        return fullscreenCheck;
+    }
+
+    public BufferedImage getResumeCheck() {
+        return resumeCheck;
+    }
+
+    public BufferedImage getBackToMenuCheck() {
+        return backToMenuCheck;
+    }
+
+    public Gameplay getGameplay() {
+        return gameplay;
+    }
+
+    public Font getCustomFont() {
+        return customFont;
+    }
+
+    public ProgressBar getMusicProgressBar() {
+        return musicProgressBar;
+    }
+
+    public ProgressBar getSfxProgressBar() {
+        return sfxProgressBar;
     }
 
     public void setFullscreen(boolean fullscreen) {

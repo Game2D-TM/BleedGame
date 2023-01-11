@@ -14,10 +14,14 @@ public class OptionKeyboardHandler implements KeyListener {
 
     private final Gameplay gameplay;
     private OptionMenu optionMenu;
+    private int chooseIndex = 0;
 
     public OptionKeyboardHandler(Map<String, BufferedImage> optionGuis, Gameplay gameplay) {
         this.gameplay = gameplay;
         optionMenu = new OptionMenu(optionGuis, gameplay);
+        if(Game.current == Game.ScreenState.fullscreen) {
+            optionMenu.setFullscreen(true);
+        }
     }
 
     public void tick() {
@@ -41,6 +45,9 @@ public class OptionKeyboardHandler implements KeyListener {
         GameState state;
         switch (e.getKeyCode()) {
             case KeyEvent.VK_ESCAPE, KeyEvent.VK_P:
+                if (chooseIndex > 0) {
+                    chooseIndex = 0;
+                }
                 state = Game.STATE;
                 if (state == GameState.GAME_STATE) {
                     Game.STATE = GameState.OPTION_STATE;
@@ -52,6 +59,9 @@ public class OptionKeyboardHandler implements KeyListener {
                 }
                 break;
             case KeyEvent.VK_UP:
+                if (chooseIndex > 0) {
+                    chooseIndex = 0;
+                }
                 optionsIndex = optionMenu.getOptionIndex();
                 if (optionsIndex > 0) {
                     subOptionIndex = optionMenu.getSubOptionIndex();
@@ -64,6 +74,9 @@ public class OptionKeyboardHandler implements KeyListener {
                 }
                 break;
             case KeyEvent.VK_DOWN:
+                if (chooseIndex > 0) {
+                    chooseIndex = 0;
+                }
                 optionsIndex = optionMenu.getOptionIndex();
                 if (optionsIndex > 0) {
                     subOptionIndex = optionMenu.getSubOptionIndex();
@@ -76,22 +89,44 @@ public class OptionKeyboardHandler implements KeyListener {
                 }
                 break;
             case KeyEvent.VK_LEFT:
-                optionsIndex = optionMenu.getOptionIndex();
-                if (optionsIndex > 0) {
-                    optionsIndex--;
+                if (chooseIndex > 0) {
+                    switch (chooseIndex) {
+                        case 2:
+                            optionMenu.decreaseMusicVolume();
+                            break;
+                        case 3:
+                            optionMenu.decreaseSfxVolume();
+                            break;
+                    }
                 } else {
-                    optionsIndex = optionMenu.getOptions().length - 1;
+                    optionsIndex = optionMenu.getOptionIndex();
+                    if (optionsIndex > 0) {
+                        optionsIndex--;
+                    } else {
+                        optionsIndex = optionMenu.getOptions().length - 1;
+                    }
+                    optionMenu.setOptionIndex(optionsIndex);
                 }
-                optionMenu.setOptionIndex(optionsIndex);
                 break;
             case KeyEvent.VK_RIGHT:
-                optionsIndex = optionMenu.getOptionIndex();
-                if (optionsIndex < optionMenu.getOptions().length - 1) {
-                    optionsIndex++;
+                if (chooseIndex > 0) {
+                    switch (chooseIndex) {
+                        case 2:
+                            optionMenu.increaseMusicVolume();
+                            break;
+                        case 3:
+                            optionMenu.increaseSfxVolume();
+                            break;
+                    }
                 } else {
-                    optionsIndex = 0;
+                    optionsIndex = optionMenu.getOptionIndex();
+                    if (optionsIndex < optionMenu.getOptions().length - 1) {
+                        optionsIndex++;
+                    } else {
+                        optionsIndex = 0;
+                    }
+                    optionMenu.setOptionIndex(optionsIndex);
                 }
-                optionMenu.setOptionIndex(optionsIndex);
                 break;
             case KeyEvent.VK_ENTER:
                 optionsIndex = optionMenu.getOptionIndex();
@@ -99,12 +134,18 @@ public class OptionKeyboardHandler implements KeyListener {
                     subOptionIndex = optionMenu.getSubOptionIndex();
                     switch (subOptionIndex) {
                         case 0:
+                            if (chooseIndex > 0) {
+                                chooseIndex = 0;
+                            }
                             Game.STATE = GameState.GAME_STATE;
                             optionMenu.setOpen(false);
                             optionMenu.resetOptionsIndex();
                             break;
                         case 1:
-                            if(optionMenu.isFullscreen()) {
+                            if (chooseIndex > 0) {
+                                chooseIndex = 0;
+                            }
+                            if (optionMenu.isFullscreen()) {
                                 gameplay.getGame().changeWindowMode(Game.ScreenState.windowed);
                                 gameplay.resolutionChange(1650, 950);
                             } else {
@@ -114,10 +155,15 @@ public class OptionKeyboardHandler implements KeyListener {
                             optionMenu.setFullscreen(!optionMenu.isFullscreen());
                             break;
                         case 2:
+                            chooseIndex = 2;
                             break;
                         case 3:
+                            chooseIndex = 3;
                             break;
                         case 4:
+                            if (chooseIndex > 0) {
+                                chooseIndex = 0;
+                            }
                             gameplay.getAudioPlayer().closeThread("background_music");
                             gameplay.getGame().goBackToMenu();
                             optionMenu.resetOptionsIndex();
