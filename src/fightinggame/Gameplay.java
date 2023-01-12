@@ -97,7 +97,7 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void initFirstScene() {
-        File scene = DataManager.getFirstScene(1);
+        File scene = DataManager.getFirstScene(2);
         if (scene == null) {
             return;
         }
@@ -465,7 +465,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.ATTACK01_LTR, attackLTR);
         Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
                 500, defEnemyPosition,
-                enemyAnimations, null, this, 200, null);
+                enemyAnimations, this, 200, null);
         enemy.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
         enemy.getController().add(movementHandler);
@@ -674,7 +674,7 @@ public class Gameplay extends JPanel implements Runnable {
 
         //Init Player
         player = new Player(0, "Shinobu Windsor", 100, defPlayerPosition,
-                playerAnimations, null, this, inventorySheet);
+                playerAnimations, this, inventorySheet);
         //Init platforms
         player.setInsidePlatform(firstPlatform);
 
@@ -720,12 +720,6 @@ public class Gameplay extends JPanel implements Runnable {
                 chest.getItems().add(keyItem);
             }
         }
-//        platform spawn
-//        Platform spawnArea = getPlatforms().get(4).get(10);
-//        fireSword.setPosition(spawnArea.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
-//        fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
-//        fireSword.setSpawnForever(true);
-//        itemsOnGround.add(fireSword);
         platform = getPlatforms().get(4).get(10);
         if (platform != null) {
             GameObject gameObject = background.getGameObjectsTouchable().get("chest1");

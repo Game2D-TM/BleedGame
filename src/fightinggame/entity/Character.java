@@ -28,7 +28,6 @@ public abstract class Character {
     protected Animation currAnimation;
     protected Map<CharacterState, Animation> animations;
     protected List<GameHandler> controller = new ArrayList<>();
-    protected Map<String, BufferedImage> characterAssets;
     protected final Inventory inventory;
     protected final List<Ability> abilities = new ArrayList<>();
     protected BufferedImage avatar;
@@ -47,13 +46,12 @@ public abstract class Character {
     protected boolean grapEdge = false;
     protected Stats stats;
 
-    public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
+    public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
         this.id = id;
         this.name = name;
         this.position = position;
         this.animations = animations;
-        this.characterAssets = characterAssets;
         this.gameplay = gameplay;
         this.isLTR = isLTR;
         stats = new Stats(this, 1, 0, 10, 5, 100, 30, 0, 0, 0);
@@ -468,14 +466,6 @@ public abstract class Character {
 
     public void setAnimations(Map<CharacterState, Animation> animations) {
         this.animations = animations;
-    }
-
-    public Map<String, BufferedImage> getCharacterAssets() {
-        return characterAssets;
-    }
-
-    public void setCharacterAssets(Map<String, BufferedImage> characterAssets) {
-        this.characterAssets = characterAssets;
     }
 
     public List<GameHandler> getController() {

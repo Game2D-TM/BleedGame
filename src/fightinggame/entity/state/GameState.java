@@ -4,5 +4,6 @@ public enum GameState {
     OPTION_STATE,
     GAME_STATE,
     MENU_STATE,
-    TRANSITION_STATE
+    TRANSITION_STATE,
+    DIALOGUE_STATE
 }

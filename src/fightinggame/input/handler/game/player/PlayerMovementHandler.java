@@ -177,6 +177,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
             for (Iterator<Integer> it = keyPresses.iterator(); it.hasNext();) {
                 int keyCode = it.next();
                 switch (keyCode) {
+                    case KeyEvent.VK_SPACE:
+                        player.getDialogue().next();
+                        break;
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
                         if (player.isWallSlide()) {

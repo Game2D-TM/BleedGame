@@ -4,7 +4,6 @@ import fightinggame.Gameplay;
 import fightinggame.animation.enemy.*;
 import fightinggame.entity.Animation;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
@@ -36,9 +35,9 @@ public abstract class Enemy extends Character {
     protected double experience = 0;
     protected int stunTime = 300;
 
-    public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
+    public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, int rangeRandomSpeed, SpriteSheet inventorySheet) {
-        super(id, name, health, position, animations, characterAssets, gameplay, false, inventorySheet);
+        super(id, name, health, position, animations, gameplay, false, inventorySheet);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 10f, 100, 100));
         healthBar.setAppearTimeLimit(1000);

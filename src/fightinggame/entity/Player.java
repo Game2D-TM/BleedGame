@@ -4,9 +4,11 @@ import fightinggame.entity.state.CharacterState;
 import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
 import fightinggame.animation.player.*;
+import fightinggame.entity.enemy.Enemy;
+import fightinggame.entity.enemy.dior.DiorEnemy;
+import fightinggame.resource.DataManager;
 import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Map;
 
@@ -17,11 +19,15 @@ public class Player extends Character {
     private boolean isAirAttack;
     private boolean isSpecialAttack;
     private boolean isDoubleJump;
+    private Dialogue dialogue;
+    private boolean isSpeak;
+    private int speakCounter = 0;
+    private int speakDialogueIndex = 1;
 
     public Player(int id, String name, int health, GamePosition position,
-            Map<CharacterState, Animation> animations, Map<String, BufferedImage> characterAssets,
+            Map<CharacterState, Animation> animations,
             Gameplay gameplay, SpriteSheet inventorySheet) {
-        super(id, name, health, position, animations, characterAssets, gameplay, true, inventorySheet);
+        super(id, name, health, position, animations, gameplay, true, inventorySheet);
         avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
@@ -34,6 +40,7 @@ public class Player extends Character {
         healthBar.getPositions().put("player_score",
                 new GamePosition(healthBar.getNamePos().getXPosition(),
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
+        dialogue = new Dialogue(this, gameplay);
     }
 
     @Override
@@ -85,6 +92,33 @@ public class Player extends Character {
                 }
             }
         }
+        if (isSpeak) {
+            if(Enemy.ENEMY_HEALTHBAR_SHOW != null) {
+                DiorEnemy enemy = (DiorEnemy)Enemy.ENEMY_HEALTHBAR_SHOW;
+                if(enemy.isSpeak()) {
+                    enemy.setIsSpeak(false);
+                }
+            }
+            if (dialogue != null) {
+                dialogue.tick();
+            }
+            if (dialogue.isEndDialogue()) {
+                isSpeak = false;
+            }
+        } else {
+            if(speakCounter <= 1500) {
+                speakCounter++;
+            }
+            if (speakCounter > 1500) {
+                boolean result = dialogue.loadDialogue(DataManager.getFile("starter_" + speakDialogueIndex));
+                if (result) {
+                    dialogue.setEndDialogue(false);
+                    isSpeak = true;
+                    speakCounter = 0;
+                    speakDialogueIndex++;
+                }
+            }
+        }
     }
 
     @Override
@@ -93,6 +127,11 @@ public class Player extends Character {
         healthBar.render(g);
         g.drawString("Score: " + score, getPlayerScorePos().getXPosition(),
                 getPlayerScorePos().getYPosition());
+        if (isSpeak) {
+            if (dialogue != null) {
+                dialogue.render(g);
+            }
+        }
 //        g.setColor(Color.red);
         // hitbox
 //        g.setColor(Color.red);
@@ -275,11 +314,27 @@ public class Player extends Character {
         }
         return false;
     }
-    
+
+    public boolean isSpeak() {
+        return isSpeak;
+    }
+
+    public void setIsSpeak(boolean isSpeak) {
+        this.isSpeak = isSpeak;
+    }
+
+    public Dialogue getDialogue() {
+        return dialogue;
+    }
+
+    public void setDialogue(Dialogue dialogue) {
+        this.dialogue = dialogue;
+    }
+
     public boolean isSlide() {
         return position.isSlide;
     }
-    
+
     public boolean isSprint() {
         return (position.isMoveRight || position.isMoveLeft) && position.isSprint;
     }
