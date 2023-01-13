@@ -7,6 +7,7 @@ import fightinggame.resource.DataManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.File;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +21,14 @@ public class Rule {
     private boolean isTransition;
     private Platform firstPlatform;
     private Platform secondPlatform;
+    private LocalTime timeLimit;
 
     public Rule(GamePosition position, Platform firPlatform, Platform secondPlatform, Gameplay gameplay) {
         this.victoryPosition = position;
         this.gameplay = gameplay;
         this.firstPlatform = firPlatform;
         this.secondPlatform = secondPlatform;
+        setTimeLimit(30);
     }
 
     public void tick() {
@@ -38,10 +41,15 @@ public class Rule {
                     if (scene == null) {
                         scene = DataManager.getFirstScene(1);
                     }
-                    gameplay.initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
+                    gameplay.loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                     resetGameCounter = 0;
                 }
             } else {
+//                if (timeLimit != null) {
+//                    if (GameTimer.getInstance().countDownEnd(timeLimit)) {
+//                        player.setIsDeath(true);
+//                    }
+//                }
                 if (missionComplete) {
                     GamePosition playerHitBox = player.getHitBoxPosition();
                     if (playerHitBox != null) {
@@ -61,7 +69,7 @@ public class Rule {
                                         player.getInventory().removeItemFromInventory(key);
                                     }
                                     missionComplete = false;
-                                    gameplay.initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
+                                    gameplay.loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                                 }
                             }
                         }
@@ -123,4 +131,37 @@ public class Rule {
         }
         return null;
     }
+
+    public void setTimeLimit(int minutes) {
+        timeLimit = GameTimer.getInstance().addMinutes(minutes);
+    }
+
+    public Gameplay getGameplay() {
+        return gameplay;
+    }
+
+    public int getResetGameCounter() {
+        return resetGameCounter;
+    }
+
+    public int getResetGameLimit() {
+        return resetGameLimit;
+    }
+
+    public boolean isTransition() {
+        return isTransition;
+    }
+
+    public Platform getFirstPlatform() {
+        return firstPlatform;
+    }
+
+    public Platform getSecondPlatform() {
+        return secondPlatform;
+    }
+
+    public LocalTime getTimeLimit() {
+        return timeLimit;
+    }
+
 }

@@ -36,6 +36,7 @@ public class OptionMenu {
     private ProgressBar sfxProgressBar;
     private float musicVolume;
     private float sfxVolume;
+    private String description = "";
 
     public OptionMenu(Map<String, BufferedImage> optionGuis, Gameplay gameplay) {
         this.optionGuis = optionGuis;
@@ -63,6 +64,7 @@ public class OptionMenu {
                     }
                     selectPosition = new GamePosition(mainPosition.getXPosition() + 15,
                             mainPosition.getYPosition() + 15, 70, 70);
+                    description = "Exit Option Menu.";
                     break;
                 case 1:
                     if (subOptionIndex == 0) {
@@ -92,22 +94,31 @@ public class OptionMenu {
                         case 0:
                             selectPosition = new GamePosition(mainPosition.getXPosition() + 875,
                                     mainPosition.getYPosition() + 45, 80, 80);
+                            description = "Continue Play Game.";
                             break;
                         case 1:
                             selectPosition = new GamePosition(mainPosition.getXPosition() + 875,
                                     mainPosition.getYPosition() + 125, 80, 80);
+                            if(!isFullscreen()) {
+                                description = "Change To Fullscreen Mode.";
+                            } else {
+                                description = "Change To Window Mode.";
+                            }
                             break;
                         case 2:
                             selectPosition = new GamePosition(mainPosition.getXPosition() + 585,
                                     mainPosition.getYPosition() + 223, 375, 40);
+                            description = "Background Music Volume.";
                             break;
                         case 3:
                             selectPosition = new GamePosition(mainPosition.getXPosition() + 585,
                                     mainPosition.getYPosition() + 303, 375, 40);
+                            description = "Sound Effect Volume.";
                             break;
                         case 4:
                             selectPosition = new GamePosition(mainPosition.getXPosition() + 495 + 100 + 350 - 70,
                                     mainPosition.getYPosition() + 365, 80, 80);
+                            description = "Back To Game Menu.";
                             break;
                     }
                     break;
@@ -137,6 +148,7 @@ public class OptionMenu {
                     // Titles
 //                    g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 60));
                     g.setFont(customFont);
+                    g.setColor(new Color(133, 0, 0));
                     g.drawString("Resume", mainPosition.getXPosition() + 150 - gameplay.getCamera().getPosition().getXPosition(),
                             mainPosition.getYPosition() + 100 - gameplay.getCamera().getPosition().getYPosition());
                     g.drawString("Fullscreen", mainPosition.getXPosition() + 150 - gameplay.getCamera().getPosition().getXPosition(),
@@ -167,6 +179,9 @@ public class OptionMenu {
                         g.drawImage(optionGuis.get("selection"), selectPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
                                 selectPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), selectPosition.getWidth(), selectPosition.getHeight(), null);
                     }
+                    g.setFont(DataManager.getFont(35));
+                    g.drawString(description, mainPosition.getXPosition() + 150 - gameplay.getCamera().getPosition().getXPosition()
+                            , mainPosition.getMaxY() - 35 - gameplay.getCamera().getPosition().getYPosition());
                 }
             }
         }

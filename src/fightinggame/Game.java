@@ -108,7 +108,7 @@ public class Game extends JFrame {
     public void start() {
         isRunning = true;
         init();
-        STATE = GameState.GAME_STATE;
+//        STATE = GameState.GAME_STATE;
         if (gameplay != null) {
             if (gameThread != null && gameThread.isAlive()) {
                 gameThread.interrupt();

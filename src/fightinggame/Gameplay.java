@@ -1,5 +1,6 @@
 package fightinggame;
 
+import fightinggame.animation.BackgroundAnimation;
 import fightinggame.animation.ability.FireBallAnimation;
 import fightinggame.animation.enemy.EnemyAttack;
 import fightinggame.animation.enemy.EnemyDeath;
@@ -32,6 +33,9 @@ import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
 import fightinggame.entity.GameMap;
+import fightinggame.entity.GameTimer;
+import fightinggame.entity.LoadingScreen;
+import fightinggame.entity.ProgressBar;
 import fightinggame.entity.Rule;
 import fightinggame.entity.TransitionScreen;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
@@ -57,6 +61,7 @@ import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.Utils;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -82,6 +87,7 @@ public class Gameplay extends JPanel implements Runnable {
     private Rule rule;
     private OptionKeyboardHandler optionHandler;
     private TransitionScreen transitionScreen;
+    private LoadingScreen loadingScreen;
 
     public Gameplay(Game game) {
         this.game = game;
@@ -90,6 +96,11 @@ public class Gameplay extends JPanel implements Runnable {
         setDoubleBuffered(true);
         transitionScreen = new TransitionScreen(this);
         audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
+        SpriteSheet loadingBackgroundSheet = new SpriteSheet();
+        loadingBackgroundSheet.add("assets/res/background/Loading/loading.png");
+        BackgroundAnimation animation = new BackgroundAnimation(0, loadingBackgroundSheet, -1);
+        loadingScreen = new LoadingScreen(animation , new ProgressBar(ImageManager.loadImagesFromFoldersToList("assets/res/gui/option_menu/Progressbar")), 
+                                        new GamePosition(0, 0, game.getWidth(), game.getHeight()));
     }
 
     public void initCamera() {
@@ -101,7 +112,8 @@ public class Gameplay extends JPanel implements Runnable {
         if (scene == null) {
             return;
         }
-        initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
+//        initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
+        loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
     }
 
     public void initBackgroundMusic() {
@@ -113,6 +125,41 @@ public class Gameplay extends JPanel implements Runnable {
 //        setPreferredSize(new Dimension(width - 16, height - 39));
 //        initCamera();
 //        initFirstScene();
+    }
+
+    public void loadScene(String sceneName, String sceneDataFilePath) {
+        loadingScreen.resetLoading();
+        Game.STATE = GameState.LOADING_STATE;
+        Gameplay gameplay = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                background = new Background(0, sceneName,
+                        ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
+                        ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
+                        ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH), gameplay,
+                        sceneDataFilePath, 250, 180);
+                map = new GameMap(1, "Map", gameplay,
+                        new GamePosition(0, 0, 0, 0),
+                        ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
+                        ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
+                        ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH),
+                        sceneDataFilePath, 15, 15);
+                initObjects();
+                initVictoryPosition();
+                enemies.clear();
+                itemsOnGround.clear();
+                Platform firstPlatform = getPlatforms().get(11).get(3);
+                playerInit(firstPlatform);
+                initEnemies();
+//                spawnEnemiesThread = new Thread(spawnEnemies());
+//                spawnEnemiesThread.start();
+                AudioPlayer.audioPlayers.clear();
+                initBackgroundMusic();
+                transitionScreen.startTransitionBackward();
+                Game.STATE = GameState.GAME_STATE;
+            }
+        }).start();
     }
 
     public void initScene(String sceneName, String sceneDataFilePath) {
@@ -872,7 +919,14 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
+        if(Game.STATE == GameState.LOADING_STATE) {
+            if(loadingScreen != null) {
+                loadingScreen.tick();
+            }
+            return;
+        }
         if (Game.STATE == GameState.GAME_STATE) {
+            GameTimer.getInstance().tick();
             if (background != null) {
                 background.tick();
             }
@@ -920,6 +974,12 @@ public class Gameplay extends JPanel implements Runnable {
 
     public void render(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
+        if(Game.STATE == GameState.LOADING_STATE) {
+            if(loadingScreen != null) {
+                loadingScreen.render(g2);
+            }
+            return;
+        }
         if (Game.STATE == GameState.OPTION_STATE) {
             if (background != null) {
                 background.render(g2);
@@ -965,6 +1025,10 @@ public class Gameplay extends JPanel implements Runnable {
                 }
             }
             if (rule != null) {
+                g.setFont(DataManager.getFont(50f));
+                g.setColor(new Color(133, 0, 0));
+                g.drawString(GameTimer.getInstance().countDownString(rule.getTimeLimit(), GameTimer.FORMAT_MS),
+                         getWidth() / 2 - 50, 80);
                 rule.render(g2);
             }
             if (player != null) {

@@ -15,7 +15,7 @@ import java.awt.event.KeyListener;
 public class MenuKeyboardHandler implements KeyListener {
 
     private final Game game;
-    private String[] buttons = {"Start", "Options", "Quit"};
+    private String[] buttons = {"Start", "Load Game", "Quit"};
     private int currIndex = 0;
     private Image image;
     private int width, height;
@@ -65,7 +65,7 @@ public class MenuKeyboardHandler implements KeyListener {
                         case "Start":
                             game.start();
                             break;
-                        case "Options":
+                        case "Load Game":
                             break;
                         case "Quit":
                             game.dispose();
@@ -73,8 +73,6 @@ public class MenuKeyboardHandler implements KeyListener {
                     }
                     break;
             }
-            String button = buttons[currIndex];
-            System.out.println(button);
         }
     }
 
@@ -87,18 +85,18 @@ public class MenuKeyboardHandler implements KeyListener {
             g.setColor(Color.white);
             g.fillRect(0, 0, width, height);
             g.drawImage(image, 0, 0, width, height, null);
-            g.setColor(Color.red);
-            g.drawRect(width / 3 + 50, firstY, width / 4, height / 8);
-            g.drawRect(width / 3 + 50, firstY + height / 8 + 40, width / 4, height / 8);
-            g.drawRect(width / 3 + 50, firstY + (height / 8 + 40) * 2, width / 4, height / 8);
+            g.setColor(new Color(133, 0, 0));
+//            g.drawRect(width / 3 + 50, firstY, width / 4, height / 8);
+//            g.drawRect(width / 3 + 50, firstY + height / 8 + 40, width / 4, height / 8);
+//            g.drawRect(width / 3 + 50, firstY + (height / 8 + 40) * 2, width / 4, height / 8);
             g.setFont(customFont);
-            g.drawString("Start", width / 3 + 190, firstY + 80);
-            g.drawString("Options", width / 3 + 170, firstY + height / 8 + 40 + 80);
-            g.drawString("Quit", width / 3 + 200, firstY + (height / 8 + 40) * 2 + 80);
+            g.drawString(buttons[0], width / 3 + 190, firstY + 80);
+            g.drawString(buttons[1], width / 3 + 120, firstY + height / 8 + 40 + 80);
+            g.drawString(buttons[2], width / 3 + 200, firstY + (height / 8 + 40) * 2 + 80);
             g.setColor(Color.WHITE);
             switch (currIndex) {
                 case 1:
-                    x = width / 3 + 170;
+                    x = width / 3 + 120;
                     y = firstY + height / 8 + 40 + 80;
                     break;
                 case 2:

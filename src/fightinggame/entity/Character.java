@@ -541,6 +541,14 @@ public abstract class Character {
     }
 
     public void setIsDeath(boolean isDeath) {
+        if (isDeath) {
+            stats.setHealth(0);
+            if (isLTR) {
+                currAnimation = animations.get(CharacterState.DEATH_LTR);
+            } else {
+                currAnimation = animations.get(CharacterState.DEATH_RTL);
+            }
+        }
         this.isDeath = isDeath;
     }
 

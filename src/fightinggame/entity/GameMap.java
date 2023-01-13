@@ -24,7 +24,7 @@ import java.util.Map;
 public class GameMap extends Background {
 
     public static int DEF_SURROUND_PLATFORM = 8;
-    public static int DEF_MINUS_DOWN = 3;
+    public static int DEF_MINUS_DOWN = 0;
     public static int DEF_MINUS_UP = 0;
     public static int DEF_MINUS_RIGHT = 0;
     public static int DEF_MINUS_LEFT = 0;
@@ -133,6 +133,84 @@ public class GameMap extends Background {
             position.setWidth(maxSize * tileWidth);
             position.setHeight(nHeight);
         }
+    }
+
+    @Override
+    public List<List<Platform>> getSurroundPlatform(int i, int j, int surroundTile, int minusDown, int minusLeft, int minusUp, int minusRight) {
+        List<List<Platform>> scenePlatforms = scene;
+        if (scenePlatforms != null && scenePlatforms.size() > 0) {
+            List<List<Platform>> platforms = new ArrayList<List<Platform>>();
+            int left = j, up = i, right = j, down = i;
+            if (left - surroundTile - minusLeft >= 0) {
+                left = left - surroundTile - minusLeft;
+            } else {
+                left = 0;
+            }
+            if (up - surroundTile - minusUp >= 0) {
+                up = up - surroundTile - minusUp;
+            } else {
+                up = 0;
+            }
+            if (scenePlatforms.get(i) != null && scenePlatforms.get(i).size() > 2) {
+                if (right + surroundTile - minusRight <= scenePlatforms.get(i).size() - 1) {
+                    right = right + surroundTile - minusRight;
+                } else {
+                    right = scenePlatforms.get(i).size() - 1;
+                }
+            } else {
+                return null;
+            }
+            if (scenePlatforms.size() > 2) {
+                if (down + surroundTile - minusDown <= scenePlatforms.size() - 1) {
+                    down = down + surroundTile - minusDown;
+                } else {
+                    down = scenePlatforms.size() - 1;
+                }
+            } else {
+                return null;
+            }
+            int lackLeft = surroundTile - (j - left);
+            int lackRight = surroundTile - (right - j);
+            int lackUp = surroundTile - (i - up);
+            int lackDown = surroundTile - (down - i);
+            if (lackRight > 0) {
+                left -= lackRight;
+                if(left < 0) {
+                    left = 0;
+                }
+            }
+            if(lackLeft > 0) {
+                right += lackLeft;
+                if(right > scenePlatforms.get(i).size() - 1) {
+                    right = scenePlatforms.get(i).size() - 1;
+                }
+            }
+            if(lackUp > 0) {
+                down += lackUp;
+                if(down > scenePlatforms.size() - 1) {
+                    down = scenePlatforms.size() - 1;
+                }
+            }
+            if(lackDown > 0) {
+                up -= lackDown;
+                if(up < 0) {
+                    up = 0;
+                }
+            }
+//            System.out.println(up + " " + down + " " + right + " " + left);
+            for (int row = up; row <= down; row++) {
+                List<Platform> list = new ArrayList<Platform>();
+                for (int column = left; column <= right; column++) {
+                    Platform platform = scenePlatforms.get(row).get(column);
+                    if (platform != null) {
+                        list.add(platform);
+                    }
+                }
+                platforms.add(list);
+            }
+            return platforms;
+        }
+        return null;
     }
 
     @Override
