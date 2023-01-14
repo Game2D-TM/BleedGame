@@ -108,7 +108,6 @@ public class Game extends JFrame {
     public void start() {
         isRunning = true;
         init();
-//        STATE = GameState.GAME_STATE;
         if (gameplay != null) {
             if (gameThread != null && gameThread.isAlive()) {
                 gameThread.interrupt();
@@ -145,7 +144,7 @@ public class Game extends JFrame {
             }
             current = ScreenState.windowed;
         }
-        System.out.println(getWidth() + " " + getHeight());
+//        System.out.println(getWidth() + " " + getHeight());
     }
 
     public Thread getGameThread() {

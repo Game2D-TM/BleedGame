@@ -41,6 +41,7 @@ public class Rule {
                     if (scene == null) {
                         scene = DataManager.getFirstScene(1);
                     }
+                    gameplay.getAudioPlayer().closeThread("background_music");
                     gameplay.loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                     resetGameCounter = 0;
                 }
@@ -69,6 +70,7 @@ public class Rule {
                                         player.getInventory().removeItemFromInventory(key);
                                     }
                                     missionComplete = false;
+                                    gameplay.getAudioPlayer().closeThread("background_music");
                                     gameplay.loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                                 }
                             }
@@ -86,10 +88,15 @@ public class Rule {
     }
 
     public void render(Graphics g) {
-        g.setColor(Color.red);
-        g.drawRect(victoryPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                victoryPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
-                victoryPosition.getWidth(), victoryPosition.getHeight());
+        g.setFont(DataManager.getFont(50f));
+        g.setColor(new Color(133, 0, 0));
+        g.drawString(GameTimer.getInstance().countDownString(timeLimit, GameTimer.FORMAT_MS),
+                gameplay.getWidth() / 2 - 50, 80);
+        // victory position hitbox
+//        g.setColor(Color.red);
+//        g.drawRect(victoryPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+//                victoryPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+//                victoryPosition.getWidth(), victoryPosition.getHeight());
     }
 
     public GamePosition getVictoryPosition() {

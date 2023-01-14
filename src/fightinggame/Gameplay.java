@@ -61,7 +61,6 @@ import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.Utils;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -985,10 +984,6 @@ public class Gameplay extends JPanel implements Runnable {
                 }
             }
             if (rule != null) {
-                g.setFont(DataManager.getFont(50f));
-                g.setColor(new Color(133, 0, 0));
-                g.drawString(GameTimer.getInstance().countDownString(rule.getTimeLimit(), GameTimer.FORMAT_MS),
-                        getWidth() / 2 - 50, 80);
                 rule.render(g2);
             }
             if (player != null) {
