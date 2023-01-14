@@ -38,15 +38,11 @@ public class Fireball extends Throwable {
                     } else {
                         spawnPosition.moveLeft(speed, true);
                     }
-                    int attackX = -1;
-                    int attackY = spawnPosition.getYPosition();
-                    int attackHeight = spawnPosition.getHeight();
                     if (character instanceof Player) {
-                        attackX = spawnPosition.getMaxX();
                         if (!gameplay.getEnemies().isEmpty()) {
                             for (int i = 0; i < gameplay.getEnemies().size(); i++) {
                                 Enemy enemy = gameplay.getEnemies().get(i);
-                                if (enemy.checkHit(attackX, attackY, attackHeight, true, character, attackDamage)) {
+                                if (enemy.checkHit(spawnPosition, true, character, attackDamage)) {
                                     gameplay.getAudioPlayer().startThread("fireball_hit", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                                     spawnPosition = null;
                                     endPosition = null;
@@ -56,8 +52,7 @@ public class Fireball extends Throwable {
                             }
                         }
                     } else {
-                        attackX = spawnPosition.getXPosition();
-                        if (gameplay.getPlayer().checkHit(attackX, attackY, attackHeight, true, character, attackDamage)) {
+                        if (gameplay.getPlayer().checkHit(spawnPosition, true, character, attackDamage)) {
                             gameplay.getAudioPlayer().startThread("fireball_hit", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                             spawnPosition = null;
                             endPosition = null;

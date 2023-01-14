@@ -31,11 +31,7 @@ public class LoadingScreen {
                 if (!progressBar.isEmpty()) {
                     progressBar.next();
                     loadingCounter = 0;
-                    if (percent != 80) {
-                        percent += 5;
-                    } else {
-                        percent = 100;
-                    }
+                    percent += 5;
                 }
             }
         }
@@ -48,13 +44,13 @@ public class LoadingScreen {
             }
             if (progressBar != null) {
                 progressBar.render(g, position.getXPosition() + 30,
-                         position.getMaxY() - 90,
-                         position.getWidth() - 60, 50);
+                        position.getMaxY() - 90,
+                        position.getWidth() - 60, 50);
             }
             g.setFont(DataManager.getFont(30f));
             g.setColor(Color.white);
             g.drawString(percent + "%", position.getMaxX() - 100,
-                     position.getMaxY() - 10);
+                    position.getMaxY() - 10);
         }
     }
 

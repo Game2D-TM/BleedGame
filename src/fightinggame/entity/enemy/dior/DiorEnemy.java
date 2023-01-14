@@ -84,22 +84,14 @@ public class DiorEnemy extends Enemy {
     public void tick() {
         super.tick();
         if (!isAttack && !isAttacked && !isDeath) {
-            int xAttack = -1;
-            int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
-            int attackHeight = position.getHeight() / 2 - 10;
-            if (!isLTR) {
-                xAttack = position.getXPosition() - 30;
-            } else {
-                xAttack = position.getMaxX() + 30;
-            }
-            if (gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, false, null)) {
+            if (gameplay.getPlayer().checkHit(attackHitBox(), false, null)) {
                 if (isLTR) {
                     currAnimation = animations.get(CharacterState.ATTACK01_LTR);
                 } else {
                     currAnimation = animations.get(CharacterState.ATTACK01_RTL);
                 }
                 isAttack = true;
-                gameplay.getPlayer().checkHit(xAttack, attackY, attackHeight, isAttack, this);
+                gameplay.getPlayer().checkHit(attackHitBox(), isAttack, this);
             }
         }
 
@@ -165,8 +157,8 @@ public class DiorEnemy extends Enemy {
         }
         if (Enemy.ENEMY_HEALTHBAR_SHOW != null
                 && this == Enemy.ENEMY_HEALTHBAR_SHOW) {
-            if(isDeath) {
-                if(isSpeak) {
+            if (isDeath) {
+                if (isSpeak) {
                     isSpeak = false;
                     speakTimeDialogueCounter = 0;
                     dialogue.setEndDialogue(true);
@@ -219,13 +211,9 @@ public class DiorEnemy extends Enemy {
 //                 getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
 //                getWidthHitBox(), getHeightHitBox());
         // attack hitbox
-//        int attackX = position.getXPosition();
-//        if(isLTR) {
-//            attackX = position.getMaxX();
-//        }
-//        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
-//        int attackHeight = position.getHeight() / 2 - 10;
-//        g.fillRect(attackX, attackY, 20, attackHeight);
+//        g.fillRect(attackHitBox().getXPosition() - gameplay.getCamera().getPosition().getXPosition()
+//                , attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition()
+//                , attackHitBox().getWidth(), attackHitBox().getHeight());
     }
 
     public boolean isSpeak() {
@@ -278,6 +266,20 @@ public class DiorEnemy extends Enemy {
 
     public void setColor(DiorColor color) {
         this.color = color;
+    }
+
+    @Override
+    public GamePosition attackHitBox() {
+        int attackX, attackY, attackWidth, attackHeight;
+        attackY = position.getYPosition() + position.getHeight() / 3 - 10;
+        attackHeight = position.getHeight() / 2 - 10;
+        attackWidth = position.getWidth() / 3;
+        if (!isLTR) {
+            attackX = position.getXPosition() - 30;
+        } else {
+            attackX = (position.getMaxX() + 30) - attackWidth;
+        }
+        return new GamePosition(attackX, attackY, attackWidth, attackHeight);
     }
 
 }

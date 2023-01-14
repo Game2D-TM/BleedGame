@@ -89,6 +89,7 @@ public abstract class Enemy extends Character {
                 gameplay.getPlayer().getStats().addExperience(experience);
                 gameplay.getPlayer().addScore(point);
                 gameplay.getEnemies().remove(this);
+                gameplay.getRule().addSecondsTimeLimit(15);
                 deathCounter = 0;
             }
         }
@@ -259,17 +260,21 @@ public abstract class Enemy extends Character {
     }
 
     @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, 
+    public boolean checkHit(GamePosition attackHitBox, boolean isAttack, 
             Character character, int attackDamage) {
-        int attackMaxY = attackY + attackHeight;
         if (isAttack && !isDeath) {
-            if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
-                    && ((attackY <= getYHitBox() && attackMaxY >= getYMaxHitBox()
-                    || (attackY >= getYHitBox() && attackMaxY <= getYMaxHitBox())
-                    || (attackY > getYHitBox() && attackY <= getYMaxHitBox()
-                    && attackMaxY > getYMaxHitBox())
-                    || (attackMaxY > getYHitBox() && attackMaxY <= getYMaxHitBox()
-                    && attackY < getYHitBox())))) {
+            if (((attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox())
+                        || (attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox()
+                        && attackHitBox.getMaxX() > getXMaxHitBox())
+                        || (attackHitBox.getMaxX() >= getXHitBox() && attackHitBox.getMaxX() <= getXMaxHitBox()
+                        && attackHitBox.getXPosition() < getXHitBox())
+                        || (attackHitBox.getXPosition() < getXHitBox() && attackHitBox.getMaxX() > getXMaxHitBox()))
+                        && ((attackHitBox.getYPosition() <= getYHitBox() && attackHitBox.getYPosition() >= getYMaxHitBox()
+                        || (attackHitBox.getYPosition() >= getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox())
+                        || (attackHitBox.getYPosition() > getYHitBox() && attackHitBox.getYPosition() <= getYMaxHitBox()
+                        && attackHitBox.getMaxY() > getYMaxHitBox())
+                        || (attackHitBox.getMaxY() > getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox()
+                        && attackHitBox.getYPosition() < getYHitBox())))) {
                 setDefAttackedCounter();
                 if (ENEMY_HEALTHBAR_SHOW != null) {
                     ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
@@ -330,23 +335,5 @@ public abstract class Enemy extends Character {
     public void setStunTime(int stunTime) {
         this.stunTime = stunTime;
     }
-
-    @Override
-    public abstract int getXHitBox();
-
-    @Override
-    public abstract int getWidthHitBox();
-
-    @Override
-    public abstract int getHeightHitBox();
-
-    @Override
-    public abstract int getXMaxHitBox();
-
-    @Override
-    public abstract int getYHitBox();
-
-    @Override
-    public abstract int getYMaxHitBox();
 
 }

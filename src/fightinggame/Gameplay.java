@@ -78,8 +78,6 @@ public class Gameplay extends JPanel implements Runnable {
     private final List<Enemy> enemies = new ArrayList<Enemy>();
     private final Game game;
     private int itemCount = 0;
-    private int enemyCount = 0;
-    private int enemyAnimationCount = 0;
     private Thread spawnEnemiesThread;
     private AudioPlayer audioPlayer;
     private final List<Item> itemsOnGround = new ArrayList<Item>();
@@ -99,8 +97,8 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet loadingBackgroundSheet = new SpriteSheet();
         loadingBackgroundSheet.add("assets/res/background/Loading/loading.png");
         BackgroundAnimation animation = new BackgroundAnimation(0, loadingBackgroundSheet, -1);
-        loadingScreen = new LoadingScreen(animation , new ProgressBar(ImageManager.loadImagesFromFoldersToList("assets/res/gui/option_menu/Progressbar")), 
-                                        new GamePosition(0, 0, game.getWidth(), game.getHeight()));
+        loadingScreen = new LoadingScreen(animation, new ProgressBar(ImageManager.loadImagesFromFoldersToList("assets/res/gui/option_menu/Progressbar")),
+                new GamePosition(0, 0, game.getWidth(), game.getHeight()));
     }
 
     public void initCamera() {
@@ -130,33 +128,11 @@ public class Gameplay extends JPanel implements Runnable {
     public void loadScene(String sceneName, String sceneDataFilePath) {
         loadingScreen.resetLoading();
         Game.STATE = GameState.LOADING_STATE;
-        Gameplay gameplay = this;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                background = new Background(0, sceneName,
-                        ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
-                        ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
-                        ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH), gameplay,
-                        sceneDataFilePath, 250, 180);
-                map = new GameMap(1, "Map", gameplay,
-                        new GamePosition(0, 0, 0, 0),
-                        ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
-                        ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
-                        ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH),
-                        sceneDataFilePath, 15, 15);
-                initObjects();
-                initVictoryPosition();
-                enemies.clear();
-                itemsOnGround.clear();
-                Platform firstPlatform = getPlatforms().get(11).get(3);
-                playerInit(firstPlatform);
-                initEnemies();
-//                spawnEnemiesThread = new Thread(spawnEnemies());
-//                spawnEnemiesThread.start();
-                AudioPlayer.audioPlayers.clear();
-                initBackgroundMusic();
-                transitionScreen.startTransitionBackward();
+                initScene(sceneName, sceneDataFilePath);
+                rule.setTimeLimit(7);
                 Game.STATE = GameState.GAME_STATE;
             }
         }).start();
@@ -180,8 +156,9 @@ public class Gameplay extends JPanel implements Runnable {
         itemsOnGround.clear();
         Platform firstPlatform = getPlatforms().get(11).get(3);
         playerInit(firstPlatform);
-        spawnEnemiesThread = new Thread(spawnEnemies());
-        spawnEnemiesThread.start();
+        initEnemies();
+//        spawnEnemiesThread = new Thread(spawnEnemies());
+//        spawnEnemiesThread.start();
         AudioPlayer.audioPlayers.clear();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
@@ -479,26 +456,16 @@ public class Gameplay extends JPanel implements Runnable {
 //        ImageManager.writeImages(enemyRunForward.getImages(), "assets/res/enemy/dior_firor/run_rtl", "Run_RTL", ImageManager.EXTENSION_PNG);
 //        ImageManager.writeImages(enemyRunBack.getImages(), "assets/res/enemy/dior_firor/run_ltr", "Run_LTR", ImageManager.EXTENSION_PNG);
 //        ImageManager.writeImages(enemyAttack.getImages(), "assets/res/enemy/dior_firor/attack", "Attack_RTL", ImageManager.EXTENSION_PNG);
-        EnemyIdle idleRTL = new EnemyIdle(enemyAnimationCount, idleRTLSheet);
-        enemyAnimationCount++;
-        EnemyIdle idleLTR = new EnemyIdle(enemyAnimationCount, idleLTRSheet);
-        enemyAnimationCount++;
-        EnemyHit hitRTL = new EnemyHit(enemyAnimationCount, enemyHitRTLSheet);
-        enemyAnimationCount++;
-        EnemyHit hitLTR = new EnemyHit(enemyAnimationCount, enemyHitLTRSheet);
-        enemyAnimationCount++;
-        EnemyDeath deathRTL = new EnemyDeath(enemyAnimationCount, enemyDeathRTLSheet);
-        enemyAnimationCount++;
-        EnemyDeath deathLTR = new EnemyDeath(enemyAnimationCount, enemyDeathLTRSheet);
-        enemyAnimationCount++;
-        EnemyRunForward runForward = new EnemyRunForward(enemyAnimationCount, enemyRunForward, 40);
-        enemyAnimationCount++;
-        EnemyRunBack runBack = new EnemyRunBack(enemyAnimationCount, enemyRunBack, 40);
-        enemyAnimationCount++;
-        EnemyAttack attackRTL = new EnemyAttack(enemyAnimationCount, enemyAttackRTLSheet, 25);
-        enemyAnimationCount++;
-        EnemyAttack attackLTR = new EnemyAttack(enemyAnimationCount, enemyAttackLTRSheet, 25);
-        enemyAnimationCount++;
+        EnemyIdle idleRTL = new EnemyIdle(0, idleRTLSheet);
+        EnemyIdle idleLTR = new EnemyIdle(1, idleLTRSheet);
+        EnemyHit hitRTL = new EnemyHit(2, enemyHitRTLSheet);
+        EnemyHit hitLTR = new EnemyHit(3, enemyHitLTRSheet);
+        EnemyDeath deathRTL = new EnemyDeath(4, enemyDeathRTLSheet);
+        EnemyDeath deathLTR = new EnemyDeath(5, enemyDeathLTRSheet);
+        EnemyRunForward runForward = new EnemyRunForward(6, enemyRunForward, 40);
+        EnemyRunBack runBack = new EnemyRunBack(7, enemyRunBack, 40);
+        EnemyAttack attackRTL = new EnemyAttack(8, enemyAttackRTLSheet, 25);
+        EnemyAttack attackLTR = new EnemyAttack(9, enemyAttackLTRSheet, 25);
         Map<CharacterState, Animation> enemyAnimations = new HashMap();
         enemyAnimations.put(CharacterState.IDLE_RTL, idleRTL);
         enemyAnimations.put(CharacterState.IDLE_LTR, idleLTR);
@@ -510,7 +477,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.RUNBACK, runBack);
         enemyAnimations.put(CharacterState.ATTACK01_RTL, attackRTL);
         enemyAnimations.put(CharacterState.ATTACK01_LTR, attackLTR);
-        Enemy enemy = new DiorEnemy(diorColor, enemyCount, "Dior Firor " + diorColor + " " + enemyCount,
+        Enemy enemy = new DiorEnemy(diorColor, 0, "Dior Firor " + diorColor,
                 500, defEnemyPosition,
                 enemyAnimations, this, 200, null);
         enemy.setInsidePlatform(firstPlatform);
@@ -518,7 +485,6 @@ public class Gameplay extends JPanel implements Runnable {
         enemy.getController().add(movementHandler);
         abilitiesCharacterInit(enemy.getAbilities(), enemy);
         itemInit(enemy.getInventory(), enemy);
-        enemyCount++;
         enemies.add(enemy);
         // level up to 8
 //        enemy.getStats().addExperience(50000);
@@ -570,11 +536,11 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"), idle_tick);
         PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"), fire_idle_tick);
         PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01"), run_tick); // 0
-        PlayerAttack attack01LTR = new PlayerAttack(2, spriteSheetMap.get("Attack01"), attack1_tick); // 12
-        PlayerAttack attack02LTR = new PlayerAttack(2, spriteSheetMap.get("Attack02"), attack2_tick); // 12
+        PlayerLightAttack attack01LTR = new PlayerLightAttack(2, spriteSheetMap.get("Attack01"), attack1_tick); // 12
+        PlayerHeavyAttack attack02LTR = new PlayerHeavyAttack(2, spriteSheetMap.get("Attack02"), attack2_tick); // 12
         PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, attack3_tick);
-        PlayerAttack fireAttack01LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack01"), fire_attack1_tick);
-        PlayerAttack fireAttack02LTR = new PlayerAttack(2, spriteSheetMap.get("FireAttack02"), fire_attack2_tick);
+        PlayerLightAttack fireAttack01LTR = new PlayerLightAttack(2, spriteSheetMap.get("FireAttack01"), fire_attack1_tick);
+        PlayerHeavyAttack fireAttack02LTR = new PlayerHeavyAttack(2, spriteSheetMap.get("FireAttack02"), fire_attack2_tick);
         PlayerAttackSpecial_LTR fireAttack03LTR = new PlayerAttackSpecial_LTR(2, fireAttackSpecialLTR, fire_attack3_tick);
         PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), death_tick);
         PlayerDeath fireDeathLTR = new PlayerDeath(4, spriteSheetMap.get("FireDeath01"), fireDeath_tick);
@@ -605,11 +571,11 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL(), idle_tick);
         PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL(), fire_idle_tick);
         PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL(), run_tick);
-        PlayerAttack attack01RTL = new PlayerAttack(2, spriteSheetMap.get("Attack01").convertRTL(), attack1_tick);
-        PlayerAttack attack02RTL = new PlayerAttack(2, spriteSheetMap.get("Attack02").convertRTL(), attack2_tick);
+        PlayerLightAttack attack01RTL = new PlayerLightAttack(2, spriteSheetMap.get("Attack01").convertRTL(), attack1_tick);
+        PlayerHeavyAttack attack02RTL = new PlayerHeavyAttack(2, spriteSheetMap.get("Attack02").convertRTL(), attack2_tick);
         PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, attack3_tick);
-        PlayerAttack fireAttack01RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), fire_attack1_tick);
-        PlayerAttack fireAttack02RTL = new PlayerAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), fire_attack2_tick);
+        PlayerLightAttack fireAttack01RTL = new PlayerLightAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), fire_attack1_tick);
+        PlayerHeavyAttack fireAttack02RTL = new PlayerHeavyAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), fire_attack2_tick);
         PlayerAttackSpecial_RTL fireAttack03RTL = new PlayerAttackSpecial_RTL(2, fireAttackSpecialRTL, fire_attack3_tick);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), crouch_tick);
         PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), death_tick);
@@ -758,25 +724,19 @@ public class Gameplay extends JPanel implements Runnable {
         keySheet.add("assets/res/item/key.png");
         KeyAnimation keyAnimation = new KeyAnimation(1, keySheet, -1);
         Key keyItem = new Key(1, "Key Item", keyAnimation, null, this, 1);
-        Platform platform = getPlatforms().get(3).get(42);
-        if (platform != null) {
-            GameObject gameObject = background.getGameObjectsTouchable().get("chest3");
-            if (gameObject != null) {
-                Chest chest = (Chest) gameObject;
-                keyItem.setPosition(platform.middlePlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
-                chest.getItems().add(keyItem);
-            }
+        GameObject gameObject = background.getGameObjectsTouchable().get("chest3");
+        if (gameObject != null) {
+            Chest chest = (Chest) gameObject;
+            keyItem.setPosition(chest.getPlatform().middlePlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
+            chest.getItems().add(keyItem);
         }
-        platform = getPlatforms().get(4).get(10);
-        if (platform != null) {
-            GameObject gameObject = background.getGameObjectsTouchable().get("chest1");
-            if (gameObject != null) {
-                if (gameObject instanceof Chest) {
-                    Chest chest = (Chest) gameObject;
-                    fireSword.setPosition(platform.middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
-                    fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
-                    chest.getItems().add(fireSword);
-                }
+        gameObject = background.getGameObjectsTouchable().get("chest1");
+        if (gameObject != null) {
+            if (gameObject instanceof Chest) {
+                Chest chest = (Chest) gameObject;
+                fireSword.setPosition(chest.getPlatform().middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
+                fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
+                chest.getItems().add(fireSword);
             }
         }
 
@@ -838,7 +798,7 @@ public class Gameplay extends JPanel implements Runnable {
             sheetRTL.setImages(fireBallsRTL);
             Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 10);
             Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 10);
-            Fireball fireball = new Fireball(150, 30, 2, 500, fireballIcon,
+            Fireball fireball = new Fireball(150, 30, 2, 1000, fireballIcon,
                     new GamePosition(firstSkillPosition.getMaxX() + 15,
                             firstSkillPosition.getYPosition(), firstSkillPosition.getWidth(), firstSkillPosition.getHeight()),
                     fireBallAnimationLTR, fireBallAnimationRTL, redBorder, this, character);
@@ -854,7 +814,7 @@ public class Gameplay extends JPanel implements Runnable {
                 sheetRTL.setImages(fireBallsRTL);
                 Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
                 Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
-                Fireball fireball = new Fireball(20, 15, 2, 2000, null, null,
+                Fireball fireball = new Fireball(20, 15, 2, 1000, null, null,
                         fireBallAnimationLTR, fireBallAnimationRTL, this, character);
                 abilities.add(fireball);
             }
@@ -919,8 +879,8 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
-        if(Game.STATE == GameState.LOADING_STATE) {
-            if(loadingScreen != null) {
+        if (Game.STATE == GameState.LOADING_STATE) {
+            if (loadingScreen != null) {
                 loadingScreen.tick();
             }
             return;
@@ -974,8 +934,8 @@ public class Gameplay extends JPanel implements Runnable {
 
     public void render(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        if(Game.STATE == GameState.LOADING_STATE) {
-            if(loadingScreen != null) {
+        if (Game.STATE == GameState.LOADING_STATE) {
+            if (loadingScreen != null) {
                 loadingScreen.render(g2);
             }
             return;
@@ -1028,7 +988,7 @@ public class Gameplay extends JPanel implements Runnable {
                 g.setFont(DataManager.getFont(50f));
                 g.setColor(new Color(133, 0, 0));
                 g.drawString(GameTimer.getInstance().countDownString(rule.getTimeLimit(), GameTimer.FORMAT_MS),
-                         getWidth() / 2 - 50, 80);
+                        getWidth() / 2 - 50, 80);
                 rule.render(g2);
             }
             if (player != null) {

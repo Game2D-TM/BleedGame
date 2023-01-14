@@ -93,9 +93,9 @@ public class Player extends Character {
             }
         }
         if (isSpeak) {
-            if(Enemy.ENEMY_HEALTHBAR_SHOW != null) {
-                DiorEnemy enemy = (DiorEnemy)Enemy.ENEMY_HEALTHBAR_SHOW;
-                if(enemy.isSpeak()) {
+            if (Enemy.ENEMY_HEALTHBAR_SHOW != null) {
+                DiorEnemy enemy = (DiorEnemy) Enemy.ENEMY_HEALTHBAR_SHOW;
+                if (enemy.isSpeak()) {
                     enemy.setIsSpeak(false);
                 }
             }
@@ -106,7 +106,7 @@ public class Player extends Character {
                 isSpeak = false;
             }
         } else {
-            if(speakCounter <= 1500) {
+            if (speakCounter <= 1500) {
                 speakCounter++;
             }
             if (speakCounter > 1500) {
@@ -139,16 +139,9 @@ public class Player extends Character {
 //                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
 //                getWidthHitBox(), getHeightHitBox());
         //attackhitbox
-//        int attackX;
-//        if (isLTR) {
-//            attackX = position.getMaxX() - 12;
-//        } else {
-//            attackX = position.getXPosition() - 20 + 12;
-//        }
-//        int attackY = position.getYPosition() + position.getHeight() / 3 - 10;
-//        int attackHeight = position.getHeight() / 2 - 50;
-//        g.fillRect(attackX - gameplay.getCamera().getPosition().getXPosition(),
-//                attackY - gameplay.getCamera().getPosition().getYPosition(), 20, attackHeight);
+//        g.fillRect(attackHitBox().getXPosition() - gameplay.getCamera().getPosition().getXPosition()
+//                    , attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition()
+//                    , attackHitBox().getWidth(), attackHitBox().getHeight());
     }
 
     @Override
@@ -158,7 +151,7 @@ public class Player extends Character {
 
     public int getXHitBox() {
         if (currAnimation != null) {
-            if (currAnimation instanceof PlayerAttack) {
+            if (currAnimation instanceof PlayerLightAttack) {
                 return position.getXPosition() + 110;
             } else if (currAnimation instanceof PlayerRun_LTR) {
                 return position.getXPosition() + 140;
@@ -187,7 +180,7 @@ public class Player extends Character {
                 return position.getWidth() / 3 - 5;
             } else if (currAnimation instanceof PlayerRun_RTL) {
                 return position.getWidth() / 3 - 3;
-            } else if (currAnimation instanceof PlayerAttack) {
+            } else if (currAnimation instanceof PlayerLightAttack) {
                 return position.getWidth() / 3 + 30;
             } else if (currAnimation instanceof PlayerCrouch) {
                 return position.getWidth() / 3 + 10;
@@ -259,17 +252,21 @@ public class Player extends Character {
     }
 
     @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack,
+    public boolean checkHit(GamePosition attackHitBox, boolean isAttack,
             Character character, int attackDamage) {
-        int attackMaxY = attackY + attackHeight;
         if (!isAttack && !isDeath) {
-            if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
-                    && ((attackY <= getYHitBox() && attackMaxY >= getYMaxHitBox()
-                    || (attackY >= getYHitBox() && attackMaxY <= getYMaxHitBox())
-                    || (attackY > getYHitBox() && attackY <= getYMaxHitBox()
-                    && attackMaxY > getYMaxHitBox())
-                    || (attackMaxY > getYHitBox() && attackMaxY <= getYMaxHitBox()
-                    && attackY < getYHitBox())))) {
+            if (((attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox())
+                    || (attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox()
+                    && attackHitBox.getMaxX() > getXMaxHitBox())
+                    || (attackHitBox.getMaxX() >= getXHitBox() && attackHitBox.getMaxX() <= getXMaxHitBox()
+                    && attackHitBox.getXPosition() < getXHitBox())
+                    || (attackHitBox.getXPosition() < getXHitBox() && attackHitBox.getMaxX() > getXMaxHitBox()))
+                    && ((attackHitBox.getYPosition() <= getYHitBox() && attackHitBox.getYPosition() >= getYMaxHitBox()
+                    || (attackHitBox.getYPosition() >= getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox())
+                    || (attackHitBox.getYPosition() > getYHitBox() && attackHitBox.getYPosition() <= getYMaxHitBox()
+                    && attackHitBox.getMaxY() > getYMaxHitBox())
+                    || (attackHitBox.getMaxY() > getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox()
+                    && attackHitBox.getYPosition() < getYHitBox())))) {
                 if (this.isAttack) {
                     return false;
                 }
@@ -277,13 +274,18 @@ public class Player extends Character {
             }
         } else {
             if (isAttack && !isAttacked && !isDeath) {
-                if (attackX >= getXHitBox() && attackX <= getXMaxHitBox()
-                        && ((attackY <= getYHitBox() && attackMaxY >= getYMaxHitBox()
-                        || (attackY >= getYHitBox() && attackMaxY <= getYMaxHitBox())
-                        || (attackY > getYHitBox() && attackY <= getYMaxHitBox()
-                        && attackMaxY > getYMaxHitBox())
-                        || (attackMaxY > getYHitBox() && attackMaxY <= getYMaxHitBox()
-                        && attackY < getYHitBox())))) {
+                if (((attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox())
+                        || (attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox()
+                        && attackHitBox.getMaxX() > getXMaxHitBox())
+                        || (attackHitBox.getMaxX() >= getXHitBox() && attackHitBox.getMaxX() <= getXMaxHitBox()
+                        && attackHitBox.getXPosition() < getXHitBox())
+                        || (attackHitBox.getXPosition() < getXHitBox() && attackHitBox.getMaxX() > getXMaxHitBox()))
+                        && ((attackHitBox.getYPosition() <= getYHitBox() && attackHitBox.getYPosition() >= getYMaxHitBox()
+                        || (attackHitBox.getYPosition() >= getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox())
+                        || (attackHitBox.getYPosition() > getYHitBox() && attackHitBox.getYPosition() <= getYMaxHitBox()
+                        && attackHitBox.getMaxY() > getYMaxHitBox())
+                        || (attackHitBox.getMaxY() > getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox()
+                        && attackHitBox.getYPosition() < getYHitBox())))) {
                     if (isLTR) {
                         currAnimation = animations.get(CharacterState.GET_HIT_LTR);
                     } else {
@@ -383,5 +385,42 @@ public class Player extends Character {
 
     public GamePosition getPlayerScorePos() {
         return healthBar.getPositions().get("player_score");
+    }
+
+    @Override
+    public GamePosition attackHitBox() {
+        int width;
+        int x = position.getXPosition(), y;
+        int attackX = 0, attackY, attackWidth, attackHeight;
+        if (isLTR) {
+            width = position.getWidth() + 20; // 120
+        } else {
+            x = position.getXPosition() - 20;
+            width = position.getWidth() + 20;
+        }
+        if (isLTR) {
+            attackX = (x + width - 2) - (width / 3);
+        } else {
+            attackX = x + 24;
+        }
+        attackWidth = width / 3 - 22;
+        attackY = position.getYPosition() + position.getHeight() / 3 - 10;
+        attackHeight = position.getHeight() / 2 - 10;
+        if(currAnimation != null) {
+            if(currAnimation instanceof PlayerHeavyAttack) {
+                if(isLTR) {
+                    attackX -= 16;
+                } else {
+                    attackX += 16;
+                }
+            } else if(currAnimation instanceof PlayerAirAttack_LTR) {
+                attackX -= 12;
+                attackHeight -= 10;
+            } else if(currAnimation instanceof PlayerAirAttack_RTL) {
+                attackX += 12;
+                attackHeight -= 10;
+            }
+        }
+        return new GamePosition(attackX, attackY, attackWidth, attackHeight);
     }
 }

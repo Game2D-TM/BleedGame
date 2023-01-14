@@ -27,8 +27,8 @@ public class Chest extends ObjectTouchable {
     }
 
     @Override
-    public boolean checkHit(int attackX, int attackY, int attackHeight) {
-        boolean result = super.checkHit(attackX, attackY, attackHeight);
+    public boolean checkHit(GamePosition attackHitBox) {
+        boolean result = super.checkHit(attackHitBox);
         if (result) {
             if (items != null && items.size() > 0) {
                 for (int i = 0; i < items.size(); i++) {

@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 public class GameTimer {
 
-    public static String FORMAT_HMS = "HH:mm:ss";
-    public static String FORMAT_MS = "mm:ss";
+    public static final String FORMAT_HMS = "HH:mm:ss";
+    public static final String FORMAT_MS = "mm:ss";
     
     private LocalTime time;
     private static GameTimer instance;
@@ -27,23 +27,43 @@ public class GameTimer {
     }
     
     public LocalTime addMinutes(long minute) {
-        return time.plusMinutes(minute);
+        return addMinutes(time, minute);
     }
     public LocalTime addHours(long hour) {
-        return time.plusHours(hour);
+        return addHours(time, hour);
     }
     public LocalTime addSeconds(long seconds) {
-        return time.plusSeconds(seconds);
+        return addSeconds(time, seconds);
     }
     
     public LocalTime minusMinutes(long minute) {
-        return time.minusMinutes(minute);
+        return minusMinutes(time, minute);
     }
     public LocalTime minusHours(long hour) {
-        return time.minusHours(hour);
+        return minusHours(time, hour);
     }
     public LocalTime minusSeconds(long seconds) {
-        return time.minusSeconds(seconds);
+        return minusSeconds(time, seconds);
+    }
+    
+    public LocalTime addMinutes(LocalTime localTime, long minute) {
+        return localTime.plusMinutes(minute);
+    }
+    public LocalTime addHours(LocalTime localTime, long hour) {
+        return localTime.plusHours(hour);
+    }
+    public LocalTime addSeconds(LocalTime localTime, long seconds) {
+        return localTime.plusSeconds(seconds);
+    }
+    
+    public LocalTime minusMinutes(LocalTime localTime, long minute) {
+        return localTime.minusMinutes(minute);
+    }
+    public LocalTime minusHours(LocalTime localTime, long hour) {
+        return localTime.minusHours(hour);
+    }
+    public LocalTime minusSeconds(LocalTime localTime, long seconds) {
+        return localTime.minusSeconds(seconds);
     }
     
     public String countDownString(LocalTime localTime, String format) {

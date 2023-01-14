@@ -24,34 +24,24 @@ public abstract class ObjectTouchable extends GameObject {
         if (!isTouch) {
             Player player = gameplay.getPlayer();
             if (player.isAttack() || player.isAirAttack()) {
-                int attackX = -1, attackY = -1, attackHeight = -1, x = player.getPosition().getXPosition(), width = player.getPosition().getWidth();
-                if (player.isLTR()) {
-                    width = width + 20; // 120
-                } else {
-                    x = x - 20;
-                    width = width + 20;
-                }
-                if (player.isLTR()) {
-                    attackX = x + width + 20 - 2;
-                } else {
-                    attackX = x + 2;
-                }
-                attackY = player.getPosition().getYPosition() + player.getPosition().getHeight() / 3 - 10;
-                attackHeight = player.getPosition().getHeight() / 2 - 10;
-                checkHit(attackX, attackY, attackHeight);
+                checkHit(player.attackHitBox());
             }
         }
     }
 
-    public boolean checkHit(int attackX, int attackY, int attackHeight) {
-        int attackMaxY = attackY + attackHeight;
-        if (attackX >= position.getXPosition() && attackX <= position.getMaxX()
-                && ((attackY <= position.getYPosition() && attackMaxY >= position.getMaxY()
-                || (attackY >= position.getYPosition() && attackMaxY <= position.getMaxY())
-                || (attackY > position.getYPosition() && attackY <= position.getMaxY()
-                && attackMaxY > position.getMaxY())
-                || (attackMaxY > position.getYPosition() && attackMaxY <= position.getMaxY()
-                && attackY < position.getYPosition())))) {
+    public boolean checkHit(GamePosition attackHitBox) {
+        if (((attackHitBox.getXPosition() >= position.getXPosition() && attackHitBox.getXPosition() <= position.getMaxX())
+                    || (attackHitBox.getXPosition() >= position.getXPosition() && attackHitBox.getXPosition() <= position.getMaxX()
+                    && attackHitBox.getMaxX() > position.getMaxX())
+                    || (attackHitBox.getMaxX() >= position.getXPosition() && attackHitBox.getMaxX() <= position.getMaxX()
+                    && attackHitBox.getXPosition() < position.getXPosition())
+                    || (attackHitBox.getXPosition() < position.getXPosition() && attackHitBox.getMaxX() > position.getMaxX()))
+                    && ((attackHitBox.getYPosition() <= position.getYPosition() && attackHitBox.getYPosition() >= position.getMaxY()
+                    || (attackHitBox.getYPosition() >= position.getYPosition() && attackHitBox.getMaxY() <= position.getMaxY())
+                    || (attackHitBox.getYPosition() > position.getYPosition() && attackHitBox.getYPosition() <= position.getMaxY()
+                    && attackHitBox.getMaxY() > position.getMaxY())
+                    || (attackHitBox.getMaxY() > position.getYPosition() && attackHitBox.getMaxY() <= position.getMaxY()
+                    && attackHitBox.getYPosition() < position.getYPosition())))) {
             if (imageAfterTouch == null) {
                 return false;
             }

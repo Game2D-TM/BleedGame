@@ -28,7 +28,7 @@ public class Rule {
         this.gameplay = gameplay;
         this.firstPlatform = firPlatform;
         this.secondPlatform = secondPlatform;
-        setTimeLimit(30);
+        setTimeLimit(7);
     }
 
     public void tick() {
@@ -45,11 +45,11 @@ public class Rule {
                     resetGameCounter = 0;
                 }
             } else {
-//                if (timeLimit != null) {
-//                    if (GameTimer.getInstance().countDownEnd(timeLimit)) {
-//                        player.setIsDeath(true);
-//                    }
-//                }
+                if (timeLimit != null) {
+                    if (GameTimer.getInstance().countDownEnd(timeLimit)) {
+                        player.setIsDeath(true);
+                    }
+                }
                 if (missionComplete) {
                     GamePosition playerHitBox = player.getHitBoxPosition();
                     if (playerHitBox != null) {
@@ -134,6 +134,18 @@ public class Rule {
 
     public void setTimeLimit(int minutes) {
         timeLimit = GameTimer.getInstance().addMinutes(minutes);
+    }
+
+    public void addSecondsTimeLimit(int seconds) {
+        timeLimit = timeLimit.plusSeconds(seconds);
+    }
+
+    public void addMinutesTimeLimit(int minutes) {
+        timeLimit = timeLimit.plusMinutes(minutes);
+    }
+
+    public void addHoursTimeLimit(int hours) {
+        timeLimit = timeLimit.plusHours(hours);
     }
 
     public Gameplay getGameplay() {

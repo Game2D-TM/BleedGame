@@ -34,6 +34,7 @@ public abstract class Character {
     protected HealthBar healthBar;
     protected boolean isAttacked = false;
     protected boolean isAttack = false;
+    protected boolean isSpellCast = false;
     protected boolean isDeath = false;
     protected int receiveDamage = 0;
     protected int receiveDamageRenderTick = 0;
@@ -307,6 +308,10 @@ public abstract class Character {
     }
 
     public void render(Graphics g) {
+        // attackHitBox
+//        g.fillRect(attackHitBox().getXPosition() - gameplay.getCamera().getPosition().getXPosition()
+//                    , attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition()
+//                    , attackHitBox().getWidth(), attackHitBox().getHeight());
         if (currAnimation != null) {
             currAnimation.render(g, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
                     position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
@@ -345,11 +350,11 @@ public abstract class Character {
         return inventory;
     }
 
-    public abstract boolean checkHit(int attackX, int attackY, int attackHeight,
+    public abstract boolean checkHit(GamePosition attackHitBox,
             boolean isAttack, Character character, int attackDamage);
 
-    public boolean checkHit(int attackX, int attackY, int attackHeight, boolean isAttack, Character character) {
-        return checkHit(attackX, attackY, attackHeight, isAttack, character, -1);
+    public boolean checkHit(GamePosition attackHitBox, boolean isAttack, Character character) {
+        return checkHit(attackHitBox, isAttack, character, -1);
     }
 
     public boolean moveRight() {
@@ -387,6 +392,8 @@ public abstract class Character {
     public abstract int getYHitBox();
 
     public abstract int getYMaxHitBox();
+    
+    public abstract GamePosition attackHitBox();
 
     public GamePosition getHitBoxPosition() {
         return new GamePosition(getXHitBox(), getYHitBox(), getWidthHitBox(), getHeightHitBox());
@@ -515,6 +522,15 @@ public abstract class Character {
     public void setStats(Stats stats) {
         this.stats = stats;
     }
+
+    public boolean isSpellCast() {
+        return isSpellCast;
+    }
+
+    public void setIsSpellCast(boolean isSpellCast) {
+        this.isSpellCast = isSpellCast;
+    }
+    
 
     public void setIsAttacked(boolean isAttacked) {
         this.isAttacked = isAttacked;
