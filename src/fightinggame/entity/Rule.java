@@ -1,15 +1,20 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
-import fightinggame.entity.item.Item;
 import fightinggame.entity.platform.Platform;
+import fightinggame.entity.quest.Quest;
+import fightinggame.entity.quest.QuestRequired;
+import fightinggame.entity.state.QuestState;
 import fightinggame.resource.DataManager;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.File;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Rule {
 
@@ -22,6 +27,7 @@ public class Rule {
     private Platform firstPlatform;
     private Platform secondPlatform;
     private LocalTime timeLimit;
+    private final Map<String, Quest> quests = new HashMap<>();
 
     public Rule(GamePosition position, Platform firPlatform, Platform secondPlatform, Gameplay gameplay) {
         this.victoryPosition = position;
@@ -42,6 +48,7 @@ public class Rule {
                         scene = DataManager.getFirstScene(1);
                     }
                     gameplay.getAudioPlayer().closeThread("background_music");
+                    gameplay.getPlayer().resetEnemiesKilled();
                     gameplay.loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                     resetGameCounter = 0;
                 }
@@ -65,20 +72,31 @@ public class Rule {
                             if (!gameplay.getTransitionScreen().isTransition()) {
                                 File scene = DataManager.getNextScene();
                                 if (scene != null) {
-                                    Item key = player.getInventory().getItemByName("Key Item");
-                                    if (key != null) {
-                                        player.getInventory().removeItemFromInventory(key);
-                                    }
                                     missionComplete = false;
                                     gameplay.getAudioPlayer().closeThread("background_music");
+                                    gameplay.getPlayer().resetEnemiesKilled();
                                     gameplay.loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                                 }
                             }
                         }
                     }
                 } else {
-                    Item key = player.getInventory().getItemByName("Key Item");
-                    if (key != null) {
+                    if (quests != null && quests.size() > 0) {
+                        boolean completeAllQuest = true;
+                        for (String id : quests.keySet()) {
+                            Quest quest = quests.get(id);
+                            if (quest != null) {
+                                if (quest.getState() == QuestState.ON_GOING) {
+                                    quest.tick();
+                                    completeAllQuest = quest.isComplete();
+                                }
+                            }
+                        }
+                        if (completeAllQuest) {
+                            missionComplete = true;
+                            isTransition = false;
+                        }
+                    } else {
                         missionComplete = true;
                         isTransition = false;
                     }
@@ -92,11 +110,38 @@ public class Rule {
         g.setColor(new Color(133, 0, 0));
         g.drawString(GameTimer.getInstance().countDownString(timeLimit, GameTimer.FORMAT_MS),
                 gameplay.getWidth() / 2 - 50, 80);
+        if (quests.size() > 0) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setColor(new Color(0, 0, 0, 90));
+            g2.fillRoundRect(gameplay.getWidth() - 260, 270,
+                            250, 300, 35, 35);
+            g.setFont(DataManager.getFont(20f));
+            g.setColor(Color.white);
+            for (String id : quests.keySet()) {
+                Quest quest = quests.get(id);
+                if (quest != null) {
+                    List<QuestRequired> requireds = quest.getRequireds();
+                    if (requireds != null && requireds.size() > 1) {
+                        g.drawString(requireds.get(0).toString(),
+                                gameplay.getWidth() - 220, 300);
+                        g.drawString(requireds.get(1).toString(),
+                                gameplay.getWidth() - 220, 350);
+                    }
+                }
+            }
+        }
         // victory position hitbox
 //        g.setColor(Color.red);
 //        g.drawRect(victoryPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
 //                victoryPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
 //                victoryPosition.getWidth(), victoryPosition.getHeight());
+    }
+
+    public void addQuest(Quest quest) {
+        if (quest == null) {
+            return;
+        }
+        quests.putIfAbsent(quest.getId(), quest);
     }
 
     public GamePosition getVictoryPosition() {

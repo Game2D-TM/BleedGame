@@ -30,6 +30,7 @@ public class GameMap extends Background {
     public static int DEF_MINUS_LEFT = 0;
 
     private BufferedImage mapImageBorder;
+    private boolean isRenderMap = true;
 
     public GameMap(int id, String name, Gameplay gameplay, GamePosition position,
             Map<String, BufferedImage> backgrounds,
@@ -175,25 +176,25 @@ public class GameMap extends Background {
             int lackDown = surroundTile - (down - i);
             if (lackRight > 0) {
                 left -= lackRight;
-                if(left < 0) {
+                if (left < 0) {
                     left = 0;
                 }
             }
-            if(lackLeft > 0) {
+            if (lackLeft > 0) {
                 right += lackLeft;
-                if(right > scenePlatforms.get(i).size() - 1) {
+                if (right > scenePlatforms.get(i).size() - 1) {
                     right = scenePlatforms.get(i).size() - 1;
                 }
             }
-            if(lackUp > 0) {
+            if (lackUp > 0) {
                 down += lackUp;
-                if(down > scenePlatforms.size() - 1) {
+                if (down > scenePlatforms.size() - 1) {
                     down = scenePlatforms.size() - 1;
                 }
             }
-            if(lackDown > 0) {
+            if (lackDown > 0) {
                 up -= lackDown;
-                if(up < 0) {
+                if (up < 0) {
                     up = 0;
                 }
             }
@@ -214,9 +215,37 @@ public class GameMap extends Background {
     }
 
     @Override
+    public void renderScene(Graphics g, List<List<Platform>> scene) {
+        if (scene != null && scene.size() > 0) {
+            for (int i = 0; i < scene.size(); i++) {
+                List<Platform> images = scene.get(i);
+                if (images != null && images.size() > 0) {
+                    for (int j = 0; j < images.size(); j++) {
+                        Platform platform = images.get(j);
+                        if (platform != null && platform.getPosition() != null) {
+                            g.drawImage(platform.getImage(), platform.getPosition().getXPosition(),
+                                    platform.getPosition().getYPosition(), platform.getPosition().getWidth(),
+                                    platform.getPosition().getHeight(), null);
+                            // hitbox
+//                            g.setColor(Color.red);
+//                            g.drawRect(platform.getPosition().getXPosition()
+//                                    - gameplay.getCamera().getPosition().getXPosition(), platform.getPosition().getYPosition()
+//                                    - gameplay.getCamera().getPosition().getYPosition(), platform.getPosition().getWidth(),
+//                                    platform.getPosition().getHeight());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void tick() {
-        position.setXPosition(gameplay.getCamera().getPosition().getMaxX() - position.getWidth() - 10);
-        position.setYPosition(gameplay.getCamera().getPosition().getYPosition() + 10);
+        if (!isRenderMap) {
+            return;
+        }
+//        position.setXPosition(gameplay.getCamera().getPosition().getMaxX() - position.getWidth() - 10);
+//        position.setYPosition(gameplay.getCamera().getPosition().getYPosition() + 10);
         Platform insidePlatform = gameplay.getPlayer().getInsidePlatform();
         if (insidePlatform != null) {
             initMap(getSurroundPlatform(insidePlatform.getRow(), insidePlatform.getColumn(),
@@ -226,18 +255,16 @@ public class GameMap extends Background {
 
     @Override
     public void render(Graphics g) {
+        if (!isRenderMap) {
+            return;
+        }
         if (backgrounds != null && backgrounds.values().size() > 0) {
             if (mapImageBorder != null) {
-                g.drawImage(mapImageBorder, position.getXPosition() - 10 - gameplay.getCamera().getPosition().getXPosition(),
-                        position.getYPosition() - 10 - gameplay.getCamera().getPosition().getYPosition(),
+                g.drawImage(mapImageBorder, position.getXPosition() - 10,
+                        position.getYPosition() - 10,
                         position.getWidth() + 10,
                         position.getHeight() + 20, null);
             }
-//            for (BufferedImage image : backgrounds.values()) {
-//                g.drawImage(image, position.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-//                        position.getYPosition() - gameplay.getCamera().getPosition().getYPosition(), position.getWidth(),
-//                        position.getHeight(), null);
-//            }
         }
         if (gameplay.getPlayer().getInsidePlatform() != null) {
             Platform insidePlatform = gameplay.getPlayer().getInsidePlatform();
@@ -258,8 +285,8 @@ public class GameMap extends Background {
                                 if ((platformRow >= playerRow - 8 && platformRow <= playerRow + 3)
                                         && (platformColumn >= playerColumn - 8 && platformColumn <= playerColumn + 8)) {
                                     g.setColor(Color.LIGHT_GRAY);
-                                    g.fillRect(platform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                                            platform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                                    g.fillRect(platform.getPosition().getXPosition(),
+                                            platform.getPosition().getYPosition(),
                                             tileWidth, tileHeight);
                                 }
                             }
@@ -278,7 +305,11 @@ public class GameMap extends Background {
                                     Platform platform = scene.get(objRow).get(objColumn);
                                     if (platform != null && platform.getPosition() != null) {
                                         obj.setPosition(platform.middlePlatform(tileWidth, tileHeight));
-                                        obj.render(g);
+                                        if (obj.getPosition() != null) {
+                                            g.drawImage(obj.getImage(), obj.getPosition().getXPosition(),
+                                                    obj.getPosition().getYPosition(),
+                                                    obj.getPosition().getWidth(), obj.getPosition().getHeight(), null);
+                                        }
                                     }
                                 }
                             }
@@ -287,18 +318,20 @@ public class GameMap extends Background {
                 }
             }
         }
+        // Player Position on Map
         Platform playerInsidePlatform = gameplay.getPlayer().getInsidePlatform();
         if (playerInsidePlatform != null) {
             Platform mapPlatform = scene.get(playerInsidePlatform.getRow()).get(playerInsidePlatform.getColumn());
             if (mapPlatform != null) {
                 if (mapPlatform.getPosition() != null) {
                     g.setColor(Color.white);
-                    g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                            mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                    g.fillRect(mapPlatform.getPosition().getXPosition(),
+                            mapPlatform.getPosition().getYPosition(),
                             tileWidth, tileHeight);
                 }
             }
         }
+        // Enemies Position on Map
         List<Enemy> enemies = gameplay.getEnemies();
         if (enemies != null && enemies.size() > 0) {
             Platform playerPlatform = gameplay.getPlayer().getInsidePlatform();
@@ -316,8 +349,8 @@ public class GameMap extends Background {
                                     if (mapPlatform != null) {
                                         if (mapPlatform.getPosition() != null) {
                                             g.setColor(Color.red);
-                                            g.fillRect(mapPlatform.getPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                                                    mapPlatform.getPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                                            g.fillRect(mapPlatform.getPosition().getXPosition(),
+                                                    mapPlatform.getPosition().getYPosition(),
                                                     tileWidth, tileHeight);
                                         }
                                     }
@@ -329,4 +362,13 @@ public class GameMap extends Background {
             }
         }
     }
+
+    public boolean isRenderMap() {
+        return isRenderMap;
+    }
+
+    public void setIsRenderMap(boolean isRenderMap) {
+        this.isRenderMap = isRenderMap;
+    }
+
 }

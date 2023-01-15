@@ -264,7 +264,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                         player.getPosition().isSlide = true;
                         break;
                     case KeyEvent.VK_SHIFT:
-                        if (player.isAttack() || player.isSprint()
+                        if (player.isAttack() || player.isSprint() || player.isSlide()
                                 || player.isInAir() || player.isFallDown()) {
                             break;
                         }

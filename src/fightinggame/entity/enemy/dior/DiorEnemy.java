@@ -29,24 +29,22 @@ public class DiorEnemy extends Enemy {
         this.color = color;
         switch (color) {
             case Red:
-                point += 10;
-                experience = 500;
+                experience = 100;
                 stats.setAttackDamage(stats.getAttackDamage() + 20);
-                stats.setSpeed(stats.getSpeed() - 15);
-                stats.setHealth(stats.getHealth() - 200);
-                break;
-            case Blue:
-                experience = 70;
-                stats.setAttackDamage(stats.getAttackDamage() + 5);
-                stats.setSpeed(stats.getSpeed() + 10);
+                stats.setSpeed(stats.getSpeed() - 20);
                 stats.setHealth(stats.getHealth() - 150);
                 break;
+            case Blue:
+                experience = 90;
+                stats.setAttackDamage(stats.getAttackDamage() + 5);
+                stats.setSpeed(stats.getSpeed() + 10);
+                stats.setHealth(stats.getHealth() + 50);
+                break;
             case Green:
-                point += 5;
                 experience = 70;
                 stats.setAttackDamage(stats.getAttackDamage() + 10);
-                stats.setSpeed(stats.getSpeed() - 5);
-                stats.setHealth(stats.getHealth() - 100);
+                stats.setSpeed(stats.getSpeed() - 10);
+                stats.setHealth(stats.getHealth() - 50);
                 break;
             case Orange:
                 experience = 60;
@@ -56,26 +54,25 @@ public class DiorEnemy extends Enemy {
                 break;
             case Purple:
                 experience = 50;
-                stats.setSpeed(stats.getSpeed() - 10);
+                stats.setSpeed(stats.getSpeed() - 5);
                 stats.setHealth(stats.getHealth() + 200);
                 break;
             case White:
                 experience = 80;
-                point += 5;
                 stats.setAttackDamage(stats.getAttackDamage() - 8);
-                stats.setSpeed(stats.getSpeed() - 10);
+                stats.setSpeed(stats.getSpeed() - 5);
                 stats.setHealth(stats.getHealth() + 400);
                 break;
             case Yellow:
                 experience = 80;
                 stats.setAttackDamage(stats.getAttackDamage() - 5);
-                stats.setSpeed(stats.getSpeed() + 40);
+                stats.setSpeed(stats.getSpeed() + 30);
                 stats.setHealth(stats.getHealth() + 50);
                 break;
         }
         healthBar.setMaxHealth(stats.getHealth());
-        if (stats.getSpeed() <= 0) {
-            stats.setSpeed(1);
+        if (stats.getSpeed() <= 30) {
+            stats.setSpeed(30);
         }
         dialogue = new Dialogue(this, gameplay);
     }

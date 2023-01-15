@@ -35,6 +35,10 @@ public abstract class Enemy extends Character {
     protected double experience = 0;
     protected int stunTime = 300;
 
+    public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
+        super(id, name, health, position, animations, gameplay, isLTR, inventorySheet);
+    }
+
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, int rangeRandomSpeed, SpriteSheet inventorySheet) {
         super(id, name, health, position, animations, gameplay, false, inventorySheet);
@@ -42,10 +46,8 @@ public abstract class Enemy extends Character {
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 10f, 100, 100));
         healthBar.setAppearTimeLimit(1000);
         Random rand = new Random();
-        int range = rand.nextInt(rangeRandomSpeed);
-        if(range == 0) range += 1;
         stats.setHealth(health);
-        stats.setSpeed(rand.nextInt(range) + 1);
+        stats.setSpeed(rand.nextInt(rangeRandomSpeed) + 30);
     }
 
     @Override
@@ -89,7 +91,8 @@ public abstract class Enemy extends Character {
                 gameplay.getPlayer().getStats().addExperience(experience);
                 gameplay.getPlayer().addScore(point);
                 gameplay.getEnemies().remove(this);
-                gameplay.getRule().addSecondsTimeLimit(15);
+                gameplay.getRule().addSecondsTimeLimit(10);
+                gameplay.getPlayer().getEnemiesKilled().add(this);
                 deathCounter = 0;
             }
         }
@@ -311,7 +314,7 @@ public abstract class Enemy extends Character {
         }
         return false;
     }
-
+    
     public double getExperience() {
         return experience;
     }

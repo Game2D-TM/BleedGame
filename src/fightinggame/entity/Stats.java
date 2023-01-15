@@ -5,6 +5,8 @@ import fightinggame.entity.enemy.Enemy;
 import java.util.Random;
 
 public class Stats {
+    
+    public static int NEXT_LEVEL_RATE = 100;
 
     private Character character;
     private int level = 1;
@@ -30,7 +32,7 @@ public class Stats {
         this.character = character;
         this.level = level;
         this.levelExperience = levelExperience;
-        nextLevelExperience += level * 500;
+        nextLevelExperience += level * NEXT_LEVEL_RATE;
         this.attackDamage = attackDamage;
         this.defenceDamage = defenceDamage;
         this.health = health;
@@ -111,12 +113,12 @@ public class Stats {
         if (nextLevelExperience <= nLevelExperience) {
             levelUp();
             levelExperience = nLevelExperience - nextLevelExperience;
-            nextLevelExperience += level * 500;
+            nextLevelExperience += level * NEXT_LEVEL_RATE;
             while(true) {
                 if(levelExperience >= nextLevelExperience) {
                     levelUp();
                     levelExperience -= nextLevelExperience;
-                    nextLevelExperience += level * 500;
+                    nextLevelExperience += level * NEXT_LEVEL_RATE;
                 } else {
                     break;
                 }

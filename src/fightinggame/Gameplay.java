@@ -52,7 +52,12 @@ import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.item.collectable.healing.HealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.platform.Platform;
+import fightinggame.entity.quest.Quest;
+import fightinggame.entity.quest.QuestType;
+import fightinggame.entity.quest.type.EnemyRequired;
+import fightinggame.entity.quest.type.ItemRequired;
 import fightinggame.entity.state.GameState;
+import fightinggame.entity.state.QuestState;
 import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
 import fightinggame.input.handler.game.player.PlayerMouseHandler;
 import fightinggame.input.handler.game.player.PlayerAbilityHandler;
@@ -71,8 +76,7 @@ public class Gameplay extends JPanel implements Runnable {
     public static int GRAVITY = 7; //7
 
     private Background background;
-    private Background map;
-    private boolean renderMap = true;
+    private GameMap map;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
     private final Game game;
@@ -144,7 +148,7 @@ public class Gameplay extends JPanel implements Runnable {
                 ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH), this,
                 sceneDataFilePath, 250, 180);
         map = new GameMap(1, "Map", this,
-                new GamePosition(0, 0, 0, 0),
+                new GamePosition(getWidth() - 260, 10, 0, 0),
                 ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
                 ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
                 ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH),
@@ -158,9 +162,34 @@ public class Gameplay extends JPanel implements Runnable {
         initEnemies();
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
+        initGameItems();
         AudioPlayer.audioPlayers.clear();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
+    }
+
+    public void initGameItems() {
+        //Init Key
+        SpriteSheet keySheet = new SpriteSheet();
+        keySheet.add("assets/res/item/key.png");
+        KeyAnimation keyAnimation = new KeyAnimation(1, keySheet, -1);
+        Key keyItem = new Key(1, "Key Item", keyAnimation, null, this, 1);
+        GameObject gameObject = background.getGameObjectsTouchable().get("chest3");
+        if (gameObject != null) {
+            Chest chest = (Chest) gameObject;
+            keyItem.setPosition(chest.getPlatform().middlePlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
+            chest.getItems().add(keyItem);
+        }
+        //Init Quest
+        if(rule != null) {
+            Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor Orange", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State"
+                    , player, this);
+            quest.getRequireds().add(new ItemRequired(keyItem, 1, "Find Mystery Key", quest));
+            quest.getRequireds().add(new EnemyRequired("Dior Firor"
+                    , 15, "Kill Dior Firor", quest));
+            quest.setState(QuestState.ON_GOING);
+            rule.addQuest(quest);
+        }
     }
 
     public void initVictoryPosition() {
@@ -478,7 +507,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.ATTACK01_LTR, attackLTR);
         Enemy enemy = new DiorEnemy(diorColor, 0, "Dior Firor " + diorColor,
                 500, defEnemyPosition,
-                enemyAnimations, this, 200, null);
+                enemyAnimations, this, 60, null);
         enemy.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
         enemy.getController().add(movementHandler);
@@ -718,18 +747,8 @@ public class Gameplay extends JPanel implements Runnable {
         Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, 1, itemEquipAnimations);
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
-        //Init Key
-        SpriteSheet keySheet = new SpriteSheet();
-        keySheet.add("assets/res/item/key.png");
-        KeyAnimation keyAnimation = new KeyAnimation(1, keySheet, -1);
-        Key keyItem = new Key(1, "Key Item", keyAnimation, null, this, 1);
-        GameObject gameObject = background.getGameObjectsTouchable().get("chest3");
-        if (gameObject != null) {
-            Chest chest = (Chest) gameObject;
-            keyItem.setPosition(chest.getPlatform().middlePlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
-            chest.getItems().add(keyItem);
-        }
-        gameObject = background.getGameObjectsTouchable().get("chest1");
+
+        GameObject gameObject = background.getGameObjectsTouchable().get("chest1");
         if (gameObject != null) {
             if (gameObject instanceof Chest) {
                 Chest chest = (Chest) gameObject;
@@ -770,7 +789,7 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void abilitiesItemInit(List<Ability> abilities, Character character) {
-        Ability potionHeal = new PotionHeal(5, 0, "S Potion", 500, null, null, this, character);
+        Ability potionHeal = new PotionHeal(10, 0, "S Potion", 500, null, null, this, character);
         abilities.add(potionHeal);
     }
 
@@ -783,7 +802,7 @@ public class Gameplay extends JPanel implements Runnable {
             greaterHealSheet.getImages().add(ImageManager.loadImage("assets/res/ability/Greater-Heal.png"));
             GamePosition firstSkillPosition = new GamePosition(character.getHealthBar().getHealthBarPos().getXPosition(),
                     character.getHealthBar().getHealthBarPos().getMaxY() + 90, 80, 80);
-            Ability greaterHeal = new GreaterHeal(20, 1, 2500, greaterHealSheet,
+            Ability greaterHeal = new GreaterHeal(15, 1, 2500, greaterHealSheet,
                     firstSkillPosition, null, null, redBorder, this, character);
             abilities.add(greaterHeal);
             SpriteSheet fireballIcon = new SpriteSheet();
@@ -889,10 +908,8 @@ public class Gameplay extends JPanel implements Runnable {
             if (background != null) {
                 background.tick();
             }
-            if (renderMap) {
-                if (map != null) {
-                    map.tick();
-                }
+            if (map != null) {
+                map.tick();
             }
             if (camera != null) {
                 camera.tick();
@@ -943,10 +960,8 @@ public class Gameplay extends JPanel implements Runnable {
             if (background != null) {
                 background.render(g2);
             }
-            if (renderMap) {
-                if (map != null) {
-                    map.render(g2);
-                }
+            if (map != null) {
+                map.render(g2);
             }
             if (optionHandler != null) {
                 optionHandler.render(g2);
@@ -954,11 +969,6 @@ public class Gameplay extends JPanel implements Runnable {
         } else {
             if (background != null) {
                 background.render(g2);
-            }
-            if (renderMap) {
-                if (map != null) {
-                    map.render(g2);
-                }
             }
             if (camera != null) {
                 camera.render(g2);
@@ -972,6 +982,9 @@ public class Gameplay extends JPanel implements Runnable {
                         }
                     }
                 }
+            }
+            if (map != null) {
+                map.render(g2);
             }
             if (itemsOnGround.size() > 0) {
                 for (int i = 0; i < itemsOnGround.size(); i++) {
@@ -1036,11 +1049,11 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public boolean isRenderMap() {
-        return renderMap;
+        return map.isRenderMap();
     }
 
     public void setRenderMap(boolean renderMap) {
-        this.renderMap = renderMap;
+        map.setIsRenderMap(renderMap);
     }
 
     public Thread getThread() {

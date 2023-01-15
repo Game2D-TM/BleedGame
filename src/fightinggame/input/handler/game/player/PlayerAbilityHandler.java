@@ -37,9 +37,9 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_2:
-                    if(player.isInAir() || player.isFallDown()) {
-                        break;
-                    }
+//                    if(player.isInAir() || player.isFallDown()) {
+//                        break;
+//                    }
                     if (!player.isSpellCast() && !player.isAttack() && !player.getPosition().isMoving()
                             && !player.getPosition().isCrouch && !player.isDeath()) {
                         int spawnX;

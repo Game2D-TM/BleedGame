@@ -10,6 +10,8 @@ import fightinggame.resource.DataManager;
 import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Player extends Character {
@@ -23,6 +25,7 @@ public class Player extends Character {
     private boolean isSpeak;
     private int speakCounter = 0;
     private int speakDialogueIndex = 1;
+    private final List<Enemy> enemiesKilled = new ArrayList<>();
 
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations,
@@ -316,7 +319,17 @@ public class Player extends Character {
         }
         return false;
     }
+    
+    public void resetEnemiesKilled() {
+        if(enemiesKilled.size() > 0) {
+            enemiesKilled.clear();
+        }
+    }
 
+    public List<Enemy> getEnemiesKilled() {
+        return enemiesKilled;
+    }
+    
     public boolean isSpeak() {
         return isSpeak;
     }
