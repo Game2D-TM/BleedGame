@@ -6,9 +6,10 @@ import fightinggame.entity.quest.Quest;
 import fightinggame.entity.quest.QuestRequired;
 import fightinggame.entity.state.QuestState;
 import fightinggame.resource.DataManager;
+import fightinggame.resource.ImageManager;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class Rule {
     private Platform secondPlatform;
     private LocalTime timeLimit;
     private final Map<String, Quest> quests = new HashMap<>();
+    private Map<String, BufferedImage> questImages;
+    private boolean isRenderQuest = true;
 
     public Rule(GamePosition position, Platform firPlatform, Platform secondPlatform, Gameplay gameplay) {
         this.victoryPosition = position;
@@ -35,6 +38,7 @@ public class Rule {
         this.firstPlatform = firPlatform;
         this.secondPlatform = secondPlatform;
         setTimeLimit(7);
+        questImages = ImageManager.loadImagesFromFolderToMap("assets/res/gui/quest");
     }
 
     public void tick() {
@@ -110,22 +114,40 @@ public class Rule {
         g.setColor(new Color(133, 0, 0));
         g.drawString(GameTimer.getInstance().countDownString(timeLimit, GameTimer.FORMAT_MS),
                 gameplay.getWidth() / 2 - 50, 80);
-        if (quests.size() > 0) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(new Color(0, 0, 0, 90));
-            g2.fillRoundRect(gameplay.getWidth() - 260, 270,
-                            250, 300, 35, 35);
-            g.setFont(DataManager.getFont(20f));
-            g.setColor(Color.white);
-            for (String id : quests.keySet()) {
-                Quest quest = quests.get(id);
-                if (quest != null) {
-                    List<QuestRequired> requireds = quest.getRequireds();
-                    if (requireds != null && requireds.size() > 1) {
-                        g.drawString(requireds.get(0).toString(),
-                                gameplay.getWidth() - 220, 300);
-                        g.drawString(requireds.get(1).toString(),
-                                gameplay.getWidth() - 220, 350);
+        if (isRenderQuest) {
+            if (quests.size() > 0) {
+                g.drawImage(questImages.get("page"), gameplay.getWidth() - 260, 270,
+                        250, 300, null);
+                g.drawImage(questImages.get("title"), gameplay.getWidth() - 260, 270,
+                        250, 50, null, null);
+                g.setFont(DataManager.getFont(30f));
+                g.setColor(new Color(133, 0, 0));
+                g.drawString("Quest", gameplay.getWidth() - 170, 310);
+                g.setFont(DataManager.getFont(20f));
+                for (String id : quests.keySet()) {
+                    Quest quest = quests.get(id);
+                    if (quest != null) {
+                        List<QuestRequired> requireds = quest.getRequireds();
+                        if (requireds != null && requireds.size() > 0) {
+                            int yTitle = 350;
+                            int yCheck = 335;
+                            for (int i = 0; i < requireds.size(); i++) {
+                                if (i > 4) {
+                                    break;
+                                }
+                                QuestRequired required = requireds.get(i);
+                                if (required != null) {
+                                    g.drawString(required.toString(),
+                                            gameplay.getWidth() - 220, yTitle);
+                                    if (required.isFinished()) {
+                                        g.drawImage(questImages.get("check"), gameplay.getWidth() - 245, yCheck,
+                                                15, 15, null, null);
+                                    }
+                                    yTitle += 50;
+                                    yCheck += 50;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -191,6 +213,10 @@ public class Rule {
     public void addSecondsTimeLimit(int seconds) {
         timeLimit = timeLimit.plusSeconds(seconds);
     }
+    
+    public void subtractSecondsTimeLimit(int seconds) {
+        timeLimit = timeLimit.minusSeconds(seconds);
+    }
 
     public void addMinutesTimeLimit(int minutes) {
         timeLimit = timeLimit.plusMinutes(minutes);
@@ -226,6 +252,14 @@ public class Rule {
 
     public LocalTime getTimeLimit() {
         return timeLimit;
+    }
+
+    public boolean isRenderQuest() {
+        return isRenderQuest;
+    }
+
+    public void setIsRenderQuest(boolean isRenderQuest) {
+        this.isRenderQuest = isRenderQuest;
     }
 
 }

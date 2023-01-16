@@ -266,6 +266,9 @@ public class GameMap extends Background {
                         position.getHeight() + 20, null);
             }
         }
+        if(gameplay.getPlayer() == null) {
+            return;
+        }
         if (gameplay.getPlayer().getInsidePlatform() != null) {
             Platform insidePlatform = gameplay.getPlayer().getInsidePlatform();
             if (insidePlatform != null) {

@@ -1,12 +1,14 @@
 package fightinggame.entity.enemy;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.enemy.*;
+import fightinggame.animation.enemy.EnemyRunBack;
+import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.entity.Animation;
 import java.awt.Graphics;
 import java.util.Map;
 import java.util.Random;
 import fightinggame.entity.Character;
+import fightinggame.entity.Dialogue;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.HealthBar;
@@ -17,6 +19,7 @@ import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
 import fightinggame.entity.SpriteSheet;
+import java.io.File;
 import java.util.List;
 
 public abstract class Enemy extends Character {
@@ -26,22 +29,26 @@ public abstract class Enemy extends Character {
     public static int DEF_WIDTH_VISION_POS = 1000;
     public static int DEF_HEIGHT_VISION_POS = 100;
     public static Enemy ENEMY_HEALTHBAR_SHOW;
-    
+
     protected int deathCounter = 0;
+    protected int deathExpireLimit = 1500;
     protected int isAttackedCounter = 0;
     protected int walkCounter = 0;
     protected boolean animateChange = false;
     protected int point = 10;
     protected double experience = 0;
-    protected int stunTime = 300;
-
-    public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
-        super(id, name, health, position, animations, gameplay, isLTR, inventorySheet);
-    }
+    protected int stunTime = 50;
+    protected boolean isSpeak;
+    protected Dialogue dialogue;
+    protected int speakCounter = 0;
+    protected int speakTimeDialogueCounter = 0;
+    protected File dialogueFile;
+    protected int attackCounter = 0;
+    protected int attackLimit = 50;
 
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
-            Gameplay gameplay, int rangeRandomSpeed, SpriteSheet inventorySheet) {
-        super(id, name, health, position, animations, gameplay, false, inventorySheet);
+            Gameplay gameplay, int rangeRandomSpeed) {
+        super(id, name, health, position, animations, gameplay, false, null);
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 10f, 100, 100));
         healthBar.setAppearTimeLimit(1000);
@@ -66,7 +73,7 @@ public abstract class Enemy extends Character {
         healthBar.tick();
         if (isDeath) {
             deathCounter++;
-            if (deathCounter >= 1500) {
+            if (deathCounter >= deathExpireLimit) {
                 List<Item> itemsInInventory = inventory.getAllItemsFromInventory();
                 if (itemsInInventory != null && itemsInInventory.size() > 0) {
                     for (int i = 0; i < itemsInInventory.size(); i++) {
@@ -98,7 +105,7 @@ public abstract class Enemy extends Character {
         }
         if (isAttacked && !isDeath) {
             isAttackedCounter++;
-            if (isAttackedCounter >= stunTime) {
+            if (isAttackedCounter > stunTime) {
                 if (isLTR) {
                     currAnimation = animations.get(CharacterState.IDLE_LTR);
                 } else {
@@ -142,6 +149,90 @@ public abstract class Enemy extends Character {
                     position.isMoveRight = true;
                 }
                 walkCounter = 0;
+            }
+        }
+        if (dialogue != null) {
+            if (checkPlayerOnSight() && !isDeath && !gameplay.getPlayer().isSpeak()) {
+                if (isSpeak) {
+                    if (speakTimeDialogueCounter <= 500) {
+                        speakTimeDialogueCounter++;
+                    }
+                    dialogue.tick();
+                    if (speakTimeDialogueCounter > 500) {
+                        dialogue.next();
+                        speakTimeDialogueCounter = 0;
+                    }
+                    if (dialogue.isEndDialogue()) {
+                        isSpeak = false;
+                        speakTimeDialogueCounter = 0;
+                    }
+                } else {
+                    if (speakCounter <= 100) {
+                        speakCounter++;
+                    }
+                    if (speakCounter > 100) {
+                        boolean result = dialogue.loadDialogue(dialogueFile);
+                        if (result) {
+                            isSpeak = true;
+                            speakCounter = 0;
+                            dialogue.setEndDialogue(false);
+                        }
+                    }
+                }
+            }
+            if (Enemy.ENEMY_HEALTHBAR_SHOW != null
+                    && this == Enemy.ENEMY_HEALTHBAR_SHOW) {
+                if (isDeath) {
+                    if (isSpeak) {
+                        isSpeak = false;
+                        speakTimeDialogueCounter = 0;
+                        dialogue.setEndDialogue(true);
+                    }
+                }
+            }
+        }
+        if (!isAttack && !isAttacked && !isDeath && !animateChange) {
+            if (!gameplay.getPlayer().isAttacked()) {
+                if (gameplay.getPlayer().checkHit(attackHitBox(), false, null)) {
+                    if (isLTR) {
+                        currAnimation = animations.get(CharacterState.ATTACK01_LTR);
+                    } else {
+                        currAnimation = animations.get(CharacterState.ATTACK01_RTL);
+                    }
+                    isAttack = true;
+                    gameplay.getPlayer().checkHit(attackHitBox(), isAttack, this);
+                }
+            }
+        }
+        if (!isAttacked && !isDeath) {
+            if (animateChange) {
+                attackCounter++;
+                if (attackCounter > attackLimit) {
+                    if (!isLTR) {
+                        position.setXPosition(position.getXPosition() + stats.getAttackRange());
+                    } else {
+                        position.setXPosition(position.getXPosition() - stats.getAttackRange());
+                    }
+                    position.setWidth(position.getWidth() - stats.getAttackRange());
+                    animateChange = false;
+                    if (isLTR) {
+                        currAnimation = animations.get(CharacterState.IDLE_LTR);
+                    } else {
+                        currAnimation = animations.get(CharacterState.IDLE_RTL);
+                    }
+                    attackCounter = 0;
+                }
+            } else {
+                if (isAttack) {
+                    if (!isLTR) {
+                        position.setXPosition(position.getXPosition() - stats.getAttackRange());
+                    } else {
+                        position.setXPosition(position.getXPosition() + stats.getAttackRange());
+                    }
+                    position.setWidth(position.getWidth() + stats.getAttackRange());
+                    isAttack = false;
+                    animateChange = true;
+                }
             }
         }
         if (!healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
@@ -263,21 +354,21 @@ public abstract class Enemy extends Character {
     }
 
     @Override
-    public boolean checkHit(GamePosition attackHitBox, boolean isAttack, 
+    public boolean checkHit(GamePosition attackHitBox, boolean isAttack,
             Character character, int attackDamage) {
         if (isAttack && !isDeath) {
             if (((attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox())
-                        || (attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox()
-                        && attackHitBox.getMaxX() > getXMaxHitBox())
-                        || (attackHitBox.getMaxX() >= getXHitBox() && attackHitBox.getMaxX() <= getXMaxHitBox()
-                        && attackHitBox.getXPosition() < getXHitBox())
-                        || (attackHitBox.getXPosition() < getXHitBox() && attackHitBox.getMaxX() > getXMaxHitBox()))
-                        && ((attackHitBox.getYPosition() <= getYHitBox() && attackHitBox.getYPosition() >= getYMaxHitBox()
-                        || (attackHitBox.getYPosition() >= getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox())
-                        || (attackHitBox.getYPosition() > getYHitBox() && attackHitBox.getYPosition() <= getYMaxHitBox()
-                        && attackHitBox.getMaxY() > getYMaxHitBox())
-                        || (attackHitBox.getMaxY() > getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox()
-                        && attackHitBox.getYPosition() < getYHitBox())))) {
+                    || (attackHitBox.getXPosition() >= getXHitBox() && attackHitBox.getXPosition() <= getXMaxHitBox()
+                    && attackHitBox.getMaxX() > getXMaxHitBox())
+                    || (attackHitBox.getMaxX() >= getXHitBox() && attackHitBox.getMaxX() <= getXMaxHitBox()
+                    && attackHitBox.getXPosition() < getXHitBox())
+                    || (attackHitBox.getXPosition() < getXHitBox() && attackHitBox.getMaxX() > getXMaxHitBox()))
+                    && ((attackHitBox.getYPosition() <= getYHitBox() && attackHitBox.getYPosition() >= getYMaxHitBox()
+                    || (attackHitBox.getYPosition() >= getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox())
+                    || (attackHitBox.getYPosition() > getYHitBox() && attackHitBox.getYPosition() <= getYMaxHitBox()
+                    && attackHitBox.getMaxY() > getYMaxHitBox())
+                    || (attackHitBox.getMaxY() > getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox()
+                    && attackHitBox.getYPosition() < getYHitBox())))) {
                 setDefAttackedCounter();
                 if (ENEMY_HEALTHBAR_SHOW != null) {
                     ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
@@ -285,10 +376,12 @@ public abstract class Enemy extends Character {
                 ENEMY_HEALTHBAR_SHOW = this;
                 healthBar.setCanShow(true);
                 gameplay.setRenderMap(false);
-                if (isLTR) {
-                    currAnimation = animations.get(CharacterState.GET_HIT_LTR);
-                } else {
+                if (character.isLTR()) {
                     currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                    isLTR = false;
+                } else {
+                    currAnimation = animations.get(CharacterState.GET_HIT_LTR);
+                    isLTR = true;
                 }
                 isAttacked = true;
                 if (attackDamage == -1) {
@@ -314,7 +407,7 @@ public abstract class Enemy extends Character {
         }
         return false;
     }
-    
+
     public double getExperience() {
         return experience;
     }
@@ -337,6 +430,30 @@ public abstract class Enemy extends Character {
 
     public void setStunTime(int stunTime) {
         this.stunTime = stunTime;
+    }
+
+    public boolean isSpeak() {
+        return isSpeak;
+    }
+
+    public void setIsSpeak(boolean isSpeak) {
+        this.isSpeak = isSpeak;
+    }
+
+    public int getSpeakCounter() {
+        return speakCounter;
+    }
+
+    public void setSpeakCounter(int speakCounter) {
+        this.speakCounter = speakCounter;
+    }
+
+    public int getSpeakTimeDialogueCounter() {
+        return speakTimeDialogueCounter;
+    }
+
+    public void setSpeakTimeDialogueCounter(int speakTimeDialogueCounter) {
+        this.speakTimeDialogueCounter = speakTimeDialogueCounter;
     }
 
 }

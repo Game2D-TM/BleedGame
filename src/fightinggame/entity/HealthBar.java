@@ -151,6 +151,10 @@ public class HealthBar {
     public GamePosition getAvatarPos() {
         return positions.get("avatar_pos");
     }
+    
+    public GamePosition setAvatarPos(GamePosition nPos) {
+        return positions.put("avatar_pos", nPos);
+    }
 
     public GamePosition getNamePos() {
         return positions.get("character_name");
@@ -238,5 +242,7 @@ public class HealthBar {
     public void setCanShow(boolean canShow) {
         this.canShow = canShow;
     }
+    
+    
 
 }

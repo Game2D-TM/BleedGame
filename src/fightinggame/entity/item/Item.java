@@ -218,5 +218,13 @@ public abstract class Item {
     public void setSpawnForever(boolean spawnForever) {
         this.spawnForever = spawnForever;
     }
+    
+     public Character getCharacter() {
+        return character;
+    }
+
+    public void setCharacter(Character character) {
+        this.character = character;
+    }
 
 }

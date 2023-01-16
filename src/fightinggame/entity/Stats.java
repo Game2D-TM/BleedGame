@@ -14,6 +14,7 @@ public class Stats {
     private double levelExperience = 0;
     private double nextLevelExperience = 0;
     private int attackDamage;
+    private int attackRange = 30;
     private int defenceDamage;
     private float defenceChange = 0.001f;
     private int bounceRange = 30;
@@ -326,6 +327,14 @@ public class Stats {
 
     public void setDropSpeed(float dropSpeed) {
         this.dropSpeed = dropSpeed;
+    }
+
+    public int getAttackRange() {
+        return attackRange;
+    }
+
+    public void setAttackRange(int attackRange) {
+        this.attackRange = attackRange;
     }
     
 }

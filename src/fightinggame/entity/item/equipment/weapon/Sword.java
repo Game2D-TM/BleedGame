@@ -9,8 +9,7 @@ import fightinggame.entity.item.Item;
 import fightinggame.entity.item.equipment.Equipment;
 import java.util.Map;
 
-
-public class Sword extends Equipment{
+public class Sword extends Equipment {
 
     public Sword(int id, String name, Animation animation, Character character, Gameplay gameplay, int amount) {
         super(id, name, animation, character, gameplay, amount);
@@ -19,12 +18,17 @@ public class Sword extends Equipment{
     public Sword(int id, String name, Animation animation, Character character, Gameplay gameplay, int amount, Map<CharacterState, Animation> itemEquipAnimations) {
         super(id, name, animation, character, gameplay, amount, itemEquipAnimations);
     }
-    
+
     @Override
     public boolean use() {
-        if(!isEquip) {
+        if (!isEquip) {
             IncreaseStat increaseStat = (IncreaseStat) abilities.get(0);
-            if(increaseStat != null) {
+            if (increaseStat != null) {
+                if (itemEquipAnimations != null && itemEquipAnimations.size() > 0) {
+                    for (CharacterState state : itemEquipAnimations.keySet()) {
+                        character.getAnimations().put(state, itemEquipAnimations.get(state));
+                    }
+                }
                 increaseStat.execute();
                 isEquip = true;
                 return true;
@@ -67,5 +71,5 @@ public class Sword extends Equipment{
     public int getYMaxHitBox() {
         return getYHitBox() + getHeightHitBox();
     }
-    
+
 }

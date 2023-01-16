@@ -66,15 +66,7 @@ public abstract class Equipment extends Item {
                     itemsOnGround.remove(this);
                     spawnDrop = false;
                     dropExpireCounter = 0;
-                    result = use();
-                    if (result) {
-                        if (itemEquipAnimations != null && itemEquipAnimations.size() > 0) {
-                            for (CharacterState state : itemEquipAnimations.keySet()) {
-                                character.getAnimations().put(state, itemEquipAnimations.get(state));
-                            }
-                        }
-                        return true;
-                    }
+                    return use();
                 }
             }
         }

@@ -19,4 +19,6 @@ public class EnemyAnimationResources {
     public static String DIOR_PURPLE_SHEET = "assets/res/enemy/Dior_Purple_Ani.png";
     //7
     public static String DIOR_WHITE_SHEET = "assets/res/enemy/Dior_White_Ani.png";    
+    
+    public static String CAT_BOSS_SHEET_LOC = "assets/res/enemy/Cat Boss/";
 }

@@ -2,11 +2,13 @@ package fightinggame.input.handler.game.player;
 
 import fightinggame.Game;
 import fightinggame.Gameplay;
-import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
+import fightinggame.entity.Rule;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
+import fightinggame.entity.item.collectable.healing.HealthPotion;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.GameHandler;
 import java.awt.event.KeyEvent;
@@ -32,9 +34,7 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
         if (!player.isDeath() && Game.STATE == GameState.GAME_STATE) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_1:
-                    if (!player.isDeath()) {
-                        player.getAbility(0).execute();
-                    }
+                    player.getAbility(0).execute();
                     break;
                 case KeyEvent.VK_2:
 //                    if(player.isInAir() || player.isFallDown()) {
@@ -50,8 +50,8 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                             spawnX = player.getPosition().getMaxX() + xChange;
                             endPos = new GamePosition(
                                     player.getPosition().getMaxX() + xChange, 0,
-                                    gameplay.getCamera().getPosition().getMaxX() -
-                                            (player.getPosition().getMaxX() + xChange), 0);
+                                    gameplay.getCamera().getPosition().getMaxX()
+                                    - (player.getPosition().getMaxX() + xChange), 0);
 
                         } else {
                             xChange = 215;
@@ -80,11 +80,11 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_3:
-                    if (!player.isDeath()) {
-                        Item item = player.getInventory().getItemAscending();
-                        if (item == null) {
-                            break;
-                        }
+                    Item item = player.getInventory().getItemAscending();
+                    if (item == null) {
+                        break;
+                    }
+                    if (item instanceof HealthPotion) {
                         if (item.use()) {
 
                         } else {
@@ -93,9 +93,16 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_I:
-                    if (!player.isDeath() && !player.isAttack() && !player.getPosition().isMoving()) {
+                    if (!player.isAttack() && !player.getPosition().isMoving()) {
                         player.getInventory().open();
                     }
+                    break;
+                case KeyEvent.VK_Q:
+                    Rule rule = gameplay.getRule();
+                    if (rule == null) {
+                        break;
+                    }
+                    rule.setIsRenderQuest(!rule.isRenderQuest());
                     break;
             }
         }

@@ -2,10 +2,11 @@ package fightinggame;
 
 import fightinggame.animation.BackgroundAnimation;
 import fightinggame.animation.ability.FireBallAnimation;
-import fightinggame.animation.enemy.EnemyAttack;
+import fightinggame.animation.enemy.EnemyHeavyAttack;
 import fightinggame.animation.enemy.EnemyDeath;
 import fightinggame.animation.enemy.EnemyHit;
 import fightinggame.animation.enemy.EnemyIdle;
+import fightinggame.animation.enemy.EnemyLightAttack;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.animation.item.HealthPotionAnimation;
@@ -46,6 +47,8 @@ import fightinggame.entity.background.GameObject;
 import fightinggame.entity.background.GameObjectType;
 import fightinggame.entity.background.ObjectNonTouchable;
 import fightinggame.entity.background.touchable.Chest;
+import fightinggame.entity.enemy.EnemyType;
+import fightinggame.entity.enemy.dior.PirateCat;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.equipment.weapon.Sword;
@@ -89,12 +92,13 @@ public class Gameplay extends JPanel implements Runnable {
     private OptionKeyboardHandler optionHandler;
     private TransitionScreen transitionScreen;
     private LoadingScreen loadingScreen;
-
+    private Map<String, SpriteSheet> playerSpriteSheetMap;
     public Gameplay(Game game) {
         this.game = game;
+        setDoubleBuffered(true);
         optionHandler = new OptionKeyboardHandler(ImageManager.loadImagesFromFolderToMap(DataManager.OPTION_GUIS), this);
         game.addKeyListener(optionHandler);
-        setDoubleBuffered(true);
+        playerSpriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
         transitionScreen = new TransitionScreen(this);
         audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
         SpriteSheet loadingBackgroundSheet = new SpriteSheet();
@@ -113,7 +117,6 @@ public class Gameplay extends JPanel implements Runnable {
         if (scene == null) {
             return;
         }
-//        initScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
         loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
     }
 
@@ -157,9 +160,9 @@ public class Gameplay extends JPanel implements Runnable {
         initVictoryPosition();
         enemies.clear();
         itemsOnGround.clear();
-        Platform firstPlatform = getPlatforms().get(11).get(3);
-        playerInit(firstPlatform);
+        playerInit(getPlatforms().get(11).get(3));
         initEnemies();
+//        pirateCatInit(getPlatforms().get(14).get(15));
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
         initGameItems();
@@ -181,12 +184,14 @@ public class Gameplay extends JPanel implements Runnable {
             chest.getItems().add(keyItem);
         }
         //Init Quest
-        if(rule != null) {
-            Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor Orange", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State"
-                    , player, this);
+        if (rule != null) {
+            Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor Orange", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State",
+                    player, this);
             quest.getRequireds().add(new ItemRequired(keyItem, 1, "Find Mystery Key", quest));
-            quest.getRequireds().add(new EnemyRequired("Dior Firor"
-                    , 15, "Kill Dior Firor", quest));
+            quest.getRequireds().add(new EnemyRequired("Dior Firor",
+                    15, "Kill Dior Firor", quest));
+            quest.getRequireds().add(new EnemyRequired("Zach Fowler",
+                    1, "Defeat Zach Fowler", quest));
             quest.setState(QuestState.ON_GOING);
             rule.addQuest(quest);
         }
@@ -255,10 +260,14 @@ public class Gameplay extends JPanel implements Runnable {
                         int row = Utils.getInt(rowStr);
                         int column = Utils.getInt(columnStr);
                         if (row > 0 && column > 0) {
-                            switch (enemyType) {
-                                case "dior":
-                                    firstPlatform = background.getScene().get(row).get(column);
+                            EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
+                            firstPlatform = background.getScene().get(row).get(column);
+                            switch (type) {
+                                case DIOR:
                                     diorInit(firstPlatform);
+                                    break;
+                                case PIRATE_CAT:
+                                    pirateCatInit(firstPlatform);
                                     break;
                             }
                         }
@@ -397,10 +406,10 @@ public class Gameplay extends JPanel implements Runnable {
             }
             try {
                 tick();
-                revalidate();
+//                revalidate();
                 repaint();
             } catch (Exception ex) {
-                System.out.println(ex.toString());
+//                System.out.println(ex.toString());
             }
             updateTime = System.nanoTime() - now;
             wait = (OPTIMAL_TIME - updateTime) / 1000000;
@@ -415,6 +424,80 @@ public class Gameplay extends JPanel implements Runnable {
     @Override
     public void paint(Graphics g) {
         render(g);
+    }
+
+    public void pirateCatInit(Platform firstPlatform) {
+        GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
+                firstPlatform.getPosition().getYPosition(), 300, 259);
+        String loc = EnemyAnimationResources.CAT_BOSS_SHEET_LOC;
+        SpriteSheet idleLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Idle.png"),
+                0, 0, 96, 48,
+                27, 11, 40, 37, 5);
+        SpriteSheet hitLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Hit.png"),
+                0, 0, 96, 48,
+                27, 7, 40, 41, 4);
+        SpriteSheet deathLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Death.png"),
+                0, 0, 96, 48,
+                30, 7, 40, 41, 15);
+        SpriteSheet runLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Run.png"),
+                0, 0, 96, 48,
+                27, 11, 40, 37, 8);
+        SpriteSheet attack01LTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Attack01.png"),
+                384, 0, 96, 48,
+                29, 11, 65, 37, 2);
+        SpriteSheet attack02LTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Attack02.png"),
+                0, 0, 96, 48,
+                24, 11, 42, 37, 6);
+        SpriteSheet attack03LTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Attack03.png"),
+                0, 0, 96, 48,
+                27, 11, 40, 37, 7);
+
+        SpriteSheet idleRTLSheet = idleLTRSheet.convertRTL();
+        SpriteSheet hitRTLSheet = hitLTRSheet.convertRTL();
+        SpriteSheet deathRTLSheet = deathLTRSheet.convertRTL();
+        SpriteSheet runRTLSheet = runLTRSheet.convertRTL();
+        SpriteSheet attack01RTLSheet = attack01LTRSheet.convertRTL();
+        SpriteSheet attack02RTLSheet = attack02LTRSheet.convertRTL();
+        SpriteSheet attack03RTLSheet = attack03LTRSheet.convertRTL();
+
+        EnemyIdle idleRTL = new EnemyIdle(0, idleRTLSheet);
+        EnemyIdle idleLTR = new EnemyIdle(1, idleLTRSheet);
+        EnemyHit hitRTL = new EnemyHit(2, hitRTLSheet, 25);
+        EnemyHit hitLTR = new EnemyHit(3, hitLTRSheet, 25);
+        EnemyDeath deathRTL = new EnemyDeath(4, deathRTLSheet, 100);
+        EnemyDeath deathLTR = new EnemyDeath(5, deathLTRSheet, 100);
+        EnemyRunForward runForward = new EnemyRunForward(6, runRTLSheet, 40);
+        EnemyRunBack runBack = new EnemyRunBack(7, runLTRSheet, 40);
+        EnemyHeavyAttack attack01RTL = new EnemyHeavyAttack(8, attack01RTLSheet, 25);
+        EnemyHeavyAttack attack01LTR = new EnemyHeavyAttack(9, attack01LTRSheet, 25);
+        EnemyLightAttack attack02RTL = new EnemyLightAttack(10, attack02RTLSheet, 8);
+        EnemyLightAttack attack02LTR = new EnemyLightAttack(11, attack02LTRSheet, 8);
+        EnemyHeavyAttack attack03RTL = new EnemyHeavyAttack(12, attack03RTLSheet, 25);
+        EnemyHeavyAttack attack03LTR = new EnemyHeavyAttack(13, attack03LTRSheet, 25);
+
+        Map<CharacterState, Animation> enemyAnimations = new HashMap();
+
+        enemyAnimations.put(CharacterState.IDLE_RTL, idleRTL);
+        enemyAnimations.put(CharacterState.IDLE_LTR, idleLTR);
+        enemyAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
+        enemyAnimations.put(CharacterState.GET_HIT_LTR, hitLTR);
+        enemyAnimations.put(CharacterState.DEATH_RTL, deathRTL);
+        enemyAnimations.put(CharacterState.DEATH_LTR, deathLTR);
+        enemyAnimations.put(CharacterState.RUNFORWARD, runForward);
+        enemyAnimations.put(CharacterState.RUNBACK, runBack);
+        enemyAnimations.put(CharacterState.ATTACK01_RTL, attack01RTL);
+        enemyAnimations.put(CharacterState.ATTACK01_LTR, attack01LTR);
+        enemyAnimations.put(CharacterState.ATTACK02_RTL, attack02RTL);
+        enemyAnimations.put(CharacterState.ATTACK02_LTR, attack02LTR);
+        enemyAnimations.put(CharacterState.ATTACK03_RTL, attack03RTL);
+        enemyAnimations.put(CharacterState.ATTACK03_LTR, attack03LTR);
+
+        PirateCat pirateCat = new PirateCat(0, "Zach Fowler", 5000, defEnemyPosition, enemyAnimations, this,
+                60);
+        pirateCat.setInsidePlatform(firstPlatform);
+        EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, pirateCat);
+        pirateCat.getController().add(movementHandler);
+        enemies.add(pirateCat);
     }
 
     public void diorInit(Platform firstPlatform) {
@@ -452,48 +535,57 @@ public class Gameplay extends JPanel implements Runnable {
                 diorColor = DiorColor.Yellow;
                 break;
         }
+        Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/enemy/Dior Firor/"
+                + diorColor.toString());
         // Init enemy position
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition(), 300, 200);
-        SpriteSheet idleRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
-                0, 0, 192, 160,
-                23, 55, 160, 90, 4);
-        SpriteSheet enemyHitRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
-                0, 480, 192, 160,
-                0, 55, 177, 90, 4);
-        SpriteSheet enemyDeathRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
-                0, 1920, 192, 160,
-                23, 55, 167, 90, 4);
-        SpriteSheet enemyRunForward = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
-                0, 1280, 192, 160,
-                23, 55, 160, 90, 4);
-        SpriteSheet enemyRunBack = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
-                0, 1440, 192, 160,
-                10, 55, 160, 90, 4);
-        SpriteSheet enemyAttackRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
-                0, 640, 192, 160,
-                0, 55, 180, 90, 4);
-        SpriteSheet idleLTRSheet = idleRTLSheet.convertRTL();
-        SpriteSheet enemyHitLTRSheet = enemyHitRTLSheet.convertRTL();
-        SpriteSheet enemyDeathLTRSheet = enemyDeathRTLSheet.convertRTL();
-        SpriteSheet enemyAttackLTRSheet = enemyAttackRTLSheet.convertRTL();
+//        SpriteSheet idleRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+//                0, 0, 192, 160,
+//                23, 55, 160, 90, 4);
+//        SpriteSheet enemyHitRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+//                0, 480, 192, 160,
+//                0, 55, 177, 90, 4);
+//        SpriteSheet enemyDeathRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+//                0, 1920, 192, 160,
+//                23, 55, 167, 90, 4);
+//        SpriteSheet enemyRunForward = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+//                0, 1280, 192, 160,
+//                23, 55, 160, 90, 4);
+//        SpriteSheet enemyRunBack = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+//                0, 1440, 192, 160,
+//                10, 55, 160, 90, 4);
+//        SpriteSheet enemyAttackRTLSheet = new SpriteSheet(ImageManager.loadImage(diorColorSheet),
+//                0, 640, 192, 160,
+//                0, 55, 180, 90, 4);
+//        SpriteSheet idleLTRSheet = idleRTLSheet.convertRTL();
+//        SpriteSheet enemyHitLTRSheet = enemyHitRTLSheet.convertRTL();
+//        SpriteSheet enemyDeathLTRSheet = enemyDeathRTLSheet.convertRTL();
+//        SpriteSheet enemyAttackLTRSheet = enemyAttackRTLSheet.convertRTL();
+
 //        Export bufferedimage to file
-//        ImageManager.writeImages(enemyIdleSheet.getImages(), "assets/res/enemy/dior_firor/idle", "Idle_RTL", ImageManager.EXTENSION_PNG);
-//        ImageManager.writeImages(enemyHit.getImages(), "assets/res/enemy/dior_firor/hit", "Hit_RTL", ImageManager.EXTENSION_PNG);
-//        ImageManager.writeImages(enemyDeath.getImages(), "assets/res/enemy/dior_firor/death", "Death_RTL", ImageManager.EXTENSION_PNG);
-//        ImageManager.writeImages(enemyRunForward.getImages(), "assets/res/enemy/dior_firor/run_rtl", "Run_RTL", ImageManager.EXTENSION_PNG);
-//        ImageManager.writeImages(enemyRunBack.getImages(), "assets/res/enemy/dior_firor/run_ltr", "Run_LTR", ImageManager.EXTENSION_PNG);
-//        ImageManager.writeImages(enemyAttack.getImages(), "assets/res/enemy/dior_firor/attack", "Attack_RTL", ImageManager.EXTENSION_PNG);
-        EnemyIdle idleRTL = new EnemyIdle(0, idleRTLSheet);
-        EnemyIdle idleLTR = new EnemyIdle(1, idleLTRSheet);
-        EnemyHit hitRTL = new EnemyHit(2, enemyHitRTLSheet);
-        EnemyHit hitLTR = new EnemyHit(3, enemyHitLTRSheet);
-        EnemyDeath deathRTL = new EnemyDeath(4, enemyDeathRTLSheet);
-        EnemyDeath deathLTR = new EnemyDeath(5, enemyDeathLTRSheet);
-        EnemyRunForward runForward = new EnemyRunForward(6, enemyRunForward, 40);
-        EnemyRunBack runBack = new EnemyRunBack(7, enemyRunBack, 40);
-        EnemyAttack attackRTL = new EnemyAttack(8, enemyAttackRTLSheet, 25);
-        EnemyAttack attackLTR = new EnemyAttack(9, enemyAttackLTRSheet, 25);
+//        ImageManager.writeImages(idleRTLSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Idle_RTL", "Idle_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(idleLTRSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Idle_LTR", "Idle_LTR", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyHitRTLSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Hit_RTL", "Hit_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyHitLTRSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Hit_LTR", "Hit_LTR", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyDeathRTLSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Death_RTL", "Death_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyDeathLTRSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Death_LTR", "Death_LTR", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyRunBack.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Run_LTR", "Run_LTR", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyRunForward.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Run_RTL", "Run_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyAttackRTLSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Attack_RTL", "Attack_RTL", ImageManager.EXTENSION_PNG);
+//        ImageManager.writeImages(enemyAttackLTRSheet.getImages(), "assets/res/enemy/Dior Firor/" + diorColor.toString() +"/Attack_LTR", "Attack_LTR", ImageManager.EXTENSION_PNG);
+//        
+        EnemyIdle idleRTL = new EnemyIdle(0, spriteSheetMap.get("Idle_RTL"));
+        EnemyIdle idleLTR = new EnemyIdle(1, spriteSheetMap.get("Idle_LTR"));
+        EnemyHit hitRTL = new EnemyHit(2, spriteSheetMap.get("Hit_RTL"));
+        EnemyHit hitLTR = new EnemyHit(3, spriteSheetMap.get("Hit_LTR"));
+        EnemyDeath deathRTL = new EnemyDeath(4, spriteSheetMap.get("Death_RTL"));
+        EnemyDeath deathLTR = new EnemyDeath(5, spriteSheetMap.get("Death_LTR"));
+        EnemyRunForward runForward = new EnemyRunForward(6, spriteSheetMap.get("Run_RTL"), 40);
+        EnemyRunBack runBack = new EnemyRunBack(7, spriteSheetMap.get("Run_LTR"), 40);
+        EnemyHeavyAttack attackRTL = new EnemyHeavyAttack(8, spriteSheetMap.get("Attack_RTL"), 25);
+        EnemyHeavyAttack attackLTR = new EnemyHeavyAttack(9, spriteSheetMap.get("Attack_LTR"), 25);
+
         Map<CharacterState, Animation> enemyAnimations = new HashMap();
         enemyAnimations.put(CharacterState.IDLE_RTL, idleRTL);
         enemyAnimations.put(CharacterState.IDLE_LTR, idleLTR);
@@ -507,7 +599,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.ATTACK01_LTR, attackLTR);
         Enemy enemy = new DiorEnemy(diorColor, 0, "Dior Firor " + diorColor,
                 500, defEnemyPosition,
-                enemyAnimations, this, 60, null);
+                enemyAnimations, this, 60);
         enemy.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, enemy);
         enemy.getController().add(movementHandler);
@@ -523,115 +615,110 @@ public class Gameplay extends JPanel implements Runnable {
         GamePosition middlePlatform = firstPlatform.middlePlatform(350, 259);
         GamePosition defPlayerPosition = new GamePosition(middlePlatform.getXPosition(),
                 middlePlatform.getYPosition(), 350, 259);
-        Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
 
         //Init Attack Move
-        SpriteSheet attackSpecialLTR = spriteSheetMap.get("Attack01").clone();
-        SpriteSheet attackSpecialRTL = spriteSheetMap.get("Attack01").convertRTL();
+        SpriteSheet attackSpecialLTR = playerSpriteSheetMap.get("Attack01").clone();
+        SpriteSheet attackSpecialRTL = playerSpriteSheetMap.get("Attack01").convertRTL();
         // Add special attack new sheet
-        attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack02").getImages());
-        attackSpecialLTR.getImages().addAll(spriteSheetMap.get("Attack03").getImages());
-        attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack02").convertRTL().getImages());
-        attackSpecialRTL.getImages().addAll(spriteSheetMap.get("Attack03").convertRTL().getImages());
+        attackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("Attack02").getImages());
+        attackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("Attack03").getImages());
+        attackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("Attack02").convertRTL().getImages());
+        attackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("Attack03").convertRTL().getImages());
         // Init Fire Attack Move
-        SpriteSheet fireAttackSpecialLTR = spriteSheetMap.get("FireAttack01").clone();
-        SpriteSheet fireAttackSpecialRTL = spriteSheetMap.get("FireAttack01").convertRTL();
+        SpriteSheet fireAttackSpecialLTR = playerSpriteSheetMap.get("FireAttack01").clone();
+        SpriteSheet fireAttackSpecialRTL = playerSpriteSheetMap.get("FireAttack01").convertRTL();
         // Add special attack new sheet
-        fireAttackSpecialLTR.getImages().addAll(spriteSheetMap.get("FireAttack02").getImages());
-        fireAttackSpecialLTR.getImages().addAll(spriteSheetMap.get("FireAttack03").getImages());
-        fireAttackSpecialRTL.getImages().addAll(spriteSheetMap.get("FireAttack02").convertRTL().getImages());
-        fireAttackSpecialRTL.getImages().addAll(spriteSheetMap.get("FireAttack03").convertRTL().getImages());
+        fireAttackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("FireAttack02").getImages());
+        fireAttackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("FireAttack03").getImages());
+        fireAttackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("FireAttack02").convertRTL().getImages());
+        fireAttackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("FireAttack03").convertRTL().getImages());
         //Init animations tick
-        int hit_tick = 25, idle_tick = 10, fire_idle_tick = 10,
+        int hit_tick = 16, idle_tick = 10, fire_idle_tick = 10,
                 run_tick = 10, attack1_tick = 12, attack2_tick = 12,
                 attack3_tick = 15, fire_attack1_tick = 12,
                 fire_attack2_tick = 12, fire_attack3_tick = 12,
                 death_tick = 50, fireDeath_tick = 50,
-                jump_tick = 30, falldown_tick = 50,
+                jump_tick = 10, falldown_tick = 50,
                 spellcast_tick = 40, crouch_tick = 10,
                 spellcast_loop_tick = 15, slide_tick = 30,
-                airAttack1_tick = 20, airAttack2_tick = 20,
-                airAttack3_tick = 20, fireAirAttack1_tick = 20,
+                airAttack1_tick = 20, airAttack2_tick = 15,
+                airAttack3_tick = 15, fireAirAttack1_tick = 20,
                 fireAirAttack2_tick = 20, fireAirAttack3_tick = 20,
                 airAttack_loop_tick = 20, jumpRoll_tick = 15,
-                getUp_tick = 15, knockDown_tick = 25,
+                getUp_tick = 15, knockDown_tick = 42,
                 ledgeClimb_tick = 15, ledgeGrap_tick = 15,
                 wallRun_tick = 15, wallSlide_tick = 15,
                 sprint_tick = 10;
 
         //LTR
-        PlayerHit hitLTR = new PlayerHit(3, spriteSheetMap.get("HurtAnim01"), hit_tick);
-        PlayerIdle idleLTR = new PlayerIdle(0, spriteSheetMap.get("Idle02"), idle_tick);
-        PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"), fire_idle_tick);
-        PlayerRun_LTR runLTR = new PlayerRun_LTR(1, spriteSheetMap.get("Run01"), run_tick); // 0
-        PlayerLightAttack attack01LTR = new PlayerLightAttack(2, spriteSheetMap.get("Attack01"), attack1_tick); // 12
-        PlayerHeavyAttack attack02LTR = new PlayerHeavyAttack(2, spriteSheetMap.get("Attack02"), attack2_tick); // 12
+        PlayerHit hitLTR = new PlayerHit(3, playerSpriteSheetMap.get("HurtAnim01"), hit_tick);
+        PlayerIdle idleLTR = new PlayerIdle(0, playerSpriteSheetMap.get("Idle02"), idle_tick);
+        PlayerIdle fireIdleLTR = new PlayerIdle(0, playerSpriteSheetMap.get("FireIdle01"), fire_idle_tick);
+        PlayerRun_LTR runLTR = new PlayerRun_LTR(1, playerSpriteSheetMap.get("Run01"), run_tick); // 0
+        PlayerLightAttack attack01LTR = new PlayerLightAttack(2, playerSpriteSheetMap.get("Attack01"), attack1_tick); // 12
+        PlayerHeavyAttack attack02LTR = new PlayerHeavyAttack(2, playerSpriteSheetMap.get("Attack02"), attack2_tick); // 12
         PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, attackSpecialLTR, attack3_tick);
-        PlayerLightAttack fireAttack01LTR = new PlayerLightAttack(2, spriteSheetMap.get("FireAttack01"), fire_attack1_tick);
-        PlayerHeavyAttack fireAttack02LTR = new PlayerHeavyAttack(2, spriteSheetMap.get("FireAttack02"), fire_attack2_tick);
+        PlayerLightAttack fireAttack01LTR = new PlayerLightAttack(2, playerSpriteSheetMap.get("FireAttack01"), fire_attack1_tick);
+        PlayerHeavyAttack fireAttack02LTR = new PlayerHeavyAttack(2, playerSpriteSheetMap.get("FireAttack02"), fire_attack2_tick);
         PlayerAttackSpecial_LTR fireAttack03LTR = new PlayerAttackSpecial_LTR(2, fireAttackSpecialLTR, fire_attack3_tick);
-        PlayerDeath deathLTR = new PlayerDeath(4, spriteSheetMap.get("Death01"), death_tick);
-        PlayerDeath fireDeathLTR = new PlayerDeath(4, spriteSheetMap.get("FireDeath01"), fireDeath_tick);
-        PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, spriteSheetMap.get("Jump02"), jump_tick);
-        PlayerFallDown_LTR fallDownLTR = new PlayerFallDown_LTR(6, spriteSheetMap.get("FallAnim01"), falldown_tick);
-        PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01"), spellcast_tick);
-        PlayerCrouch crouchLTR = new PlayerCrouch(8, spriteSheetMap.get("Crouch01"), crouch_tick);
-        PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop"), spellcast_loop_tick);
-        PlayerSlide_LTR slideLTR = new PlayerSlide_LTR(10, spriteSheetMap.get("Slide01"), slide_tick);
-        PlayerAirAttack_LTR airAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack01"), airAttack1_tick);
-        PlayerAirAttack_LTR airAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack02"), airAttack2_tick);
-        PlayerAirAttack_LTR airAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03"), airAttack3_tick);
-        PlayerAirAttack_LTR fireAirAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack01"), fireAirAttack1_tick);
-        PlayerAirAttack_LTR fireAirAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack02"), fireAirAttack2_tick);
-        PlayerAirAttack_LTR fireAirAttack03LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack03"), fireAirAttack3_tick);
-        PlayerAirAttack_LTR airAttackLoopLTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("AirAttack03Loop"), airAttack_loop_tick);
-        PlayerJumpRoll_LTR jumpRollLTR = new PlayerJumpRoll_LTR(12, spriteSheetMap.get("JumpRoll01"), jumpRoll_tick);
-        PlayerGetUp_LTR getUpLTR = new PlayerGetUp_LTR(13, spriteSheetMap.get("GetUp01"), getUp_tick);
-        PlayerFallDown_LTR knockDownLTR = new PlayerFallDown_LTR(14, spriteSheetMap.get("KnockDown01"), knockDown_tick);
-        PlayerLedgeAction_LTR ledgeClimbLTR = new PlayerLedgeAction_LTR(15, spriteSheetMap.get("LedgeClimb01"), ledgeClimb_tick);
-        PlayerLedgeAction_LTR ledgeGrabLTR = new PlayerLedgeAction_LTR(16, spriteSheetMap.get("LedgeGrab01"), ledgeGrap_tick);
-        PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, spriteSheetMap.get("WallRun01"), wallRun_tick);
-        PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, spriteSheetMap.get("WallSlide01"), wallSlide_tick);
-        PlayerSprint_LTR sprintLTR = new PlayerSprint_LTR(19, spriteSheetMap.get("Sprint01"), sprint_tick);
+        PlayerDeath deathLTR = new PlayerDeath(4, playerSpriteSheetMap.get("Death01"), death_tick);
+        PlayerDeath fireDeathLTR = new PlayerDeath(4, playerSpriteSheetMap.get("FireDeath01"), fireDeath_tick);
+        PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, playerSpriteSheetMap.get("Jump02"), jump_tick);
+        PlayerFallDown_LTR fallDownLTR = new PlayerFallDown_LTR(6, playerSpriteSheetMap.get("FallAnim01"), falldown_tick);
+        PlayerSpellCast spellCastLTR = new PlayerSpellCast(7, playerSpriteSheetMap.get("Spellcast01"), spellcast_tick);
+        PlayerCrouch crouchLTR = new PlayerCrouch(8, playerSpriteSheetMap.get("Crouch01"), crouch_tick);
+        PlayerSpellCastLoop spellCastLoopLTR = new PlayerSpellCastLoop(9, playerSpriteSheetMap.get("SpellcastLoop"), spellcast_loop_tick);
+        PlayerSlide_LTR slideLTR = new PlayerSlide_LTR(10, playerSpriteSheetMap.get("Slide01"), slide_tick);
+        PlayerAirAttack_LTR airAttack01LTR = new PlayerAirAttack_LTR(11, playerSpriteSheetMap.get("AirAttack01"), airAttack1_tick);
+        PlayerAirAttack_LTR airAttack02LTR = new PlayerAirAttack_LTR(11, playerSpriteSheetMap.get("AirAttack02"), airAttack2_tick);
+        PlayerAirAttack_LTR airAttack03LTR = new PlayerAirAttack_LTR(11, playerSpriteSheetMap.get("AirAttack03"), airAttack3_tick);
+        PlayerAirAttack_LTR fireAirAttack01LTR = new PlayerAirAttack_LTR(11, playerSpriteSheetMap.get("FireAirAttack01"), fireAirAttack1_tick);
+        PlayerAirAttack_LTR fireAirAttack02LTR = new PlayerAirAttack_LTR(11, playerSpriteSheetMap.get("FireAirAttack02"), fireAirAttack2_tick);
+        PlayerAirAttack_LTR fireAirAttack03LTR = new PlayerAirAttack_LTR(11, playerSpriteSheetMap.get("FireAirAttack03"), fireAirAttack3_tick);
+        PlayerAirAttack_LTR airAttackLoopLTR = new PlayerAirAttack_LTR(11, playerSpriteSheetMap.get("AirAttack03Loop"), airAttack_loop_tick);
+        PlayerJumpRoll_LTR jumpRollLTR = new PlayerJumpRoll_LTR(12, playerSpriteSheetMap.get("JumpRoll01"), jumpRoll_tick);
+        PlayerGetUp_LTR getUpLTR = new PlayerGetUp_LTR(13, playerSpriteSheetMap.get("GetUp01"), getUp_tick);
+        PlayerKnockDown knockDownLTR = new PlayerKnockDown(14, playerSpriteSheetMap.get("KnockDown01"), knockDown_tick);
+        PlayerLedgeAction_LTR ledgeClimbLTR = new PlayerLedgeAction_LTR(15, playerSpriteSheetMap.get("LedgeClimb01"), ledgeClimb_tick);
+        PlayerLedgeAction_LTR ledgeGrabLTR = new PlayerLedgeAction_LTR(16, playerSpriteSheetMap.get("LedgeGrab01"), ledgeGrap_tick);
+        PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, playerSpriteSheetMap.get("WallRun01"), wallRun_tick);
+        PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, playerSpriteSheetMap.get("WallSlide01"), wallSlide_tick);
+        PlayerSprint_LTR sprintLTR = new PlayerSprint_LTR(19, playerSpriteSheetMap.get("Sprint01"), sprint_tick);
 
         //RTL
-        PlayerHit hitRTL = new PlayerHit(3, spriteSheetMap.get("HurtAnim01").convertRTL(), hit_tick);
-        PlayerIdle idleRTL = new PlayerIdle(0, spriteSheetMap.get("Idle02").convertRTL(), idle_tick);
-        PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL(), fire_idle_tick);
-        PlayerRun_RTL runRTL = new PlayerRun_RTL(1, spriteSheetMap.get("Run01").convertRTL(), run_tick);
-        PlayerLightAttack attack01RTL = new PlayerLightAttack(2, spriteSheetMap.get("Attack01").convertRTL(), attack1_tick);
-        PlayerHeavyAttack attack02RTL = new PlayerHeavyAttack(2, spriteSheetMap.get("Attack02").convertRTL(), attack2_tick);
+        PlayerHit hitRTL = new PlayerHit(3, playerSpriteSheetMap.get("HurtAnim01").convertRTL(), hit_tick);
+        PlayerIdle idleRTL = new PlayerIdle(0, playerSpriteSheetMap.get("Idle02").convertRTL(), idle_tick);
+        PlayerIdle fireIdleRTL = new PlayerIdle(0, playerSpriteSheetMap.get("FireIdle01").convertRTL(), fire_idle_tick);
+        PlayerRun_RTL runRTL = new PlayerRun_RTL(1, playerSpriteSheetMap.get("Run01").convertRTL(), run_tick);
+        PlayerLightAttack attack01RTL = new PlayerLightAttack(2, playerSpriteSheetMap.get("Attack01").convertRTL(), attack1_tick);
+        PlayerHeavyAttack attack02RTL = new PlayerHeavyAttack(2, playerSpriteSheetMap.get("Attack02").convertRTL(), attack2_tick);
         PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, attackSpecialRTL, attack3_tick);
-        PlayerLightAttack fireAttack01RTL = new PlayerLightAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), fire_attack1_tick);
-        PlayerHeavyAttack fireAttack02RTL = new PlayerHeavyAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), fire_attack2_tick);
+        PlayerLightAttack fireAttack01RTL = new PlayerLightAttack(2, playerSpriteSheetMap.get("FireAttack01").convertRTL(), fire_attack1_tick);
+        PlayerHeavyAttack fireAttack02RTL = new PlayerHeavyAttack(2, playerSpriteSheetMap.get("FireAttack02").convertRTL(), fire_attack2_tick);
         PlayerAttackSpecial_RTL fireAttack03RTL = new PlayerAttackSpecial_RTL(2, fireAttackSpecialRTL, fire_attack3_tick);
-        PlayerCrouch crouchRTL = new PlayerCrouch(8, spriteSheetMap.get("Crouch01").convertRTL(), crouch_tick);
-        PlayerDeath deathRTL = new PlayerDeath(4, spriteSheetMap.get("Death01").convertRTL(), death_tick);
-        PlayerDeath fireDeathRTL = new PlayerDeath(4, spriteSheetMap.get("FireDeath01").convertRTL(), fireDeath_tick);
-        PlayerJump_RTL jumpRTL = new PlayerJump_RTL(5, spriteSheetMap.get("Jump02").convertRTL(), jump_tick);
-        PlayerFallDown_RTL fallDownRTL = new PlayerFallDown_RTL(6, spriteSheetMap.get("FallAnim01").convertRTL(), falldown_tick);
-        PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, spriteSheetMap.get("Spellcast01").convertRTL(), spellcast_tick);
-        PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, spriteSheetMap.get("SpellcastLoop").convertRTL(), spellcast_loop_tick);
-        PlayerSlide_RTL slideRTL = new PlayerSlide_RTL(10, spriteSheetMap.get("Slide01").convertRTL(), slide_tick);
-        PlayerAirAttack_RTL airAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack01").convertRTL(), airAttack1_tick);
-        PlayerAirAttack_RTL airAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack02").convertRTL(), airAttack2_tick);
-        PlayerAirAttack_RTL airAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03").convertRTL(), airAttack3_tick);
-        PlayerAirAttack_RTL fireAirAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack01").convertRTL(), fireAirAttack1_tick);
-        PlayerAirAttack_RTL fireAirAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack02").convertRTL(), fireAirAttack2_tick);
-        PlayerAirAttack_RTL fireAirAttack03RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack03").convertRTL(), fireAirAttack3_tick);
-        PlayerAirAttack_RTL airAttackLoopRTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("AirAttack03Loop").convertRTL(), airAttack_loop_tick);
-        PlayerJumpRoll_RTL jumpRollRTL = new PlayerJumpRoll_RTL(12, spriteSheetMap.get("JumpRoll01").convertRTL(), jumpRoll_tick);
-        PlayerGetUp_RTL getUpRTL = new PlayerGetUp_RTL(13, spriteSheetMap.get("GetUp01").convertRTL(), getUp_tick);
-        PlayerFallDown_RTL knockDownRTL = new PlayerFallDown_RTL(14, spriteSheetMap.get("KnockDown01").convertRTL(), knockDown_tick);
-        PlayerLedgeAction_RTL ledgeClimbRTL = new PlayerLedgeAction_RTL(15, spriteSheetMap.get("LedgeClimb01").convertRTL(), ledgeClimb_tick);
-        PlayerLedgeAction_RTL ledgeGrabRTL = new PlayerLedgeAction_RTL(16, spriteSheetMap.get("LedgeGrab01").convertRTL(), ledgeGrap_tick);
-        PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, spriteSheetMap.get("WallRun01").convertRTL(), wallRun_tick);
-        PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, spriteSheetMap.get("WallSlide01").convertRTL(), wallSlide_tick);
-        PlayerSprint_RTL sprintRTL = new PlayerSprint_RTL(19, spriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
-        // reverse arrays animations
-        jumpLTR.getSheet().reverseImages();
-        jumpRTL.getSheet().reverseImages();
-
+        PlayerCrouch crouchRTL = new PlayerCrouch(8, playerSpriteSheetMap.get("Crouch01").convertRTL(), crouch_tick);
+        PlayerDeath deathRTL = new PlayerDeath(4, playerSpriteSheetMap.get("Death01").convertRTL(), death_tick);
+        PlayerDeath fireDeathRTL = new PlayerDeath(4, playerSpriteSheetMap.get("FireDeath01").convertRTL(), fireDeath_tick);
+        PlayerJump_RTL jumpRTL = new PlayerJump_RTL(5, playerSpriteSheetMap.get("Jump02").convertRTL(), jump_tick);
+        PlayerFallDown_RTL fallDownRTL = new PlayerFallDown_RTL(6, playerSpriteSheetMap.get("FallAnim01").convertRTL(), falldown_tick);
+        PlayerSpellCast spellCastRTL = new PlayerSpellCast(7, playerSpriteSheetMap.get("Spellcast01").convertRTL(), spellcast_tick);
+        PlayerSpellCastLoop spellCastLoopRTL = new PlayerSpellCastLoop(9, playerSpriteSheetMap.get("SpellcastLoop").convertRTL(), spellcast_loop_tick);
+        PlayerSlide_RTL slideRTL = new PlayerSlide_RTL(10, playerSpriteSheetMap.get("Slide01").convertRTL(), slide_tick);
+        PlayerAirAttack_RTL airAttack01RTL = new PlayerAirAttack_RTL(11, playerSpriteSheetMap.get("AirAttack01").convertRTL(), airAttack1_tick);
+        PlayerAirAttack_RTL airAttack02RTL = new PlayerAirAttack_RTL(11, playerSpriteSheetMap.get("AirAttack02").convertRTL(), airAttack2_tick);
+        PlayerAirAttack_RTL airAttack03RTL = new PlayerAirAttack_RTL(11, playerSpriteSheetMap.get("AirAttack03").convertRTL(), airAttack3_tick);
+        PlayerAirAttack_RTL fireAirAttack01RTL = new PlayerAirAttack_RTL(11, playerSpriteSheetMap.get("FireAirAttack01").convertRTL(), fireAirAttack1_tick);
+        PlayerAirAttack_RTL fireAirAttack02RTL = new PlayerAirAttack_RTL(11, playerSpriteSheetMap.get("FireAirAttack02").convertRTL(), fireAirAttack2_tick);
+        PlayerAirAttack_RTL fireAirAttack03RTL = new PlayerAirAttack_RTL(11, playerSpriteSheetMap.get("FireAirAttack03").convertRTL(), fireAirAttack3_tick);
+        PlayerAirAttack_RTL airAttackLoopRTL = new PlayerAirAttack_RTL(11, playerSpriteSheetMap.get("AirAttack03Loop").convertRTL(), airAttack_loop_tick);
+        PlayerJumpRoll_RTL jumpRollRTL = new PlayerJumpRoll_RTL(12, playerSpriteSheetMap.get("JumpRoll01").convertRTL(), jumpRoll_tick);
+        PlayerGetUp_RTL getUpRTL = new PlayerGetUp_RTL(13, playerSpriteSheetMap.get("GetUp01").convertRTL(), getUp_tick);
+        PlayerKnockDown knockDownRTL = new PlayerKnockDown(14, playerSpriteSheetMap.get("KnockDown01").convertRTL(), knockDown_tick);
+        PlayerLedgeAction_RTL ledgeClimbRTL = new PlayerLedgeAction_RTL(15, playerSpriteSheetMap.get("LedgeClimb01").convertRTL(), ledgeClimb_tick);
+        PlayerLedgeAction_RTL ledgeGrabRTL = new PlayerLedgeAction_RTL(16, playerSpriteSheetMap.get("LedgeGrab01").convertRTL(), ledgeGrap_tick);
+        PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, playerSpriteSheetMap.get("WallRun01").convertRTL(), wallRun_tick);
+        PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, playerSpriteSheetMap.get("WallSlide01").convertRTL(), wallSlide_tick);
+        PlayerSprint_RTL sprintRTL = new PlayerSprint_RTL(19, playerSpriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
 
@@ -747,6 +834,11 @@ public class Gameplay extends JPanel implements Runnable {
         Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, 1, itemEquipAnimations);
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
+        
+        // Test Fire Sword
+//        fireSword.setCharacter(player);
+//        attackIncrease.setCharacter(player);
+//        fireSword.use();
 
         GameObject gameObject = background.getGameObjectsTouchable().get("chest1");
         if (gameObject != null) {
@@ -771,7 +863,7 @@ public class Gameplay extends JPanel implements Runnable {
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
-
+        
         camera.setPlayer(player);
         // level up to 8
 //        player.getStats().addExperience(50000);

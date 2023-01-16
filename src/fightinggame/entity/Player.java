@@ -5,7 +5,6 @@ import fightinggame.Gameplay;
 import fightinggame.entity.ability.Ability;
 import fightinggame.animation.player.*;
 import fightinggame.entity.enemy.Enemy;
-import fightinggame.entity.enemy.dior.DiorEnemy;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
@@ -17,6 +16,7 @@ import java.util.Map;
 public class Player extends Character {
 
     private int isStunCounter = 0;
+    private int stunTime = 50;
     private int score = 0;
     private boolean isAirAttack;
     private boolean isSpecialAttack;
@@ -31,7 +31,7 @@ public class Player extends Character {
             Map<CharacterState, Animation> animations,
             Gameplay gameplay, SpriteSheet inventorySheet) {
         super(id, name, health, position, animations, gameplay, true, inventorySheet);
-        avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/avatar.png"));
+        avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/player.png"));
         healthBarInit(health);
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
         stats.setSpeed(2);
@@ -40,6 +40,7 @@ public class Player extends Character {
         stats.setCritChange(0.5f);
         stats.setCritDamage(10);
         stats.setJumpSpeed(300);
+        stats.setAttackRange(20);
         healthBar.getPositions().put("player_score",
                 new GamePosition(healthBar.getNamePos().getXPosition(),
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
@@ -85,7 +86,7 @@ public class Player extends Character {
         }
         if (isAttacked && !isDeath) {
             isStunCounter++;
-            if (isStunCounter > 50) {
+            if (isStunCounter > stunTime) {
                 isAttacked = false;
                 isStunCounter = 0;
                 if (isLTR) {
@@ -93,11 +94,14 @@ public class Player extends Character {
                 } else {
                     currAnimation = animations.get(CharacterState.IDLE_RTL);
                 }
+                if(stunTime > 50) {
+                    stunTime = 50;
+                }
             }
         }
         if (isSpeak) {
             if (Enemy.ENEMY_HEALTHBAR_SHOW != null) {
-                DiorEnemy enemy = (DiorEnemy) Enemy.ENEMY_HEALTHBAR_SHOW;
+                Enemy enemy = Enemy.ENEMY_HEALTHBAR_SHOW;
                 if (enemy.isSpeak()) {
                     enemy.setIsSpeak(false);
                 }
@@ -289,16 +293,37 @@ public class Player extends Character {
                         && attackHitBox.getMaxY() > getYMaxHitBox())
                         || (attackHitBox.getMaxY() > getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox()
                         && attackHitBox.getYPosition() < getYHitBox())))) {
-                    if (isLTR) {
-                        currAnimation = animations.get(CharacterState.GET_HIT_LTR);
-                    } else {
-                        currAnimation = animations.get(CharacterState.GET_HIT_RTL);
-                    }
                     isAttacked = true;
                     if (attackDamage == -1) {
                         receiveDamage = stats.getHit(character.getStats());
                     } else {
                         receiveDamage = stats.getHit(character.getStats(), attackDamage);
+                    }
+                    if (character.getStats().getBounceRange() < 50) {
+                        if (character.isLTR()) {
+                            currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                            if(!isSlide()) {
+                                isLTR = false;
+                            }
+                        } else {
+                            currAnimation = animations.get(CharacterState.GET_HIT_LTR);
+                            if(!isSlide()) {
+                                isLTR = true;
+                            }
+                        }
+                    } else {
+                        if (character.isLTR()) {
+                            currAnimation = animations.get(CharacterState.KNOCKDOWN_RTL);
+                            if(!isSlide()) {
+                                isLTR = false;
+                            }
+                        } else {
+                            currAnimation = animations.get(CharacterState.KNOCKDOWN_LTR);
+                            if(!isSlide()) {
+                                isLTR = true;
+                            }
+                        }
+                        stunTime = 150;
                     }
                     if (character.isLTR) {
                         position.setXPosition(position.getXPosition() + character.getStats().getBounceRange());
@@ -319,9 +344,9 @@ public class Player extends Character {
         }
         return false;
     }
-    
+
     public void resetEnemiesKilled() {
-        if(enemiesKilled.size() > 0) {
+        if (enemiesKilled.size() > 0) {
             enemiesKilled.clear();
         }
     }
@@ -329,7 +354,7 @@ public class Player extends Character {
     public List<Enemy> getEnemiesKilled() {
         return enemiesKilled;
     }
-    
+
     public boolean isSpeak() {
         return isSpeak;
     }
@@ -406,10 +431,10 @@ public class Player extends Character {
         int x = position.getXPosition(), y;
         int attackX = 0, attackY, attackWidth, attackHeight;
         if (isLTR) {
-            width = position.getWidth() + 20; // 120
+            width = position.getWidth() + stats.getAttackRange(); // 120
         } else {
-            x = position.getXPosition() - 20;
-            width = position.getWidth() + 20;
+            x = position.getXPosition() - stats.getAttackRange();
+            width = position.getWidth() + stats.getAttackRange();
         }
         if (isLTR) {
             attackX = (x + width - 2) - (width / 3);
@@ -419,17 +444,17 @@ public class Player extends Character {
         attackWidth = width / 3 - 22;
         attackY = position.getYPosition() + position.getHeight() / 3 - 10;
         attackHeight = position.getHeight() / 2 - 10;
-        if(currAnimation != null) {
-            if(currAnimation instanceof PlayerHeavyAttack) {
-                if(isLTR) {
+        if (currAnimation != null) {
+            if (currAnimation instanceof PlayerHeavyAttack) {
+                if (isLTR) {
                     attackX -= 16;
                 } else {
                     attackX += 16;
                 }
-            } else if(currAnimation instanceof PlayerAirAttack_LTR) {
+            } else if (currAnimation instanceof PlayerAirAttack_LTR) {
                 attackX -= 12;
                 attackHeight -= 10;
-            } else if(currAnimation instanceof PlayerAirAttack_RTL) {
+            } else if (currAnimation instanceof PlayerAirAttack_RTL) {
                 attackX += 12;
                 attackHeight -= 10;
             }

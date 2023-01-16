@@ -106,14 +106,16 @@ public class Game extends JFrame {
     }
 
     public void start() {
-        isRunning = true;
-        init();
-        if (gameplay != null) {
-            if (gameThread != null && gameThread.isAlive()) {
-                gameThread.interrupt();
+        if (gameThread == null) {
+            isRunning = true;
+            init();
+            if (gameplay != null) {
+                if (gameThread != null && gameThread.isAlive()) {
+                    gameThread.interrupt();
+                }
+                gameThread = new Thread(gameplay);
+                gameThread.start();
             }
-            gameThread = new Thread(gameplay);
-            gameThread.start();
         }
     }
 

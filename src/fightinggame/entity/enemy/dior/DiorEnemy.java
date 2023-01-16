@@ -1,7 +1,6 @@
 package fightinggame.entity.enemy.dior;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.enemy.EnemyAttack;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Dialogue;
@@ -9,24 +8,24 @@ import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.throwable.Fireball;
-import fightinggame.entity.SpriteSheet;
 import fightinggame.resource.DataManager;
+import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
+import java.io.File;
 import java.util.Map;
 
 public class DiorEnemy extends Enemy {
 
     private DiorColor color;
-    private Dialogue dialogue;
-    private boolean isSpeak;
-    private int speakCounter = 0;
-    private int speakTimeDialogueCounter = 0;
 
     public DiorEnemy(DiorColor color, int id, String name, int health,
             GamePosition position, Map<CharacterState, Animation> animations,
-            Gameplay gameplay, int rangeRandomSpeed, SpriteSheet inventorySheet) {
-        super(id, name, health, position, animations, gameplay, rangeRandomSpeed, inventorySheet);
+            Gameplay gameplay, int rangeRandomSpeed) {
+        super(id, name, health, position, animations, gameplay, rangeRandomSpeed);
         this.color = color;
+        attackLimit = 100;
+        dialogueFile = DataManager.getFile("dior_dialogue");
+        avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/dior_" + color.toString().toLowerCase() + ".png"));
         switch (color) {
             case Red:
                 experience = 100;
@@ -80,18 +79,6 @@ public class DiorEnemy extends Enemy {
     @Override
     public void tick() {
         super.tick();
-        if (!isAttack && !isAttacked && !isDeath) {
-            if (gameplay.getPlayer().checkHit(attackHitBox(), false, null)) {
-                if (isLTR) {
-                    currAnimation = animations.get(CharacterState.ATTACK01_LTR);
-                } else {
-                    currAnimation = animations.get(CharacterState.ATTACK01_RTL);
-                }
-                isAttack = true;
-                gameplay.getPlayer().checkHit(attackHitBox(), isAttack, this);
-            }
-        }
-
         if (color == DiorColor.Red) {
             if (!isAttack && !isDeath) {
                 if (checkPlayerOnSight()) {
@@ -124,69 +111,6 @@ public class DiorEnemy extends Enemy {
                                 currAnimation = animations.get(CharacterState.ATTACK01_RTL);
                             }
                             isAttack = true;
-                        }
-                    }
-                }
-            }
-        }
-        if (currAnimation != null && !isAttacked && !isDeath) {
-            if (currAnimation instanceof EnemyAttack) {
-                if (animateChange) {
-                    if (!isLTR) {
-                        position.setXPosition(position.getXPosition() + 30);
-                    } else {
-                        position.setXPosition(position.getXPosition() - 30);
-                    }
-                    position.setWidth(position.getWidth() - 30);
-                    animateChange = false;
-                }
-                if (isAttack) {
-                    if (!isLTR) {
-                        position.setXPosition(position.getXPosition() - 30);
-                    } else {
-                        position.setXPosition(position.getXPosition() + 30);
-                    }
-                    position.setWidth(position.getWidth() + 30);
-                    isAttack = false;
-                    animateChange = true;
-                }
-            }
-        }
-        if (Enemy.ENEMY_HEALTHBAR_SHOW != null
-                && this == Enemy.ENEMY_HEALTHBAR_SHOW) {
-            if (isDeath) {
-                if (isSpeak) {
-                    isSpeak = false;
-                    speakTimeDialogueCounter = 0;
-                    dialogue.setEndDialogue(true);
-                }
-            }
-            if (checkPlayerOnSight() && !isDeath && !gameplay.getPlayer().isSpeak()) {
-                if (isSpeak) {
-                    if (dialogue != null) {
-                        if (speakTimeDialogueCounter <= 500) {
-                            speakTimeDialogueCounter++;
-                        }
-                        dialogue.tick();
-                        if (speakTimeDialogueCounter > 500) {
-                            dialogue.next();
-                            speakTimeDialogueCounter = 0;
-                        }
-                        if (dialogue.isEndDialogue()) {
-                            isSpeak = false;
-                            speakTimeDialogueCounter = 0;
-                        }
-                    }
-                } else {
-                    if (speakCounter <= 100) {
-                        speakCounter++;
-                    }
-                    if (speakCounter > 100) {
-                        boolean result = dialogue.loadDialogue(DataManager.getFile("dior_dialogue"));
-                        if (result) {
-                            isSpeak = true;
-                            speakCounter = 0;
-                            dialogue.setEndDialogue(false);
                         }
                     }
                 }

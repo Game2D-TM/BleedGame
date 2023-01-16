@@ -1,5 +1,7 @@
 package fightinggame.resource;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +17,18 @@ public class ImageManager {
 
     public static String EXTENSION_PNG = ".png";
     public static String EXTENSION_JPG = ".jpg";
+
+    public static BufferedImage flipImage(BufferedImage imageFlip) {
+        if(imageFlip == null) return null;
+        BufferedImage sprite = imageFlip;
+        // Flip the image horizontally
+        AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+//            tx.translate(-sprite.getWidth(null), 0);
+        tx.translate(-sprite.getWidth(null), 0);
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        sprite = op.filter(sprite, null);
+        return sprite;
+    }
 
     public static boolean writeImage(BufferedImage image, String fileName) {
         if (!fileName.contains(".png") && !fileName.contains(".jpg")) {
@@ -37,7 +51,7 @@ public class ImageManager {
     }
 
     public static boolean writeImages(List<BufferedImage> images, String folderPath,
-             String defFileName, String extension) {
+            String defFileName, String extension) {
         if (images == null) {
             return false;
         }
