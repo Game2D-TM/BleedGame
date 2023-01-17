@@ -1,10 +1,11 @@
-package fightinggame.entity.enemy.dior;
+package fightinggame.entity.enemy.type;
 
 import fightinggame.Gameplay;
 import fightinggame.animation.enemy.*;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
+import fightinggame.entity.ability.type.healing.TimeHeal;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.resource.ImageManager;
@@ -94,6 +95,14 @@ public class PirateCat extends Enemy {
                 }
             }
         }
+        if (!isDeath) {
+            if (stats.getHealth() < healthBar.getMaxHealth()) {
+                TimeHeal timeHeal = ((TimeHeal) abilities.get(0));
+                if (timeHeal != null && timeHeal.isCanUse()) {
+                    timeHeal.execute();
+                }
+            }
+        }
     }
 
     @Override
@@ -140,18 +149,8 @@ public class PirateCat extends Enemy {
     }
 
     @Override
-    public int getXMaxHitBox() {
-        return getXHitBox() + getWidthHitBox();
-    }
-
-    @Override
     public int getYHitBox() {
         return position.getYPosition();
-    }
-
-    @Override
-    public int getYMaxHitBox() {
-        return getYHitBox() + getHeightHitBox();
     }
 
     @Override

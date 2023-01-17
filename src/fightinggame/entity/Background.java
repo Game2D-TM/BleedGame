@@ -33,6 +33,7 @@ public class Background {
     protected Map<String, BufferedImage> backgrounds;
     protected Map<String, BufferedImage> tiles;
     protected Map<String, BufferedImage> objects;
+    protected Map<String, Tile> specialTiles;
     protected final Map<String, GameObject> gameObjectsTouchable = new HashMap<>();
     protected final Map<String, GameObject> gameObjectsNonTouchable = new HashMap<>();
     protected final List<List<Platform>> scene = new ArrayList<>();
@@ -234,6 +235,16 @@ public class Background {
                 }
             }
         }
+        if(specialTiles != null) {
+            if(specialTiles.size() > 0) {
+                for(String key : specialTiles.keySet()) {
+                    Tile specialTile = specialTiles.get(key);
+                    if(specialTile != null) {
+                        specialTile.tick();
+                    }
+                }
+            }
+        }
     }
 
     public void render(Graphics g) {
@@ -272,6 +283,16 @@ public class Background {
                 GameObject obj = gameObjectsTouchable.get(key);
                 if (obj != null) {
                     obj.render(g);
+                }
+            }
+        }
+        if(specialTiles != null) {
+            if(specialTiles.size() > 0) {
+                for(String key : specialTiles.keySet()) {
+                    Tile specialTile = specialTiles.get(key);
+                    if(specialTile != null) {
+                        specialTile.render(g);
+                    }
                 }
             }
         }
@@ -385,6 +406,14 @@ public class Background {
 
     public void setPosition(GamePosition position) {
         this.position = position;
+    }
+
+    public Map<String, Tile> getSpecialTiles() {
+        return specialTiles;
+    }
+
+    public void setSpecialTiles(Map<String, Tile> specialTiles) {
+        this.specialTiles = specialTiles;
     }
 
 }

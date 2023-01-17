@@ -110,6 +110,7 @@ public class Stats {
 
     // need to code
     public void addExperience(double experience) {
+        if(character.isDeath()) return;
         double nLevelExperience = levelExperience + experience;
         if (nextLevelExperience <= nLevelExperience) {
             levelUp();
@@ -141,6 +142,7 @@ public class Stats {
 
     // need to code
     public void levelUp() {
+        if(character.isDeath()) return;
         increaseLevelUpPoint();
         level += 1;
         if (character != null) {
@@ -148,6 +150,7 @@ public class Stats {
                 if (level <= 10) {
                     attackDamage += 1;
                     if (health < character.getHealthBar().getMaxHealth()) {
+                        character.setHealingAmount(Math.abs(health - character.getHealthBar().getMaxHealth()));
                         health = character.getHealthBar().getMaxHealth();
                     }
                     health += 5;
@@ -159,6 +162,7 @@ public class Stats {
                 if (level <= 10) {
                     attackDamage += 15;
                     if (health < character.getHealthBar().getMaxHealth()) {
+                        character.setHealingAmount(Math.abs(health - character.getHealthBar().getMaxHealth()));
                         health = character.getHealthBar().getMaxHealth();
                     }
                     health += 50;

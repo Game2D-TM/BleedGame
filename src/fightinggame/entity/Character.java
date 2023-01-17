@@ -11,8 +11,8 @@ import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.entity.platform.tile.WaterTile;
 import fightinggame.input.handler.GameHandler;
+import fightinggame.resource.DataManager;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -36,8 +36,6 @@ public abstract class Character {
     protected boolean isAttack = false;
     protected boolean isSpellCast = false;
     protected boolean isDeath = false;
-    protected int receiveDamage = 0;
-    protected int receiveDamageRenderTick = 0;
     protected Gameplay gameplay;
     protected Platform insidePlatform = null;
     protected Platform standPlatform = null;
@@ -46,6 +44,10 @@ public abstract class Character {
     protected boolean wallSlide = false;
     protected boolean grapEdge = false;
     protected Stats stats;
+    protected int receiveDamage = 0;
+    protected int receiveDamageRenderTick = 0;
+    protected int healingAmount = 0;
+    protected int healingAmountRenderTick = 0;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
@@ -324,17 +326,31 @@ public abstract class Character {
 //                getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
         // Draw damage taken
         if (receiveDamage > 0) {
+            g.setColor(Color.red);
+            g.setFont(DataManager.getFont(22f));
+            g.drawString(receiveDamage + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
+                    getYHitBox() - 10 - gameplay.getCamera().getPosition().getYPosition());
+            g.setFont(null);
+            g.setColor(null);
             receiveDamageRenderTick++;
             if (receiveDamageRenderTick > 80) {
                 receiveDamage = 0;
                 receiveDamageRenderTick = 0;
             }
-            g.setColor(Color.red);
-            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
-            g.drawString(receiveDamage + "", position.getXPosition() + position.getWidth() / 2 - gameplay.getCamera().getPosition().getXPosition(),
-                    position.getYPosition() - 10 - gameplay.getCamera().getPosition().getYPosition());
-            g.setFont(null);
-            g.setColor(null);
+        } else {
+            if (healingAmount > 0) {
+                g.setColor(new Color(78, 159, 61));
+                g.setFont(DataManager.getFont(22f));
+                g.drawString("+" + healingAmount + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
+                        getYHitBox() - 10 - gameplay.getCamera().getPosition().getYPosition());
+                g.setFont(null);
+                g.setColor(null);
+                healingAmountRenderTick++;
+                if (healingAmountRenderTick > 80) {
+                    healingAmount = 0;
+                    healingAmountRenderTick = 0;
+                }
+            }
         }
         if (abilities.size() > 0) {
             for (int i = 0; i < abilities.size(); i++) {
@@ -387,12 +403,16 @@ public abstract class Character {
 
     public abstract int getHeightHitBox();
 
-    public abstract int getXMaxHitBox();
+    public int getXMaxHitBox() {
+        return getXHitBox() + getWidthHitBox();
+    }
 
     public abstract int getYHitBox();
 
-    public abstract int getYMaxHitBox();
-    
+    public int getYMaxHitBox() {
+        return getYHitBox() + getHeightHitBox();
+    }
+
     public abstract GamePosition attackHitBox();
 
     public GamePosition getHitBoxPosition() {
@@ -530,7 +550,6 @@ public abstract class Character {
     public void setIsSpellCast(boolean isSpellCast) {
         this.isSpellCast = isSpellCast;
     }
-    
 
     public void setIsAttacked(boolean isAttacked) {
         this.isAttacked = isAttacked;
@@ -602,6 +621,10 @@ public abstract class Character {
 
     public void setGrapEdge(boolean grapEdge) {
         this.grapEdge = grapEdge;
+    }
+
+    public void setHealingAmount(int healingAmount) {
+        this.healingAmount = healingAmount;
     }
 
 }

@@ -13,7 +13,7 @@ public class BlankTile extends Platform {
 
     @Override
     public boolean checkValidPosition(GamePosition position) {
-        GamePosition tilePos = this.position;
+        GamePosition tilePos = getHitBox();
         if (tilePos == null) {
             return false;
         }

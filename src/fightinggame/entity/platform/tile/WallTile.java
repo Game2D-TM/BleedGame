@@ -14,7 +14,7 @@ public class WallTile extends Platform{
 
     @Override
     public boolean checkValidPosition(GamePosition position) {
-        GamePosition tilePos = this.position;
+        GamePosition tilePos = getHitBox();
         if(tilePos == null) return false;
         if(((position.getXPosition() >= tilePos.getXPosition() && position.getXPosition() <= tilePos.getMaxX())
                 || (position.getMaxX() >= tilePos.getXPosition() && position.getMaxX() <= tilePos.getMaxX()))

@@ -7,27 +7,15 @@ import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.SpriteSheet;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public abstract class Heal extends Ability {
 
     protected int healPoint;
 
-    public Heal(int healPoint, int id, String name, long resetTime,
-            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL,
-            Gameplay gameplay, Character character) {
-        super(id, name, resetTime, skillIcon, position, animationLTR, animationRTL, gameplay, character);
-        this.healPoint = healPoint;
-    }
-
-    public Heal(int healPoint, int id, String name, long resetTime, SpriteSheet skillIcon,
-            GamePosition position, Animation animationLTR, Animation animationRTL,
-            BufferedImage border, Gameplay gameplay, Character character) {
-        super(id, name, resetTime, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
-        this.healPoint = healPoint;
-    }
-
-    public Heal(int healPoint, int id, String name, long resetTime, Animation currAnimation, GamePosition position, Gameplay gameplay, Character character) {
-        super(id, name, resetTime, currAnimation, position, gameplay, character);
+    public Heal(int healPoint, int id, String name, long resetTime, SpriteSheet skillIcon, Animation currAnimation,
+             GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
+        super(id, name, resetTime, skillIcon, currAnimation, position, border, gameplay, character);
         this.healPoint = healPoint;
     }
 
@@ -44,6 +32,7 @@ public abstract class Heal extends Ability {
             }
             if (afterHeal > health) {
                 character.getStats().setHealth(afterHeal);
+                character.setHealingAmount(healPoint);
                 gameplay.getAudioPlayer().startThread("heal_sound", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                 canUse = false;
                 return true;
@@ -57,6 +46,21 @@ public abstract class Heal extends Ability {
             return false;
         }
         return healing(character);
+    }
+
+    @Override
+    public boolean execute() {
+        return healing();
+    }
+
+    @Override
+    public boolean execute(Character character) {
+        return healing(character);
+    }
+    
+    @Override
+    public boolean execute(List<Character> characters) {
+        return false;
     }
 
     public int getHealPoint() {

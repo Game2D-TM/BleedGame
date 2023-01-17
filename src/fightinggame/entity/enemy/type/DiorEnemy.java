@@ -1,4 +1,4 @@
-package fightinggame.entity.enemy.dior;
+package fightinggame.entity.enemy.type;
 
 import fightinggame.Gameplay;
 import fightinggame.animation.enemy.EnemyRunBack;
@@ -157,18 +157,8 @@ public class DiorEnemy extends Enemy {
     }
 
     @Override
-    public int getXMaxHitBox() {
-        return position.getMaxX();
-    }
-
-    @Override
     public int getYHitBox() {
         return position.getYPosition();
-    }
-
-    @Override
-    public int getYMaxHitBox() {
-        return position.getMaxY();
     }
 
     @Override

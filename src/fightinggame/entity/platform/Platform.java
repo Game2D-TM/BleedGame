@@ -31,7 +31,7 @@ public abstract class Platform {
     public abstract boolean checkValidPosition(GamePosition position);
 
     public void tick() {
-        canRender = gameplay.getCamera().checkPositionRelateToCamera(position);
+        canRender = gameplay.getCamera().checkPositionRelateToCamera(getHitBox());
     }
 
     public void render(Graphics g) {
@@ -104,6 +104,34 @@ public abstract class Platform {
     @Override
     public boolean equals(Object obj) {
         return row == ((Platform) obj).getRow() && column == ((Platform) obj).getColumn();
+    }
+
+    public GamePosition getHitBox() {
+        return new GamePosition(getXHitBox(), getYHitBox(), getWidthHitBox(), getHeightHitBox());
+    }
+
+    public int getXHitBox() {
+        return position.getXPosition();
+    }
+
+    public int getYHitBox() {
+        return position.getYPosition();
+    }
+
+    public int getWidthHitBox() {
+        return position.getWidth();
+    }
+
+    public int getHeightHitBox() {
+        return position.getHeight();
+    }
+
+    public int getXMaxHitBox() {
+        return getXHitBox() + getWidthHitBox();
+    }
+
+    public int getYMaxHitBox() {
+        return getYHitBox() + getHeightHitBox();
     }
 
     public String getName() {

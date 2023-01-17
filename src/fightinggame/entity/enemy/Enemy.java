@@ -1,6 +1,8 @@
 package fightinggame.entity.enemy;
 
 import fightinggame.Gameplay;
+import fightinggame.animation.enemy.EnemyHeavyAttack;
+import fightinggame.animation.enemy.EnemyLightAttack;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
 import fightinggame.entity.Animation;
@@ -34,6 +36,7 @@ public abstract class Enemy extends Character {
     protected int deathExpireLimit = 1500;
     protected int isAttackedCounter = 0;
     protected int walkCounter = 0;
+    protected int walkLimit = 100;
     protected boolean animateChange = false;
     protected int point = 10;
     protected double experience = 0;
@@ -123,8 +126,9 @@ public abstract class Enemy extends Character {
         }
         if (!isDeath && !isAttacked && !isAttack && !animateChange
                 && !inAir && !fallDown) {
-            walkCounter++;
-            if (walkCounter >= 100) {
+            if (walkCounter <= walkLimit) {
+                walkCounter++;
+            } else {
                 if (currAnimation == null) {
                     if (!isLTR) {
                         currAnimation = animations.get(CharacterState.RUNFORWARD);
@@ -195,9 +199,13 @@ public abstract class Enemy extends Character {
             if (!gameplay.getPlayer().isAttacked()) {
                 if (gameplay.getPlayer().checkHit(attackHitBox(), false, null)) {
                     if (isLTR) {
-                        currAnimation = animations.get(CharacterState.ATTACK01_LTR);
+                        if (currAnimation != null && currAnimation instanceof EnemyHeavyAttack); else {
+                            currAnimation = animations.get(CharacterState.ATTACK01_LTR);
+                        }
                     } else {
-                        currAnimation = animations.get(CharacterState.ATTACK01_RTL);
+                        if (currAnimation != null && currAnimation instanceof EnemyHeavyAttack); else {
+                            currAnimation = animations.get(CharacterState.ATTACK01_RTL);
+                        }
                     }
                     isAttack = true;
                     gameplay.getPlayer().checkHit(attackHitBox(), isAttack, this);
@@ -206,8 +214,9 @@ public abstract class Enemy extends Character {
         }
         if (!isAttacked && !isDeath) {
             if (animateChange) {
-                attackCounter++;
-                if (attackCounter > attackLimit) {
+                if (attackCounter <= attackLimit) {
+                    attackCounter++;
+                } else {
                     if (!isLTR) {
                         position.setXPosition(position.getXPosition() + stats.getAttackRange());
                     } else {
@@ -376,13 +385,6 @@ public abstract class Enemy extends Character {
                 ENEMY_HEALTHBAR_SHOW = this;
                 healthBar.setCanShow(true);
                 gameplay.setRenderMap(false);
-                if (character.isLTR()) {
-                    currAnimation = animations.get(CharacterState.GET_HIT_RTL);
-                    isLTR = false;
-                } else {
-                    currAnimation = animations.get(CharacterState.GET_HIT_LTR);
-                    isLTR = true;
-                }
                 isAttacked = true;
                 if (attackDamage == -1) {
                     receiveDamage = stats.getHit(character.getStats());
@@ -400,6 +402,22 @@ public abstract class Enemy extends Character {
                         currAnimation = animations.get(CharacterState.DEATH_LTR);
                     } else {
                         currAnimation = animations.get(CharacterState.DEATH_RTL);
+                    }
+                } else {
+                    if (character.isLTR()) {
+                        if (currAnimation != null
+                                && (currAnimation instanceof EnemyHeavyAttack
+                                || currAnimation instanceof EnemyLightAttack)); else {
+                            currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                        }
+                        isLTR = false;
+                    } else {
+                        if (currAnimation != null
+                                && (currAnimation instanceof EnemyHeavyAttack
+                                || currAnimation instanceof EnemyLightAttack)); else {
+                            currAnimation = animations.get(CharacterState.GET_HIT_LTR);
+                        }
+                        isLTR = true;
                     }
                 }
                 return true;

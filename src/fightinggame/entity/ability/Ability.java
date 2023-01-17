@@ -73,11 +73,15 @@ public abstract class Ability {
         }
     }
 
-    public Ability(int id, String name, long resetTime, Animation currAnimation, GamePosition position, Gameplay gameplay, Character character) {
+    public Ability(int id, String name, long resetTime, SpriteSheet skillIcon
+            , Animation currAnimation, GamePosition position, BufferedImage border
+            , Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
         this.currAnimation = currAnimation;
+        this.border = border;
+        this.skillIcon = skillIcon;
         this.position = position;
         this.gameplay = gameplay;
         this.character = character;

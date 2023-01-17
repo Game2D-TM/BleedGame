@@ -1,4 +1,4 @@
-package fightinggame.entity.enemy.dior;
+package fightinggame.entity.enemy.type;
 
 public enum DiorColor {
     Red,

@@ -13,10 +13,4 @@ public class EnemyHeavyAttack extends Animation{
         super(id, sheet);
     }
     
-    @Override
-    public void tick() {
-        if(sheet.getSpriteIndex() == sheet.getImages().size() - 1);
-        else sheet.tick(tickToExecute);
-    }
-    
 }

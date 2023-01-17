@@ -61,29 +61,6 @@ public class Player extends Character {
     public void tick() {
         super.tick();
         healthBar.tick();
-        if (!isDeath && isSpecialAttack) {
-            if (currAnimation != null) {
-                if (currAnimation instanceof PlayerAttackSpecial_LTR) {
-                    if (currAnimation.getSheet().getSpriteIndex() == currAnimation.getSheet().getImages().size() - 1) {
-                        isSpecialAttack = false;
-                        if (isLTR) {
-                            currAnimation = animations.get(CharacterState.IDLE_LTR);
-                        } else {
-                            currAnimation = animations.get(CharacterState.IDLE_RTL);
-                        }
-                    }
-                } else if (currAnimation instanceof PlayerAttackSpecial_RTL) {
-                    if (currAnimation.getSheet().getSpriteIndex() == currAnimation.getSheet().getImages().size() - 1) {
-                        isSpecialAttack = false;
-                        if (isLTR) {
-                            currAnimation = animations.get(CharacterState.IDLE_LTR);
-                        } else {
-                            currAnimation = animations.get(CharacterState.IDLE_RTL);
-                        }
-                    }
-                }
-            }
-        }
         if (isAttacked && !isDeath) {
             isStunCounter++;
             if (isStunCounter > stunTime) {
@@ -94,7 +71,7 @@ public class Player extends Character {
                 } else {
                     currAnimation = animations.get(CharacterState.IDLE_RTL);
                 }
-                if(stunTime > 50) {
+                if (stunTime > 50) {
                     stunTime = 50;
                 }
             }
@@ -156,6 +133,7 @@ public class Player extends Character {
 
     }
 
+    @Override
     public int getXHitBox() {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerLightAttack) {
@@ -181,6 +159,7 @@ public class Player extends Character {
         return position.getXPosition() + 115;
     }
 
+    @Override
     public int getWidthHitBox() {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerRun_LTR) {
@@ -208,6 +187,7 @@ public class Player extends Character {
         return position.getWidth() / 3;
     }
 
+    @Override
     public int getHeightHitBox() {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerCrouch) {
@@ -229,10 +209,7 @@ public class Player extends Character {
         return position.getHeight() - 55;
     }
 
-    public int getXMaxHitBox() {
-        return getXHitBox() + getWidthHitBox();
-    }
-
+    @Override
     public int getYHitBox() {
         if (currAnimation != null) {
             if (currAnimation instanceof PlayerCrouch) {
@@ -252,10 +229,6 @@ public class Player extends Character {
             }
         }
         return position.getYPosition() + position.getHeight() / 3 - 35;
-    }
-
-    public int getYMaxHitBox() {
-        return getYHitBox() + getHeightHitBox();
     }
 
     @Override
@@ -299,32 +272,6 @@ public class Player extends Character {
                     } else {
                         receiveDamage = stats.getHit(character.getStats(), attackDamage);
                     }
-                    if (character.getStats().getBounceRange() < 50) {
-                        if (character.isLTR()) {
-                            currAnimation = animations.get(CharacterState.GET_HIT_RTL);
-                            if(!isSlide()) {
-                                isLTR = false;
-                            }
-                        } else {
-                            currAnimation = animations.get(CharacterState.GET_HIT_LTR);
-                            if(!isSlide()) {
-                                isLTR = true;
-                            }
-                        }
-                    } else {
-                        if (character.isLTR()) {
-                            currAnimation = animations.get(CharacterState.KNOCKDOWN_RTL);
-                            if(!isSlide()) {
-                                isLTR = false;
-                            }
-                        } else {
-                            currAnimation = animations.get(CharacterState.KNOCKDOWN_LTR);
-                            if(!isSlide()) {
-                                isLTR = true;
-                            }
-                        }
-                        stunTime = 150;
-                    }
                     if (character.isLTR) {
                         position.setXPosition(position.getXPosition() + character.getStats().getBounceRange());
                     } else {
@@ -336,6 +283,33 @@ public class Player extends Character {
                             currAnimation = animations.get(CharacterState.DEATH_LTR);
                         } else {
                             currAnimation = animations.get(CharacterState.DEATH_RTL);
+                        }
+                    } else {
+                        if (character.getStats().getBounceRange() < 50) {
+                            if (character.isLTR()) {
+                                currAnimation = animations.get(CharacterState.GET_HIT_RTL);
+                                if (!isSlide()) {
+                                    isLTR = false;
+                                }
+                            } else {
+                                currAnimation = animations.get(CharacterState.GET_HIT_LTR);
+                                if (!isSlide()) {
+                                    isLTR = true;
+                                }
+                            }
+                        } else {
+                            if (character.isLTR()) {
+                                currAnimation = animations.get(CharacterState.KNOCKDOWN_RTL);
+                                if (!isSlide()) {
+                                    isLTR = false;
+                                }
+                            } else {
+                                currAnimation = animations.get(CharacterState.KNOCKDOWN_LTR);
+                                if (!isSlide()) {
+                                    isLTR = true;
+                                }
+                            }
+                            stunTime = 150;
                         }
                     }
                     return true;
@@ -461,4 +435,13 @@ public class Player extends Character {
         }
         return new GamePosition(attackX, attackY, attackWidth, attackHeight);
     }
+
+    public int getStunTime() {
+        return stunTime;
+    }
+
+    public void setStunTime(int stunTime) {
+        this.stunTime = stunTime;
+    }
+    
 }

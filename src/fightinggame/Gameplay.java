@@ -13,6 +13,7 @@ import fightinggame.animation.item.HealthPotionAnimation;
 import fightinggame.animation.item.KeyAnimation;
 import fightinggame.animation.item.equipment.FireSwordAnimation;
 import fightinggame.animation.player.*;
+import fightinggame.animation.trap.TrapAnimation;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Background;
 import fightinggame.entity.Camera;
@@ -21,8 +22,8 @@ import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.ability.Ability;
-import fightinggame.entity.enemy.dior.DiorColor;
-import fightinggame.entity.enemy.dior.DiorEnemy;
+import fightinggame.entity.enemy.type.DiorColor;
+import fightinggame.entity.enemy.type.DiorEnemy;
 import fightinggame.resource.EnemyAnimationResources;
 import fightinggame.resource.ImageManager;
 import fightinggame.entity.SpriteSheet;
@@ -41,6 +42,7 @@ import fightinggame.entity.Rule;
 import fightinggame.entity.TransitionScreen;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
+import fightinggame.entity.ability.type.healing.TimeHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.background.GameObject;
@@ -48,13 +50,17 @@ import fightinggame.entity.background.GameObjectType;
 import fightinggame.entity.background.ObjectNonTouchable;
 import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.enemy.EnemyType;
-import fightinggame.entity.enemy.dior.PirateCat;
+import fightinggame.entity.enemy.type.PirateCat;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.item.collectable.healing.HealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.platform.Platform;
+import fightinggame.entity.platform.tile.Tile;
+import fightinggame.entity.platform.tile.TrapTile;
+import fightinggame.entity.platform.tile.trap.SpearTrap;
+import fightinggame.entity.platform.tile.trap.SpikeTrap;
 import fightinggame.entity.quest.Quest;
 import fightinggame.entity.quest.QuestType;
 import fightinggame.entity.quest.type.EnemyRequired;
@@ -69,6 +75,7 @@ import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.Utils;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -77,6 +84,7 @@ import javax.swing.JPanel;
 public class Gameplay extends JPanel implements Runnable {
 
     public static int GRAVITY = 7; //7
+    private int currentFps = 0;
 
     private Background background;
     private GameMap map;
@@ -93,6 +101,7 @@ public class Gameplay extends JPanel implements Runnable {
     private TransitionScreen transitionScreen;
     private LoadingScreen loadingScreen;
     private Map<String, SpriteSheet> playerSpriteSheetMap;
+    
     public Gameplay(Game game) {
         this.game = game;
         setDoubleBuffered(true);
@@ -157,6 +166,7 @@ public class Gameplay extends JPanel implements Runnable {
                 ImageManager.loadImagesFromFolderToMap(DataManager.GAME_OBJECTS_PATH),
                 sceneDataFilePath, 15, 15);
         initObjects();
+        initTraps();
         initVictoryPosition();
         enemies.clear();
         itemsOnGround.clear();
@@ -169,6 +179,44 @@ public class Gameplay extends JPanel implements Runnable {
         AudioPlayer.audioPlayers.clear();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
+    }
+    
+    public void initTraps() { // 10,43, 10,44
+        Platform platform = getPlatforms().get(9).get(9);
+        if(platform == null) return;
+        SpriteSheet spearSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spear.png"),
+                0, 0, 16, 64, 
+                0, 0, 16, 64, 7);
+        TrapAnimation spearAnimation = new TrapAnimation(0, spearSheet, 21);
+        TrapTile spearRot = new SpearTrap(spearAnimation, 20, "Spear Rot", spearSheet.getImage(0), 
+                platform.rightCornerPlatform(100, 350), this);
+        platform = getPlatforms().get(6).get(4);
+        if(platform == null) return;
+        SpriteSheet spikeSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spike_B.png"),
+                0, 0, 32, 32, 
+                0, 0, 32, 32, 10); // 0, 8, 32, 14
+        TrapAnimation spikeAnimation = new TrapAnimation(0, spikeSheet, 15);
+        GamePosition spikePos = platform.middlePlatform(200, 150);
+        spikePos.setYPosition(spikePos.getYPosition() + 60);
+        TrapTile spike_1 = new SpikeTrap(spikeAnimation, 10, "Spike_1", spikeSheet.getImage(0), 
+                spikePos, this);
+        
+        platform = getPlatforms().get(5).get(6);
+        if(platform == null) return;
+        SpriteSheet spike_2Sheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spike_B.png"),
+                0, 0, 32, 32, 
+                0, 0, 32, 32, 10); // 0, 8, 32, 14
+        TrapAnimation spike_2Animation = new TrapAnimation(0, spike_2Sheet, 15);
+        GamePosition spike_2Pos = platform.middlePlatform(200, 150);
+        spike_2Pos.setYPosition(spike_2Pos.getYPosition() + 60);
+        TrapTile spike_2 = new SpikeTrap(spike_2Animation, 10, "Spike_2", spike_2Sheet.getImage(0), 
+                spike_2Pos, this);
+        Map<String, Tile> specialTiles = new HashMap();
+        
+        specialTiles.put(spike_1.getName(), spike_1);
+        specialTiles.put(spearRot.getName(), spearRot);
+        specialTiles.put(spike_2.getName(), spike_2);
+        background.setSpecialTiles(specialTiles);
     }
 
     public void initGameItems() {
@@ -391,7 +439,6 @@ public class Gameplay extends JPanel implements Runnable {
         long wait;
 
         long lastFpsCheck = 0;
-        int currentFps = 0;
         int totalFrames = 0;
         final int TARGET_FPS = Game.FPS;
         final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
@@ -424,6 +471,11 @@ public class Gameplay extends JPanel implements Runnable {
     @Override
     public void paint(Graphics g) {
         render(g);
+        if (Game.STATE != GameState.LOADING_STATE) {
+            g.setColor(Color.red);
+            g.setFont(DataManager.getFont(30f));
+            g.drawString(currentFps + " FPS", getWidth() - 100, getHeight() - 25);
+        }
     }
 
     public void pirateCatInit(Platform firstPlatform) {
@@ -497,6 +549,7 @@ public class Gameplay extends JPanel implements Runnable {
         pirateCat.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", this, pirateCat);
         pirateCat.getController().add(movementHandler);
+        abilitiesCharacterInit(pirateCat.getAbilities(), pirateCat);
         enemies.add(pirateCat);
     }
 
@@ -581,8 +634,8 @@ public class Gameplay extends JPanel implements Runnable {
         EnemyHit hitLTR = new EnemyHit(3, spriteSheetMap.get("Hit_LTR"));
         EnemyDeath deathRTL = new EnemyDeath(4, spriteSheetMap.get("Death_RTL"));
         EnemyDeath deathLTR = new EnemyDeath(5, spriteSheetMap.get("Death_LTR"));
-        EnemyRunForward runForward = new EnemyRunForward(6, spriteSheetMap.get("Run_RTL"), 40);
-        EnemyRunBack runBack = new EnemyRunBack(7, spriteSheetMap.get("Run_LTR"), 40);
+        EnemyRunForward runForward = new EnemyRunForward(6, spriteSheetMap.get("Run_RTL"), 25);
+        EnemyRunBack runBack = new EnemyRunBack(7, spriteSheetMap.get("Run_LTR"), 25);
         EnemyHeavyAttack attackRTL = new EnemyHeavyAttack(8, spriteSheetMap.get("Attack_RTL"), 25);
         EnemyHeavyAttack attackLTR = new EnemyHeavyAttack(9, spriteSheetMap.get("Attack_LTR"), 25);
 
@@ -634,18 +687,18 @@ public class Gameplay extends JPanel implements Runnable {
         fireAttackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("FireAttack03").convertRTL().getImages());
         //Init animations tick
         int hit_tick = 16, idle_tick = 10, fire_idle_tick = 10,
-                run_tick = 10, attack1_tick = 12, attack2_tick = 12,
-                attack3_tick = 15, fire_attack1_tick = 12,
-                fire_attack2_tick = 12, fire_attack3_tick = 12,
+                run_tick = 10, attack1_tick = 16, attack2_tick = 13,
+                attack3_tick = 11, fire_attack1_tick = 16,
+                fire_attack2_tick = 13, fire_attack3_tick = 11,
                 death_tick = 50, fireDeath_tick = 50,
                 jump_tick = 10, falldown_tick = 50,
                 spellcast_tick = 40, crouch_tick = 10,
                 spellcast_loop_tick = 15, slide_tick = 30,
-                airAttack1_tick = 20, airAttack2_tick = 15,
-                airAttack3_tick = 15, fireAirAttack1_tick = 20,
+                airAttack1_tick = 20, airAttack2_tick = 26,
+                airAttack3_tick = 26, fireAirAttack1_tick = 20,
                 fireAirAttack2_tick = 20, fireAirAttack3_tick = 20,
                 airAttack_loop_tick = 20, jumpRoll_tick = 15,
-                getUp_tick = 15, knockDown_tick = 42,
+                getUp_tick = 15, knockDown_tick = 21,
                 ledgeClimb_tick = 15, ledgeGrap_tick = 15,
                 wallRun_tick = 15, wallSlide_tick = 15,
                 sprint_tick = 10;
@@ -834,12 +887,11 @@ public class Gameplay extends JPanel implements Runnable {
         Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, 1, itemEquipAnimations);
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
-        
+
         // Test Fire Sword
 //        fireSword.setCharacter(player);
 //        attackIncrease.setCharacter(player);
 //        fireSword.use();
-
         GameObject gameObject = background.getGameObjectsTouchable().get("chest1");
         if (gameObject != null) {
             if (gameObject instanceof Chest) {
@@ -863,7 +915,7 @@ public class Gameplay extends JPanel implements Runnable {
         player.getController().add(mouseHandler);
         game.addKeyListener(keyBoardHandler);
         game.addMouseListener(mouseHandler);
-        
+
         camera.setPlayer(player);
         // level up to 8
 //        player.getStats().addExperience(50000);
@@ -873,7 +925,7 @@ public class Gameplay extends JPanel implements Runnable {
         SpriteSheet healthPotionSheet = new SpriteSheet();
         healthPotionSheet.add("assets/res/item/s_potion.png");
         HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
-        HealthPotion healthPotion = new HealthPotion(itemCount, "S Health", healthPotionAnimation, character,
+        HealthPotion healthPotion = new HealthPotion(itemCount, "S Potion", healthPotionAnimation, character,
                 this, 1);
         abilitiesItemInit(healthPotion.getAbilities(), character);
         inventory.addItemToInventory(healthPotion);
@@ -881,7 +933,7 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void abilitiesItemInit(List<Ability> abilities, Character character) {
-        Ability potionHeal = new PotionHeal(10, 0, "S Potion", 500, null, null, this, character);
+        Ability potionHeal = new PotionHeal(10, 0, 500, null, null, null, null, this, character);
         abilities.add(potionHeal);
     }
 
@@ -894,8 +946,8 @@ public class Gameplay extends JPanel implements Runnable {
             greaterHealSheet.getImages().add(ImageManager.loadImage("assets/res/ability/Greater-Heal.png"));
             GamePosition firstSkillPosition = new GamePosition(character.getHealthBar().getHealthBarPos().getXPosition(),
                     character.getHealthBar().getHealthBarPos().getMaxY() + 90, 80, 80);
-            Ability greaterHeal = new GreaterHeal(15, 1, 2500, greaterHealSheet,
-                    firstSkillPosition, null, null, redBorder, this, character);
+            Ability greaterHeal = new GreaterHeal(15, 1, 2500, greaterHealSheet, null,
+                    firstSkillPosition, redBorder, this, character);
             abilities.add(greaterHeal);
             SpriteSheet fireballIcon = new SpriteSheet();
             fireballIcon.getImages().add(ImageManager.loadImage("assets/res/ability/Fire-Ball.png"));
@@ -906,27 +958,37 @@ public class Gameplay extends JPanel implements Runnable {
             }
             sheetLTR.setImages(fireBallsLTR);
             sheetRTL.setImages(fireBallsRTL);
-            Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 10);
-            Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 10);
+            Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 2);
+            Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 2);
             Fireball fireball = new Fireball(150, 30, 2, 1000, fireballIcon,
                     new GamePosition(firstSkillPosition.getMaxX() + 15,
                             firstSkillPosition.getYPosition(), firstSkillPosition.getWidth(), firstSkillPosition.getHeight()),
                     fireBallAnimationLTR, fireBallAnimationRTL, redBorder, this, character);
             abilities.add(fireball);
+            return;
         } else {
-            if (((DiorEnemy) character).getColor() == DiorColor.Red) {
-                SpriteSheet sheetLTR = new SpriteSheet();
-                SpriteSheet sheetRTL = new SpriteSheet();
-                if (fireBallsLTR == null || fireBallsRTL == null) {
-                    return;
+            if (character instanceof DiorEnemy) {
+                if (((DiorEnemy) character).getColor() == DiorColor.Red) {
+                    SpriteSheet sheetLTR = new SpriteSheet();
+                    SpriteSheet sheetRTL = new SpriteSheet();
+                    if (fireBallsLTR == null || fireBallsRTL == null) {
+                        return;
+                    }
+                    sheetLTR.setImages(fireBallsLTR);
+                    sheetRTL.setImages(fireBallsRTL);
+                    Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
+                    Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
+                    Fireball fireball = new Fireball(20, 15, 2, 1000, null, null,
+                            fireBallAnimationLTR, fireBallAnimationRTL, this, character);
+                    abilities.add(fireball);
                 }
-                sheetLTR.setImages(fireBallsLTR);
-                sheetRTL.setImages(fireBallsRTL);
-                Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
-                Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
-                Fireball fireball = new Fireball(20, 15, 2, 1000, null, null,
-                        fireBallAnimationLTR, fireBallAnimationRTL, this, character);
-                abilities.add(fireball);
+                return;
+            }
+            if (character instanceof PirateCat) {
+                TimeHeal timeHeal = new TimeHeal(5000, 500, 5, 0,
+                        6000, null, null, null, null, this, character);
+                abilities.add(timeHeal);
+                return;
             }
         }
     }
