@@ -1,17 +1,16 @@
 package fightinggame.resource;
 
-import fightinggame.entity.background.GameObject;
 import java.util.Map;
 
 public class Utils {
 
-    public static int getNextIndexDuplicateKey(Map<String, GameObject> objs, String name) {
-        if(objs == null) return -1;
+    public static int getNextIndexDuplicateKey(Map<String, ?> objs, String name) {
+        if(objs == null) return 1;
         if(objs.isEmpty()) return 1;
         int index = 1;
         while(true) {
-            GameObject gObj = objs.get(name + index);
-            if(gObj == null) {
+            Object obj = objs.get(name + index);
+            if(obj == null) {
                 break;
             } else {
                 index++;

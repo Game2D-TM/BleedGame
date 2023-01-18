@@ -7,13 +7,29 @@ import fightinggame.entity.GamePosition;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.ability.type.Heal;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class PotionHeal extends Heal{
 
     public PotionHeal(int healPoint, int id, long resetTime
             , SpriteSheet skillIcon, Animation currAnimation
             , GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
-        super(healPoint, id, "Potion Heal", resetTime, skillIcon, currAnimation, position, border, gameplay, character);
+        super(healPoint, id, "Potion Heal", resetTime, 0, skillIcon, currAnimation, position, border, gameplay, character);
     }
     
+    
+    @Override
+    public boolean execute(List<Character> characters) {
+        return false;
+    }
+
+    @Override
+    public boolean execute(Character character) {
+        return healing(character);
+    }
+
+    @Override
+    public boolean execute() {
+        return healing();
+    }
 }

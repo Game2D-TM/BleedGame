@@ -48,15 +48,16 @@ public abstract class Platform {
         }
     }
 
-    public GamePosition middlePlatform() {
-        return middlePlatform(position.getWidth() / 2, position.getHeight() / 2);
+    // Top Platform
+    public GamePosition middleTopPlatform() {
+        return middleTopPlatform(position.getWidth() / 2, position.getHeight() / 2);
     }
 
-    public GamePosition middlePlatform(int width, int height) {
+    public GamePosition middleTopPlatform(int width, int height) {
         int nX = position.getMaxX() - width;
         int nY = position.getYPosition() - height;
         int distance = -1;
-        if (nX < position.getXPosition()) {
+        if (nX <= position.getXPosition()) {
             distance = 0;
         } else {
             distance = Math.abs((nX - position.getXPosition()) / 2);
@@ -65,15 +66,15 @@ public abstract class Platform {
                 nY, width, height);
     }
 
-    public GamePosition leftCornerPlatform() {
-        return leftCornerPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    public GamePosition leftCornerTopPlatform() {
+        return leftCornerTopPlatform(position.getWidth() / 2, position.getHeight() / 2);
     }
 
-    public GamePosition leftCornerPlatform(int width, int height) {
+    public GamePosition leftCornerTopPlatform(int width, int height) {
         int nX = position.getMaxX() - width;
         int nY = position.getYPosition() - height;
         int distance = -1;
-        if (nX < position.getXPosition()) {
+        if (nX <= position.getXPosition()) {
             distance = 0;
         } else {
             int equalDistance = Math.abs((nX - position.getXPosition()) / 2);
@@ -83,15 +84,177 @@ public abstract class Platform {
                 nY, width, height);
     }
 
-    public GamePosition rightCornerPlatform() {
-        return rightCornerPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    public GamePosition rightCornerTopPlatform() {
+        return rightCornerTopPlatform(position.getWidth() / 2, position.getHeight() / 2);
     }
 
-    public GamePosition rightCornerPlatform(int width, int height) {
+    public GamePosition rightCornerTopPlatform(int width, int height) {
         int nX = position.getMaxX() - width;
         int nY = position.getYPosition() - height;
         int distance = -1;
-        if (nX < position.getXPosition()) {
+        if (nX <= position.getXPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nX - position.getXPosition()) / 2);
+            distance = equalDistance / 2;
+        }
+        return new GamePosition(nX - distance,
+                nY, width, height);
+    }
+
+    // Right Platform
+    public GamePosition middleRightPlatform() {
+        return middleRightPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition middleRightPlatform(int width, int height) {
+        int nY = position.getMaxY() - height;
+        int nX = position.getMaxX();
+        int distance = -1;
+        if (nY <= position.getYPosition()) {
+            distance = 0;
+        } else {
+            distance = Math.abs((nY - position.getYPosition()) / 2);
+        }
+        return new GamePosition(nX,
+                nY - distance, width, height);
+    }
+
+    public GamePosition upCornerRightPlatform() {
+        return upCornerRightPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition upCornerRightPlatform(int width, int height) {
+        int nY = position.getMaxY() - height;
+        int nX = position.getMaxX();
+        int distance = -1;
+        if (nY <= position.getYPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nY - position.getYPosition()) / 2);
+            distance = Math.abs(equalDistance + equalDistance / 2);
+        }
+        return new GamePosition(nX,
+                nY - distance, width, height);
+    }
+
+    public GamePosition downCornerRightPlatform() {
+        return downCornerRightPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition downCornerRightPlatform(int width, int height) {
+        int nY = position.getMaxY() - height;
+        int nX = position.getMaxX();
+        int distance = -1;
+        if (nY <= position.getYPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nY - position.getYPosition()) / 2);
+            distance = equalDistance / 2;
+        }
+        return new GamePosition(nX,
+                nY - distance, width, height);
+    }
+
+    // Left Platform
+    public GamePosition middleLeftPlatform() {
+        return middleLeftPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition middleLeftPlatform(int width, int height) {
+        int nY = position.getMaxY() - height;
+        int nX = position.getXPosition() - width;
+        int distance = -1;
+        if (nY <= position.getYPosition()) {
+            distance = 0;
+        } else {
+            distance = Math.abs((nY - position.getYPosition()) / 2);
+        }
+        return new GamePosition(nX,
+                nY - distance, width, height);
+    }
+
+    public GamePosition upCornerLeftPlatform() {
+        return upCornerLeftPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition upCornerLeftPlatform(int width, int height) {
+        int nY = position.getMaxY() - height;
+        int nX = position.getXPosition() - width;
+        int distance = -1;
+        if (nY <= position.getYPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nY - position.getYPosition()) / 2);
+            distance = Math.abs(equalDistance + equalDistance / 2);
+        }
+        return new GamePosition(nX,
+                nY - distance, width, height);
+    }
+
+    public GamePosition downCornerLeftPlatform() {
+        return downCornerLeftPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition downCornerLeftPlatform(int width, int height) {
+        int nY = position.getMaxY() - height;
+        int nX = position.getXPosition() - width;
+        int distance = -1;
+        if (nY <= position.getYPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nY - position.getYPosition()) / 2);
+            distance = equalDistance / 2;
+        }
+        return new GamePosition(nX,
+                nY - distance, width, height);
+    }
+
+    // Bottom Platform
+    public GamePosition middleBottomPlatform() {
+        return middleBottomPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition middleBottomPlatform(int width, int height) {
+        int nX = position.getMaxX() - width;
+        int nY = position.getMaxY();
+        int distance = -1;
+        if (nX <= position.getXPosition()) {
+            distance = 0;
+        } else {
+            distance = Math.abs((nX - position.getXPosition()) / 2);
+        }
+        return new GamePosition(nX - distance,
+                nY, width, height);
+    }
+
+    public GamePosition leftCornerBottomPlatform() {
+        return leftCornerBottomPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition leftCornerBottomPlatform(int width, int height) {
+        int nX = position.getMaxX() - width;
+        int nY = position.getMaxY();
+        int distance = -1;
+        if (nX <= position.getXPosition()) {
+            distance = 0;
+        } else {
+            int equalDistance = Math.abs((nX - position.getXPosition()) / 2);
+            distance = Math.abs(equalDistance + equalDistance / 2);
+        }
+        return new GamePosition(nX - distance,
+                nY, width, height);
+    }
+
+    public GamePosition rightCornerBottomPlatform() {
+        return rightCornerBottomPlatform(position.getWidth() / 2, position.getHeight() / 2);
+    }
+
+    public GamePosition rightCornerBottomPlatform(int width, int height) {
+        int nX = position.getMaxX() - width;
+        int nY = position.getMaxY();
+        int distance = -1;
+        if (nX <= position.getXPosition()) {
             distance = 0;
         } else {
             int equalDistance = Math.abs((nX - position.getXPosition()) / 2);

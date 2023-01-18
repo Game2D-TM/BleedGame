@@ -17,21 +17,29 @@ public abstract class Throwable extends Ability {
     protected long existTime;
     protected int throwCounter = 0;
     
-    public Throwable(int attackDamage, int speed, int id, String name, long resetTime, 
+    public Throwable(int attackDamage, int speed, int id, String name, long resetTime, int energyLost, 
             SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
             , Gameplay gameplay, Character character) {
-        super(id, name, resetTime, skillIcon, position, animationLTR, animationRTL, gameplay, character);
+        super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, gameplay, character);
         this.attackDamage = attackDamage;
         this.speed = speed;
     }
 
-    public Throwable(int attackDamage, int speed, int id, String name, long resetTime, 
+    public Throwable(int attackDamage, int speed, int id, String name, long resetTime, int energyLost, 
             SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
             , BufferedImage border, Gameplay gameplay, Character character) {
-        super(id, name, resetTime, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
+        super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
         this.attackDamage = attackDamage;
         this.speed = speed;
     }
     
-    public abstract boolean execute(GamePosition spawnPosition, GamePosition endPosition);
+    public boolean execute(GamePosition spawnPosition, GamePosition endPosition) {
+        if(this.character == null) {
+            return false;
+        }
+        if(character.getStats().haveEnergy()) {
+            return true;
+        }
+        return false;
+    }
 }

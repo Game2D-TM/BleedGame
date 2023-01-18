@@ -19,6 +19,7 @@ public class Stats {
     private float defenceChange = 0.001f;
     private int bounceRange = 30;
     private int health;
+    private int energy = 0;
     private int speed;
     private int levelUpPoint = 0;
     private int critDamage;
@@ -29,7 +30,7 @@ public class Stats {
     private float dropSpeed = 0.08f; // 0.05
 
     public Stats(Character character, int level, double levelExperience, int attackDamage, int defenceDamage, 
-            int health, int speed, int levelUpPoint, int critDamage, float critChange) {
+            int health, int energy, int speed, int levelUpPoint, int critDamage, float critChange) {
         this.character = character;
         this.level = level;
         this.levelExperience = levelExperience;
@@ -37,17 +38,20 @@ public class Stats {
         this.attackDamage = attackDamage;
         this.defenceDamage = defenceDamage;
         this.health = health;
+        this.energy = energy;
         this.speed = speed;
         this.levelUpPoint = levelUpPoint;
         this.critDamage = critDamage;
         this.critChange = critChange;
     }
 
-    public Stats(Character character, int attackDamage, int defenceDamage, int health, int speed, int critDamage, float critChange) {
+    public Stats(Character character, int attackDamage, int defenceDamage
+            , int health, int energy, int speed, int critDamage, float critChange) {
         this.character = character;
         this.attackDamage = attackDamage;
         this.defenceDamage = defenceDamage;
         this.health = health;
+        this.energy = energy;
         this.speed = speed;
         this.critDamage = critDamage;
         this.critChange = critChange;
@@ -106,6 +110,28 @@ public class Stats {
             attackWithCrit += critDamage;
         }
         return attackWithCrit;
+    }
+    
+    public boolean useEnergy(int energy) {
+        if(energy <= 0) return false;
+        int nEnergy = this.energy - energy;
+        if(nEnergy > 0) {
+            this.energy = nEnergy;
+        } else {
+            this.energy = 0;
+        }
+        return true;
+    }
+    
+    public boolean addEnergy(int energy) {
+        if(energy <= 0) return false;
+        int nEnergy = this.energy + energy;
+        if(nEnergy > character.getHealthBar().getMaxEnergy()) {
+            this.energy = character.getHealthBar().getMaxEnergy();
+        } else {
+            this.energy = nEnergy;
+        }
+        return true;
     }
 
     // need to code
@@ -340,5 +366,16 @@ public class Stats {
     public void setAttackRange(int attackRange) {
         this.attackRange = attackRange;
     }
+
+    public int getEnergy() {
+        return energy;
+    }
     
+    public boolean haveEnergy() {
+        if(energy <= 0) {
+            return false;
+        }
+        return true;
+    }
+
 }

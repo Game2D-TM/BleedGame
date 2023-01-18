@@ -67,7 +67,7 @@ public abstract class Enemy extends Character {
                 1, 2, 126, 12));
         healthBar = new HealthBar(avatar, healthBarSheet, this,
                 new GamePosition(975, 20, 550, 80), new GamePosition(1540, 8, 180, 120),
-                maxHealth);
+                maxHealth, 100);
     }
 
     @Override

@@ -4,6 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
+import fightinggame.entity.Player;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.ability.type.Heal;
 import java.awt.image.BufferedImage;
@@ -17,10 +18,10 @@ public class TimeHeal extends Heal {
     private boolean isUse;
 
     public TimeHeal(long timeLimit, int timeUseLimit, int healPoint, int id,
-            long resetTime, SpriteSheet skillIcon, Animation currAnimation,
+            long resetTime, int energyLost, SpriteSheet skillIcon, Animation currAnimation,
             GamePosition position, BufferedImage border,
             Gameplay gameplay, Character character) {
-        super(healPoint, id, "Time Heal", resetTime, skillIcon, currAnimation, position, border, gameplay, character);
+        super(healPoint, id, "Time Heal", resetTime, energyLost, skillIcon, currAnimation, position, border, gameplay, character);
         this.timeLimit = timeLimit;
         this.timeUseLimit = timeUseLimit;
         timeCounter = timeLimit;
@@ -60,6 +61,9 @@ public class TimeHeal extends Heal {
             afterHeal = maxHealth;
         }
         if (afterHeal > health) {
+            if (character instanceof Player) {
+                character.getStats().useEnergy(energyLost);
+            }
             character.getStats().setHealth(afterHeal);
             character.setHealingAmount(healPoint);
             timeUseCounter = 0;
@@ -70,16 +74,27 @@ public class TimeHeal extends Heal {
 
     @Override
     public boolean execute() {
-        return execute(character);
+        if (this.character == null) {
+            return false;
+        }
+        if (this.character.getStats().haveEnergy()) {
+            return execute(character);
+        }
+        return false;
     }
 
     @Override
     public boolean execute(Character character) {
-        if (canUse) {
-            timeCounter = timeLimit;
-            canUse = false;
-            isUse = true;
-            return true;
+        if (this.character == null) {
+            return false;
+        }
+        if (this.character.getStats().haveEnergy()) {
+            if (canUse) {
+                timeCounter = timeLimit;
+                canUse = false;
+                isUse = true;
+                return true;
+            }
         }
         return false;
     }

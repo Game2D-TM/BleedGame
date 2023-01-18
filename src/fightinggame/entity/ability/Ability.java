@@ -17,6 +17,7 @@ public abstract class Ability {
 
     protected int id;
     protected String name;
+    protected int energyLost = 0;
     protected long resetTime = 0;
     protected long coolDown = 0;
     protected long resetTimeCounter = 0;
@@ -32,11 +33,12 @@ public abstract class Ability {
     protected Character character;
     protected boolean isLTR;
 
-    public Ability(int id, String name, long resetTime, SpriteSheet skillIcon, GamePosition position,
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, GamePosition position,
             Animation animationLTR, Animation animationRTL, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
+        this.energyLost = energyLost;
         this.skillIcon = skillIcon;
         this.position = position;
         this.animationLTR = animationLTR;
@@ -52,11 +54,12 @@ public abstract class Ability {
         }
     }
 
-    public Ability(int id, String name, long resetTime, SpriteSheet skillIcon, GamePosition position,
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, GamePosition position,
             Animation animationLTR, Animation animationRTL, BufferedImage border, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
+        this.energyLost = energyLost;
         this.skillIcon = skillIcon;
         this.animationLTR = animationLTR;
         this.animationRTL = animationRTL;
@@ -73,12 +76,13 @@ public abstract class Ability {
         }
     }
 
-    public Ability(int id, String name, long resetTime, SpriteSheet skillIcon
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon
             , Animation currAnimation, GamePosition position, BufferedImage border
             , Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
+        this.energyLost = energyLost;
         this.currAnimation = currAnimation;
         this.border = border;
         this.skillIcon = skillIcon;
@@ -209,6 +213,14 @@ public abstract class Ability {
 
     public void setCharacter(Character character) {
         this.character = character;
+    }
+
+    public int getEnergyLost() {
+        return energyLost;
+    }
+
+    public void setEnergyLost(int energyLost) {
+        this.energyLost = energyLost;
     }
 
 }

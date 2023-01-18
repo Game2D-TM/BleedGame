@@ -7,7 +7,8 @@ import fightinggame.entity.Player;
 import fightinggame.entity.Rule;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
-import fightinggame.entity.item.collectable.healing.HealthPotion;
+import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
+import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.GameHandler;
@@ -80,11 +81,24 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                     }
                     break;
                 case KeyEvent.VK_3:
-                    Item item = player.getInventory().getItemAscending();
+                    Item item = player.getInventory().getItemByName("S Health Potion");
                     if (item == null) {
                         break;
                     }
-                    if (item instanceof HealthPotion) {
+                    if (item instanceof SmallHealthPotion) {
+                        if (item.use()) {
+
+                        } else {
+                            System.out.println("Is Cooldown.");
+                        }
+                    }
+                    break;
+                case KeyEvent.VK_4:
+                    item = player.getInventory().getItemByName("S Energy Potion");
+                    if (item == null) {
+                        break;
+                    }
+                    if (item instanceof SmallEnergyPotion) {
                         if (item.use()) {
 
                         } else {

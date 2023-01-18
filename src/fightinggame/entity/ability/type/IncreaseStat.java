@@ -14,7 +14,7 @@ public abstract class IncreaseStat extends Ability{
     public IncreaseStat(int id, String name, int amountIncrease,
             SpriteSheet skillIcon, GamePosition position, 
             Gameplay gameplay, Character character) {
-        super(id, name, -1, skillIcon, position, null, null, gameplay, character);
+        super(id, name, -1, 0, skillIcon, position, null, null, gameplay, character);
         this.amountIncrease = amountIncrease;
     }
 

@@ -3,18 +3,18 @@ package fightinggame.entity.item.collectable.healing;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.ability.type.Heal;
+import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.collectable.CollectableItem;
 
-public class HealthPotion extends CollectableItem {
+public class SmallEnergyPotion extends CollectableItem {
 
-    public HealthPotion(int id, String name, Animation animation, Character character,
-            Gameplay gameplay, int amount) {
-        super(id, name, animation, character, gameplay, amount);
+    public SmallEnergyPotion(int id
+            , Animation animation, Character character, Gameplay gameplay, int amount) {
+        super(id, "S Energy Potion", animation, character, gameplay, amount);
     }
-
+    
     @Override
     public boolean checkHit(Character character) {
         boolean result = super.checkHit(character);
@@ -24,14 +24,14 @@ public class HealthPotion extends CollectableItem {
         }
         return false;
     }
-    
+
     @Override
     public boolean use() {
-        Heal heal = (Heal) abilities.get(0);
-        if (heal == null) {
+        EnergyRecovery energyRecovery = (EnergyRecovery) abilities.get(0);
+        if (energyRecovery == null) {
             return false;
         }
-        boolean result = heal.healing();
+        boolean result = energyRecovery.execute();
         if (result) {
             if (amount > 0) {
                 int nAmount = amount - 1;
@@ -44,9 +44,15 @@ public class HealthPotion extends CollectableItem {
                 } else {
                     amount = nAmount;
                 }
+                return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public Item clone() {
+        return new SmallEnergyPotion(id, animation, character, gameplay, amount);
     }
 
     @Override
@@ -77,12 +83,6 @@ public class HealthPotion extends CollectableItem {
     @Override
     public int getYMaxHitBox() {
         return getYHitBox() + getHeightHitBox();
-    }
-
-    @Override
-    public Item clone() {
-        return new HealthPotion(id, name, animation,
-                 character, gameplay, amount);
     }
 
 }

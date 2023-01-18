@@ -14,16 +14,16 @@ import java.util.List;
 
 public class Fireball extends Throwable {
 
-    public Fireball(int attackDamage, int speed, int id, long resetTime,
+    public Fireball(int attackDamage, int speed, int id, long resetTime, int energyLost,
             SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL,
-             Gameplay gameplay, Character character) {
-        super(attackDamage, speed, id, "Fire Ball", resetTime, skillIcon, position, animationLTR, animationRTL, gameplay, character);
+            Gameplay gameplay, Character character) {
+        super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, gameplay, character);
     }
 
-    public Fireball(int attackDamage, int speed, int id, long resetTime, SpriteSheet skillIcon,
+    public Fireball(int attackDamage, int speed, int id, long resetTime, int energyLost, SpriteSheet skillIcon,
             GamePosition position, Animation animationLTR, Animation animationRTL,
-             BufferedImage border, Gameplay gameplay, Character character) {
-        super(attackDamage, speed, id, "Fire Ball", resetTime, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
+            BufferedImage border, Gameplay gameplay, Character character) {
+        super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class Fireball extends Throwable {
             if (spawnPosition != null && isThrow) {
                 if (gameplay.getCamera().checkPositionRelateToCamera(spawnPosition)) {
                     currAnimation.render(g, spawnPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
-                             spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                            spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                             spawnPosition.getWidth(), spawnPosition.getHeight());
                 }
             }
@@ -107,22 +107,27 @@ public class Fireball extends Throwable {
 
     @Override
     public boolean execute(GamePosition spawnPosition, GamePosition endPosition) {
-        if (canUse) {
-            this.spawnPosition = spawnPosition;
-            this.endPosition = endPosition;
-            if (character != null) {
-                if (character.isLTR()) {
-                    isLTR = true;
-                    currAnimation = animationLTR;
-                } else {
-                    isLTR = false;
-                    currAnimation = animationRTL;
+        if (super.execute(spawnPosition, endPosition)) {
+            if (canUse) {
+                this.spawnPosition = spawnPosition;
+                this.endPosition = endPosition;
+                if (character != null) {
+                    if (character.isLTR()) {
+                        isLTR = true;
+                        currAnimation = animationLTR;
+                    } else {
+                        isLTR = false;
+                        currAnimation = animationRTL;
+                    }
+                    if (character instanceof Player) {
+                        character.getStats().useEnergy(energyLost);
+                    }
                 }
+                isThrow = true;
+                canUse = false;
+                gameplay.getAudioPlayer().startThread("fireball_throw", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
+                return true;
             }
-            isThrow = true;
-            canUse = false;
-            gameplay.getAudioPlayer().startThread("fireball_throw", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
-            return true;
         }
         return false;
     }

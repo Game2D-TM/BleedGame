@@ -4,8 +4,6 @@ import fightinggame.resource.ImageManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ public class SpriteSheet {
         this.sprite = sprite;
         this.images = images;
     }
-    
+
     public SpriteSheet(BufferedImage sprite, int cutX, int cutY, int cutWidth, int cutHeight,
             int x, int y, int width, int height, int imageNum) {
         this.sprite = sprite;
@@ -139,17 +137,24 @@ public class SpriteSheet {
     public SpriteSheet convertRTL() {
         List<BufferedImage> flipped = new ArrayList<>();
         SpriteSheet result = new SpriteSheet();
-        for(int i = 0; i < this.images.size() ; i++) {
+        for (int i = 0; i < this.images.size(); i++) {
             BufferedImage sprite = images.get(i);
-            // Flip the image horizontally
-            AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
-//            tx.translate(-sprite.getWidth(null), 0);
-            tx.translate(-sprite.getWidth(null), 0);
-            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-            sprite = op.filter(sprite, null);
+            sprite = ImageManager.flipImage(sprite);
             flipped.add(sprite);
         }
         result.setImages(flipped);
+        return result;
+    }
+
+    public SpriteSheet rotateSheet(int radian) {
+        List<BufferedImage> rotate = new ArrayList<>();
+        SpriteSheet result = new SpriteSheet();
+        for (int i = 0; i < this.images.size(); i++) {
+            BufferedImage sprite = images.get(i);
+            sprite = ImageManager.rotateImage(sprite, radian);
+            rotate.add(sprite);
+        }
+        result.setImages(rotate);
         return result;
     }
 

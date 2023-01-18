@@ -48,6 +48,8 @@ public abstract class Character {
     protected int receiveDamageRenderTick = 0;
     protected int healingAmount = 0;
     protected int healingAmountRenderTick = 0;
+    protected int energyAmount = 0;
+    protected int energyAmountRenderTick = 0;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
@@ -57,7 +59,7 @@ public abstract class Character {
         this.animations = animations;
         this.gameplay = gameplay;
         this.isLTR = isLTR;
-        stats = new Stats(this, 1, 0, 10, 5, 100, 30, 0, 0, 0);
+        stats = new Stats(this, 1, 0, 10, 5, 100, 100, 30, 0, 0, 0);
         inventory = new Inventory(this, inventorySheet, gameplay);
         if (isLTR) {
             currAnimation = animations.get(CharacterState.IDLE_LTR);
@@ -350,6 +352,20 @@ public abstract class Character {
                     healingAmount = 0;
                     healingAmountRenderTick = 0;
                 }
+            } else {
+                if (energyAmount > 0) {
+                    g.setColor(new Color(0, 129, 201));
+                    g.setFont(DataManager.getFont(22f));
+                    g.drawString("+" + energyAmount + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
+                            getYHitBox() - 10 - gameplay.getCamera().getPosition().getYPosition());
+                    g.setFont(null);
+                    g.setColor(null);
+                    energyAmountRenderTick++;
+                    if (energyAmountRenderTick > 80) {
+                        energyAmount = 0;
+                        energyAmountRenderTick = 0;
+                    }
+                }
             }
         }
         if (abilities.size() > 0) {
@@ -627,4 +643,8 @@ public abstract class Character {
         this.healingAmount = healingAmount;
     }
 
+    public void setEnergyAmount(int energyAmount) {
+        this.energyAmount = energyAmount;
+    }
+    
 }

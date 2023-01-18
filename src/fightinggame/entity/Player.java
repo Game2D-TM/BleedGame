@@ -54,7 +54,7 @@ public class Player extends Character {
                 1, 2, 126, 12));
         healthBar = new HealthBar(avatar, healthBarSheet, this,
                 new GamePosition(120, 20, 550, 80), new GamePosition(15, 8, 100, 110),
-                maxHealth);
+                maxHealth, 100);
     }
 
     @Override

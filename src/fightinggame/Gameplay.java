@@ -2,74 +2,61 @@ package fightinggame;
 
 import fightinggame.animation.BackgroundAnimation;
 import fightinggame.animation.ability.FireBallAnimation;
-import fightinggame.animation.enemy.EnemyHeavyAttack;
-import fightinggame.animation.enemy.EnemyDeath;
-import fightinggame.animation.enemy.EnemyHit;
-import fightinggame.animation.enemy.EnemyIdle;
-import fightinggame.animation.enemy.EnemyLightAttack;
-import fightinggame.animation.enemy.EnemyRunBack;
-import fightinggame.animation.enemy.EnemyRunForward;
-import fightinggame.animation.item.HealthPotionAnimation;
-import fightinggame.animation.item.KeyAnimation;
-import fightinggame.animation.item.equipment.FireSwordAnimation;
 import fightinggame.animation.player.*;
-import fightinggame.animation.trap.TrapAnimation;
-import fightinggame.entity.Animation;
-import fightinggame.entity.Background;
-import fightinggame.entity.Camera;
-import fightinggame.entity.state.CharacterState;
-import fightinggame.entity.enemy.Enemy;
-import fightinggame.entity.GamePosition;
-import fightinggame.entity.Player;
-import fightinggame.entity.ability.Ability;
-import fightinggame.entity.enemy.type.DiorColor;
-import fightinggame.entity.enemy.type.DiorEnemy;
-import fightinggame.resource.EnemyAnimationResources;
-import fightinggame.resource.ImageManager;
-import fightinggame.entity.SpriteSheet;
+import fightinggame.animation.enemy.*;
+import fightinggame.animation.trap.*;
+import fightinggame.animation.item.*;
+import fightinggame.animation.item.equipment.FireSwordAnimation;
+import fightinggame.entity.*;
+import fightinggame.entity.background.*;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import fightinggame.entity.enemy.*;
+import fightinggame.resource.*;
+import fightinggame.entity.ability.*;
 import fightinggame.entity.Character;
 import fightinggame.entity.GameMap;
-import fightinggame.entity.GameTimer;
 import fightinggame.entity.LoadingScreen;
 import fightinggame.entity.ProgressBar;
 import fightinggame.entity.Rule;
 import fightinggame.entity.TransitionScreen;
+import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
+import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.healing.TimeHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
-import fightinggame.entity.background.GameObject;
-import fightinggame.entity.background.GameObjectType;
-import fightinggame.entity.background.ObjectNonTouchable;
 import fightinggame.entity.background.touchable.Chest;
-import fightinggame.entity.enemy.EnemyType;
+import fightinggame.entity.enemy.type.DiorColor;
+import fightinggame.entity.enemy.type.DiorEnemy;
 import fightinggame.entity.enemy.type.PirateCat;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
-import fightinggame.entity.item.equipment.weapon.Sword;
-import fightinggame.entity.item.collectable.healing.HealthPotion;
+import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
+import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
+import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.TrapTile;
 import fightinggame.entity.platform.tile.trap.SpearTrap;
 import fightinggame.entity.platform.tile.trap.SpikeTrap;
+import fightinggame.entity.platform.tile.trap.TrapLocation;
+import fightinggame.entity.platform.tile.trap.TrapType;
 import fightinggame.entity.quest.Quest;
 import fightinggame.entity.quest.QuestType;
 import fightinggame.entity.quest.type.EnemyRequired;
 import fightinggame.entity.quest.type.ItemRequired;
+import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.state.GameState;
 import fightinggame.entity.state.QuestState;
 import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
-import fightinggame.input.handler.game.player.PlayerMouseHandler;
 import fightinggame.input.handler.game.player.PlayerAbilityHandler;
+import fightinggame.input.handler.game.player.PlayerMouseHandler;
 import fightinggame.input.handler.game.player.PlayerMovementHandler;
 import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
@@ -79,6 +66,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Random;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
@@ -101,7 +89,7 @@ public class Gameplay extends JPanel implements Runnable {
     private TransitionScreen transitionScreen;
     private LoadingScreen loadingScreen;
     private Map<String, SpriteSheet> playerSpriteSheetMap;
-    
+
     public Gameplay(Game game) {
         this.game = game;
         setDoubleBuffered(true);
@@ -180,43 +168,181 @@ public class Gameplay extends JPanel implements Runnable {
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
     }
-    
+
     public void initTraps() { // 10,43, 10,44
-        Platform platform = getPlatforms().get(9).get(9);
-        if(platform == null) return;
-        SpriteSheet spearSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spear.png"),
-                0, 0, 16, 64, 
-                0, 0, 16, 64, 7);
-        TrapAnimation spearAnimation = new TrapAnimation(0, spearSheet, 21);
-        TrapTile spearRot = new SpearTrap(spearAnimation, 20, "Spear Rot", spearSheet.getImage(0), 
-                platform.rightCornerPlatform(100, 350), this);
-        platform = getPlatforms().get(6).get(4);
-        if(platform == null) return;
-        SpriteSheet spikeSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spike_B.png"),
-                0, 0, 32, 32, 
-                0, 0, 32, 32, 10); // 0, 8, 32, 14
-        TrapAnimation spikeAnimation = new TrapAnimation(0, spikeSheet, 15);
-        GamePosition spikePos = platform.middlePlatform(200, 150);
-        spikePos.setYPosition(spikePos.getYPosition() + 60);
-        TrapTile spike_1 = new SpikeTrap(spikeAnimation, 10, "Spike_1", spikeSheet.getImage(0), 
-                spikePos, this);
-        
-        platform = getPlatforms().get(5).get(6);
-        if(platform == null) return;
-        SpriteSheet spike_2Sheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spike_B.png"),
-                0, 0, 32, 32, 
-                0, 0, 32, 32, 10); // 0, 8, 32, 14
-        TrapAnimation spike_2Animation = new TrapAnimation(0, spike_2Sheet, 15);
-        GamePosition spike_2Pos = platform.middlePlatform(200, 150);
-        spike_2Pos.setYPosition(spike_2Pos.getYPosition() + 60);
-        TrapTile spike_2 = new SpikeTrap(spike_2Animation, 10, "Spike_2", spike_2Sheet.getImage(0), 
-                spike_2Pos, this);
-        Map<String, Tile> specialTiles = new HashMap();
-        
-        specialTiles.put(spike_1.getName(), spike_1);
-        specialTiles.put(spearRot.getName(), spearRot);
-        specialTiles.put(spike_2.getName(), spike_2);
-        background.setSpecialTiles(specialTiles);
+        int currSceneIndex = DataManager.getCurrentSceneIndex();
+        if (currSceneIndex <= 0) {
+            return;
+        }
+        File trapsLocFile = DataManager.getFile("traps_" + currSceneIndex);
+        if (trapsLocFile != null) {
+            List<String> lines = DataManager.readFileToList(trapsLocFile);
+            if (lines != null && lines.size() > 0) {
+                Map<String, Tile> specialTiles = new HashMap();
+                try {
+                    for (int i = 0; i < lines.size(); i++) {
+                        String line = lines.get(i);
+                        if (line == null || line.isEmpty()) {
+                            continue;
+                        }
+                        String[] splits = line.split(":");
+                        if (splits == null || splits.length < 2) {
+                            continue;
+                        }
+                        String type = splits[0];
+                        String[] data = splits[1].split(",");
+                        TrapType trapType = TrapType.valueOf(type.toUpperCase());
+                        if (data == null || data.length < 4) {
+                            continue;
+                        }
+                        int row = Utils.getInt(data[0]);
+                        int column = Utils.getInt(data[1]);
+                        if (row < 0 || column < 0) {
+                            continue;
+                        }
+                        Platform platform = getPlatforms().get(row).get(column);
+                        if (platform == null) {
+                            continue;
+                        }
+                        TrapLocation trapLoc = TrapLocation.valueOf(data[2].toUpperCase());
+                        SpriteSheet spearSheet = null;
+                        SpriteSheet spikeSheet = null;
+                        int width = -1, height = -1;
+                        switch (trapType) {
+                            case SPEAR:
+                                spearSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spear.png"),
+                                        0, 0, 16, 64,
+                                        0, 0, 16, 64, 7);
+                                if (trapLoc == TrapLocation.RIGHT
+                                        || trapLoc == TrapLocation.LEFT) {
+                                    width = 350;
+                                    height = 100;
+                                } else {
+                                    width = 100;
+                                    height = 350;
+                                }
+                                break;
+                            case SPIKE:
+                                spikeSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spike_B.png"),
+                                        0, 0, 32, 32,
+                                        0, 0, 32, 32, 10); // 0, 8, 32, 14
+                                if (trapLoc == TrapLocation.RIGHT
+                                        || trapLoc == TrapLocation.LEFT) {
+                                    width = 150;
+                                    height = 120;
+                                } else {
+                                    width = 200;
+                                    height = 150;
+                                }
+                                break;
+                        }
+                        if (width < 0 || height < 0) {
+                            continue;
+                        }
+                        String positionStr = data[3].toUpperCase();
+                        GamePosition position = null;
+                        switch (trapLoc) {
+                            case TOP, BOTTOM:
+                                switch (positionStr) {
+                                    case "MIDDLE":
+                                        if (trapLoc == TrapLocation.TOP) {
+                                            position = platform.middleTopPlatform(width, height);
+                                        } else {
+                                            position = platform.middleBottomPlatform(width, height);
+                                        }
+                                        break;
+                                    case "RIGHT_CORNER":
+                                        if (trapLoc == TrapLocation.TOP) {
+                                            position = platform.rightCornerTopPlatform(width, height);
+                                        } else {
+                                            position = platform.rightCornerBottomPlatform(width, height);
+                                        }
+                                        break;
+                                    case "LEFT_CORNER":
+                                        if (trapLoc == TrapLocation.TOP) {
+                                            position = platform.leftCornerTopPlatform(width, height);
+                                        } else {
+                                            position = platform.leftCornerTopPlatform(width, height);
+                                        }
+                                        break;
+                                }
+                                break;
+                            case RIGHT, LEFT:
+                                switch (positionStr) {
+                                    case "MIDDLE":
+                                        if (trapLoc == TrapLocation.RIGHT) {
+                                            position = platform.middleRightPlatform(width, height);
+                                        } else {
+                                            position = platform.middleLeftPlatform(width, height);
+                                        }
+                                        break;
+                                    case "UP_CORNER":
+                                        if (trapLoc == TrapLocation.RIGHT) {
+                                            position = platform.upCornerRightPlatform(width, height);
+                                        } else {
+                                            position = platform.upCornerLeftPlatform(width, height);
+                                        }
+                                        break;
+                                    case "DOWN_CORNER":
+                                        if (trapLoc == TrapLocation.RIGHT) {
+                                            position = platform.downCornerRightPlatform(width, height);
+                                        } else {
+                                            position = platform.downCornerLeftPlatform(width, height);
+                                        }
+                                        break;
+                                }
+                                break;
+                        }
+                        if (position == null) {
+                            continue;
+                        }
+                        TrapTile trapTile = null;
+                        String name = Utils.firstCharCapital(type);
+                        int index = Utils.getNextIndexDuplicateKey(specialTiles, name);
+                        switch (trapType) {
+                            case SPEAR:
+                                switch (trapLoc) {
+                                    case RIGHT:
+                                        spearSheet = spearSheet.rotateSheet(90);
+                                        break;
+                                    case LEFT:
+                                        spearSheet = spearSheet.rotateSheet(270);
+                                        break;
+                                    case BOTTOM:
+                                        spearSheet = spearSheet.rotateSheet(180);
+                                        break;
+                                }
+                                TrapAnimation spearAnimation = new TrapAnimation(0, spearSheet, 21);
+                                trapTile = new SpearTrap(spearAnimation, 20, trapLoc,
+                                        name + index, spearSheet.getImage(0),
+                                        position, this);
+                                break;
+                            case SPIKE:
+                                switch (trapLoc) {
+                                    case RIGHT:
+                                        spikeSheet = spikeSheet.rotateSheet(90);
+                                        break;
+                                    case LEFT:
+                                        spikeSheet = spikeSheet.rotateSheet(270);
+                                        break;
+                                    case BOTTOM:
+                                        spikeSheet = spikeSheet.rotateSheet(180);
+                                        break;
+                                }
+                                TrapAnimation spikeAnimation = new TrapAnimation(0, spikeSheet, 15);
+                                trapTile = new SpikeTrap(spikeAnimation, 10, trapLoc,
+                                        name + index, spikeSheet.getImage(0),
+                                        position, this);
+                                break;
+                        }
+                        specialTiles.put(trapTile.getName(), trapTile);
+                    }
+                } catch (Exception ex) {
+
+                }
+                background.setSpecialTiles(specialTiles);
+            }
+        }
     }
 
     public void initGameItems() {
@@ -228,9 +354,27 @@ public class Gameplay extends JPanel implements Runnable {
         GameObject gameObject = background.getGameObjectsTouchable().get("chest3");
         if (gameObject != null) {
             Chest chest = (Chest) gameObject;
-            keyItem.setPosition(chest.getPlatform().middlePlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
+            keyItem.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
             chest.getItems().add(keyItem);
         }
+
+        //Energy Potion x15
+        int amount = 15;
+        SpriteSheet energyPotionSheet = new SpriteSheet();
+        energyPotionSheet.add("assets/res/item/s_energy_potion.png");
+        PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
+        Item item = new SmallEnergyPotion(itemCount, energyPotionAnimation, null,
+                this, amount);
+        EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
+                null, null, null, null, this, null);
+        item.getAbilities().add(energyRecovery);
+        gameObject = background.getGameObjectsTouchable().get("chest2");
+        if (gameObject != null) {
+            Chest chest = (Chest) gameObject;
+            item.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
+            chest.getItems().add(item);
+        }
+        
         //Init Quest
         if (rule != null) {
             Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor Orange", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State",
@@ -369,19 +513,19 @@ public class Gameplay extends JPanel implements Runnable {
                         if (platform != null) {
                             if (width > 0 && height > 0) {
                                 if (platformPosStr.equalsIgnoreCase("mid")) {
-                                    position = platform.middlePlatform(width, height);
+                                    position = platform.middleTopPlatform(width, height);
                                 } else if (platformPosStr.equalsIgnoreCase("left")) {
-                                    position = platform.leftCornerPlatform(width, height);
+                                    position = platform.leftCornerTopPlatform(width, height);
                                 } else if (platformPosStr.equalsIgnoreCase("right")) {
-                                    position = platform.rightCornerPlatform(width, height);
+                                    position = platform.rightCornerTopPlatform(width, height);
                                 }
                             } else {
                                 if (platformPosStr.equalsIgnoreCase("mid")) {
-                                    position = platform.middlePlatform();
+                                    position = platform.middleTopPlatform();
                                 } else if (platformPosStr.equalsIgnoreCase("left")) {
-                                    position = platform.leftCornerPlatform();
+                                    position = platform.leftCornerTopPlatform();
                                 } else if (platformPosStr.equalsIgnoreCase("right")) {
-                                    position = platform.rightCornerPlatform();
+                                    position = platform.rightCornerTopPlatform();
                                 }
                             }
                             if (position == null) {
@@ -660,12 +804,12 @@ public class Gameplay extends JPanel implements Runnable {
         itemInit(enemy.getInventory(), enemy);
         enemies.add(enemy);
         // level up to 8
-//        enemy.getStats().addExperience(50000);
+//        enemy.getStats().addExperience(10000);
     }
 
     public void playerInit(Platform firstPlatform) {
         // init player position
-        GamePosition middlePlatform = firstPlatform.middlePlatform(350, 259);
+        GamePosition middlePlatform = firstPlatform.middleTopPlatform(350, 259);
         GamePosition defPlayerPosition = new GamePosition(middlePlatform.getXPosition(),
                 middlePlatform.getYPosition(), 350, 259);
 
@@ -896,13 +1040,11 @@ public class Gameplay extends JPanel implements Runnable {
         if (gameObject != null) {
             if (gameObject instanceof Chest) {
                 Chest chest = (Chest) gameObject;
-                fireSword.setPosition(chest.getPlatform().middlePlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
+                fireSword.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH + 80, Item.ITEM_HEIGHT + 80));
                 fireSword.getPosition().setYPosition(fireSword.getPosition().getYPosition() + 55);
                 chest.getItems().add(fireSword);
             }
         }
-
-        itemInit(player.getInventory(), player);
 
         //Init Handler
         PlayerAbilityHandler abilityHandler = new PlayerAbilityHandler(player, "player_ability_handler", this);
@@ -922,19 +1064,29 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void itemInit(Inventory inventory, Character character) {
-        SpriteSheet healthPotionSheet = new SpriteSheet();
-        healthPotionSheet.add("assets/res/item/s_potion.png");
-        HealthPotionAnimation healthPotionAnimation = new HealthPotionAnimation(0, healthPotionSheet, -1);
-        HealthPotion healthPotion = new HealthPotion(itemCount, "S Potion", healthPotionAnimation, character,
-                this, 1);
-        abilitiesItemInit(healthPotion.getAbilities(), character);
-        inventory.addItemToInventory(healthPotion);
+        Random random = new Random();
+        int randNum = random.nextInt(2);
+        Item item = null;
+        if (randNum == 0) {
+            SpriteSheet healthPotionSheet = new SpriteSheet();
+            healthPotionSheet.add("assets/res/item/s_health_potion.png");
+            PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
+            item = new SmallHealthPotion(itemCount, healthPotionAnimation, character,
+                    this, 1);
+            Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, this, character);
+            item.getAbilities().add(potionHeal);
+        } else {
+            SpriteSheet energyPotionSheet = new SpriteSheet();
+            energyPotionSheet.add("assets/res/item/s_energy_potion.png");
+            PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
+            item = new SmallEnergyPotion(itemCount, energyPotionAnimation, character,
+                    this, 1);
+            EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
+                    null, null, null, null, this, character);
+            item.getAbilities().add(energyRecovery);
+        }
+        inventory.addItemToInventory(item);
         itemCount++;
-    }
-
-    public void abilitiesItemInit(List<Ability> abilities, Character character) {
-        Ability potionHeal = new PotionHeal(10, 0, 500, null, null, null, null, this, character);
-        abilities.add(potionHeal);
     }
 
     public void abilitiesCharacterInit(List<Ability> abilities, Character character) {
@@ -946,7 +1098,7 @@ public class Gameplay extends JPanel implements Runnable {
             greaterHealSheet.getImages().add(ImageManager.loadImage("assets/res/ability/Greater-Heal.png"));
             GamePosition firstSkillPosition = new GamePosition(character.getHealthBar().getHealthBarPos().getXPosition(),
                     character.getHealthBar().getHealthBarPos().getMaxY() + 90, 80, 80);
-            Ability greaterHeal = new GreaterHeal(15, 1, 2500, greaterHealSheet, null,
+            Ability greaterHeal = new GreaterHeal(15, 1, 2500, 5, greaterHealSheet, null,
                     firstSkillPosition, redBorder, this, character);
             abilities.add(greaterHeal);
             SpriteSheet fireballIcon = new SpriteSheet();
@@ -960,7 +1112,7 @@ public class Gameplay extends JPanel implements Runnable {
             sheetRTL.setImages(fireBallsRTL);
             Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 2);
             Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 2);
-            Fireball fireball = new Fireball(150, 30, 2, 1000, fireballIcon,
+            Fireball fireball = new Fireball(150, 30, 2, 1000, 10, fireballIcon,
                     new GamePosition(firstSkillPosition.getMaxX() + 15,
                             firstSkillPosition.getYPosition(), firstSkillPosition.getWidth(), firstSkillPosition.getHeight()),
                     fireBallAnimationLTR, fireBallAnimationRTL, redBorder, this, character);
@@ -978,7 +1130,7 @@ public class Gameplay extends JPanel implements Runnable {
                     sheetRTL.setImages(fireBallsRTL);
                     Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
                     Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
-                    Fireball fireball = new Fireball(20, 15, 2, 1000, null, null,
+                    Fireball fireball = new Fireball(20, 15, 2, 1000, 0, null, null,
                             fireBallAnimationLTR, fireBallAnimationRTL, this, character);
                     abilities.add(fireball);
                 }
@@ -986,7 +1138,7 @@ public class Gameplay extends JPanel implements Runnable {
             }
             if (character instanceof PirateCat) {
                 TimeHeal timeHeal = new TimeHeal(5000, 500, 5, 0,
-                        6000, null, null, null, null, this, character);
+                        6000, 0, null, null, null, null, this, character);
                 abilities.add(timeHeal);
                 return;
             }

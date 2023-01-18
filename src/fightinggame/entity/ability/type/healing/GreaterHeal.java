@@ -9,9 +9,9 @@ import fightinggame.entity.SpriteSheet;
 import java.awt.image.BufferedImage;
 public class GreaterHeal extends Heal {
 
-    public GreaterHeal(int healPoint, int id, long resetTime, SpriteSheet skillIcon,
+    public GreaterHeal(int healPoint, int id, long resetTime, int energyLost, SpriteSheet skillIcon,
             Animation currAnimation, GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
-        super(healPoint, id, "Greater Heal", resetTime, skillIcon, currAnimation, position, border, gameplay, character);
+        super(healPoint, id, "Greater Heal", resetTime, energyLost, skillIcon, currAnimation, position, border, gameplay, character);
     }
 
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 public class HealthBar {
 
     private int maxHealth;
+    private int maxEnergy;
     private BufferedImage avatar;
     private SpriteSheet sheet;
     private BufferedImage curHealthImage;
@@ -26,11 +27,12 @@ public class HealthBar {
     private Font customFont;
 
     public HealthBar(BufferedImage avatar, SpriteSheet healthBar, Character character, GamePosition healthBarPos,
-            GamePosition avatarPos, int maxHealth) {
+            GamePosition avatarPos, int maxHealth, int maxEnergy) {
         this.avatar = avatar;
         this.sheet = healthBar;
         this.character = character;
         this.maxHealth = maxHealth;
+        this.maxEnergy = maxEnergy;
         positions.put("health_bar_pos", healthBarPos);
         positions.put("avatar_pos", avatarPos);
         positions.put("character_name", new GamePosition(healthBarPos.getXPosition(),
@@ -130,6 +132,7 @@ public class HealthBar {
         g.drawString("Level: " + character.getStats().getLevel(), getNamePos().getXPosition(), getNamePos().getYPosition());
         if (getPlayerScore() != null) {
             g.drawString("EXP: " + character.getStats().getLevelExperience(), getPlayerScore().getXPosition() + 300, getPlayerScore().getYPosition()-30);
+             g.drawString("Energy: " + character.getStats().getEnergy(), getPlayerScore().getXPosition() + 300, getPlayerScore().getYPosition());
         }
         g.setFont(null);
         g.setColor(null);
@@ -242,7 +245,14 @@ public class HealthBar {
     public void setCanShow(boolean canShow) {
         this.canShow = canShow;
     }
-    
+
+    public int getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    public void setMaxEnergy(int maxEnergy) {
+        this.maxEnergy = maxEnergy;
+    }
     
 
 }

@@ -2,41 +2,40 @@ package fightinggame.entity.ability.type;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
-import fightinggame.entity.ability.Ability;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.ability.Ability;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public abstract class Heal extends Ability {
+public abstract class EnergyRecovery extends Ability {
 
-    protected int healPoint;
+    private int point;
 
-    public Heal(int healPoint, int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, Animation currAnimation,
-            GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
+    public EnergyRecovery(int point, int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, Animation currAnimation, GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
         super(id, name, resetTime, energyLost, skillIcon, currAnimation, position, border, gameplay, character);
-        this.healPoint = healPoint;
+        this.point = point;
     }
 
-    public boolean healing(Character character) {
+    public boolean recovery(Character character) {
         if (canUse) {
-            int maxHealth = character.getHealthBar().getMaxHealth();
-            int health = character.getStats().getHealth();
-            if (health == maxHealth) {
+            int maxEnergy = character.getHealthBar().getMaxEnergy();
+            int energy = character.getStats().getEnergy();
+            if (energy == maxEnergy) {
                 return false;
             }
-            int afterHeal = health + healPoint;
-            if (afterHeal > maxHealth) {
-                afterHeal = maxHealth;
+            int afterRecover = energy + point;
+            if (afterRecover > maxEnergy) {
+                afterRecover = maxEnergy;
             }
-            if (afterHeal > health) {
+            if (afterRecover > energy) {
                 if (character instanceof Player) {
                     character.getStats().useEnergy(energyLost);
                 }
-                character.getStats().setHealth(afterHeal);
-                character.setHealingAmount(healPoint);
+                character.getStats().addEnergy(point);
+                character.setEnergyAmount(point);
                 gameplay.getAudioPlayer().startThread("heal_sound", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                 canUse = false;
                 return true;
@@ -45,11 +44,11 @@ public abstract class Heal extends Ability {
         return false;
     }
 
-    public boolean healing() {
+    public boolean recovery() {
         if (character == null) {
             return false;
         }
-        return healing(character);
+        return recovery(character);
     }
 
     @Override
@@ -58,7 +57,7 @@ public abstract class Heal extends Ability {
             return false;
         }
         if (this.character.getStats().haveEnergy()) {
-            return healing();
+            return recovery();
         }
         return false;
     }
@@ -69,7 +68,7 @@ public abstract class Heal extends Ability {
             return false;
         }
         if (this.character.getStats().haveEnergy()) {
-            return healing(character);
+            return recovery(character);
         }
         return false;
     }
@@ -85,11 +84,12 @@ public abstract class Heal extends Ability {
         return false;
     }
 
-    public int getHealPoint() {
-        return healPoint;
+    public int getPoint() {
+        return point;
     }
 
-    public void setHealPoint(int healPoint) {
-        this.healPoint = healPoint;
+    public void setPoint(int point) {
+        this.point = point;
     }
+
 }

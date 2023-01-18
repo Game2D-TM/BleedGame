@@ -307,7 +307,7 @@ public class GameMap extends Background {
                                         && (objColumn >= playerColumn - 8 && objColumn <= playerColumn + 8)) {
                                     Platform platform = scene.get(objRow).get(objColumn);
                                     if (platform != null && platform.getPosition() != null) {
-                                        obj.setPosition(platform.middlePlatform(tileWidth, tileHeight));
+                                        obj.setPosition(platform.middleTopPlatform(tileWidth, tileHeight));
                                         if (obj.getPosition() != null) {
                                             g.drawImage(obj.getImage(), obj.getPosition().getXPosition(),
                                                     obj.getPosition().getYPosition(),

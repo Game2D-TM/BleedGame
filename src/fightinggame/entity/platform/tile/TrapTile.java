@@ -6,26 +6,30 @@ import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.Stats;
 import fightinggame.entity.enemy.Enemy;
+import fightinggame.entity.platform.tile.trap.TrapLocation;
 import fightinggame.entity.state.CharacterState;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
 public abstract class TrapTile extends Tile {
 
-    private int hitDamage;
-    private int hitCounter = 0;
-    private int hitLimit = 100;
-    private Animation trapAnimation;
-    private boolean activeTrap;
-    private int trapCounter = 0;
-    private int trapAniLimit = 150;
-    private int hitBounce = 80;
+    protected int hitDamage;
+    protected int hitCounter = 0;
+    protected int hitLimit = 100;
+    protected Animation trapAnimation;
+    protected boolean activeTrap;
+    protected int trapCounter = 0;
+    protected int trapAniLimit = 150;
+    protected int hitBounce = 80;
+    protected TrapLocation location;
 
-    public TrapTile(Animation trapAnimation, int hitDamage, String name, BufferedImage image, GamePosition position, Gameplay gameplay) {
+    public TrapTile(Animation trapAnimation, int hitDamage, TrapLocation location, String name, BufferedImage image, GamePosition position, Gameplay gameplay) {
         super(name, image, position, gameplay, -1, -1);
         this.hitDamage = hitDamage;
         this.trapAnimation = trapAnimation;
+        this.location = location;
     }
 
     @Override
@@ -39,10 +43,10 @@ public abstract class TrapTile extends Tile {
                 super.render(g);
             }
             // hitbox
-//            g.setColor(Color.red);
-//            g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-//                    getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
-//                    getWidthHitBox(), getHeightHitBox());
+            g.setColor(Color.red);
+            g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+                    getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+                    getWidthHitBox(), getHeightHitBox());
         }
     }
 
@@ -155,6 +159,14 @@ public abstract class TrapTile extends Tile {
 
     public void setHitBounce(int hitBounce) {
         this.hitBounce = hitBounce;
+    }
+
+    public TrapLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(TrapLocation location) {
+        this.location = location;
     }
     
 }
