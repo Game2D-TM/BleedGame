@@ -19,7 +19,7 @@ public class OptionKeyboardHandler implements KeyListener {
     public OptionKeyboardHandler(Map<String, BufferedImage> optionGuis, Gameplay gameplay) {
         this.gameplay = gameplay;
         optionMenu = new OptionMenu(optionGuis, gameplay);
-        if(Game.current == Game.ScreenState.fullscreen) {
+        if (Game.current == Game.ScreenState.fullscreen) {
             optionMenu.setFullscreen(true);
         }
     }
@@ -38,143 +38,143 @@ public class OptionKeyboardHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (Game.STATE == GameState.MENU_STATE) {
-            return;
-        }
-        int optionsIndex, subOptionIndex;
-        GameState state;
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_ESCAPE, KeyEvent.VK_P:
-                if (chooseIndex > 0) {
-                    chooseIndex = 0;
-                }
-                state = Game.STATE;
-                if (state == GameState.GAME_STATE) {
-                    Game.STATE = GameState.OPTION_STATE;
-                    optionMenu.setOpen(true);
-                } else {
-                    Game.STATE = GameState.GAME_STATE;
-                    optionMenu.setOpen(false);
-                    optionMenu.resetOptionsIndex();
-                }
-                break;
-            case KeyEvent.VK_UP:
-                if (chooseIndex > 0) {
-                    chooseIndex = 0;
-                }
-                optionsIndex = optionMenu.getOptionIndex();
-                if (optionsIndex > 0) {
-                    subOptionIndex = optionMenu.getSubOptionIndex();
-                    if (subOptionIndex > 0) {
-                        subOptionIndex--;
+        if (Game.STATE == GameState.GAME_STATE
+                || Game.STATE == GameState.OPTION_STATE) {
+            int optionsIndex, subOptionIndex;
+            GameState state;
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_ESCAPE, KeyEvent.VK_P:
+                    if (chooseIndex > 0) {
+                        chooseIndex = 0;
+                    }
+                    state = Game.STATE;
+                    if (state == GameState.GAME_STATE) {
+                        Game.STATE = GameState.OPTION_STATE;
+                        optionMenu.setOpen(true);
                     } else {
-                        subOptionIndex = optionMenu.getButtons().length - 1;
+                        Game.STATE = GameState.GAME_STATE;
+                        optionMenu.setOpen(false);
+                        optionMenu.resetOptionsIndex();
                     }
-                    optionMenu.setSubOptionIndex(subOptionIndex);
-                }
-                break;
-            case KeyEvent.VK_DOWN:
-                if (chooseIndex > 0) {
-                    chooseIndex = 0;
-                }
-                optionsIndex = optionMenu.getOptionIndex();
-                if (optionsIndex > 0) {
-                    subOptionIndex = optionMenu.getSubOptionIndex();
-                    if (subOptionIndex < optionMenu.getButtons().length - 1) {
-                        subOptionIndex++;
-                    } else {
-                        subOptionIndex = 0;
+                    break;
+                case KeyEvent.VK_UP:
+                    if (chooseIndex > 0) {
+                        chooseIndex = 0;
                     }
-                    optionMenu.setSubOptionIndex(subOptionIndex);
-                }
-                break;
-            case KeyEvent.VK_LEFT:
-                if (chooseIndex > 0) {
-                    switch (chooseIndex) {
-                        case 2:
-                            optionMenu.decreaseMusicVolume();
-                            break;
-                        case 3:
-                            optionMenu.decreaseSfxVolume();
-                            break;
-                    }
-                } else {
                     optionsIndex = optionMenu.getOptionIndex();
                     if (optionsIndex > 0) {
-                        optionsIndex--;
-                    } else {
-                        optionsIndex = optionMenu.getOptions().length - 1;
+                        subOptionIndex = optionMenu.getSubOptionIndex();
+                        if (subOptionIndex > 0) {
+                            subOptionIndex--;
+                        } else {
+                            subOptionIndex = optionMenu.getButtons().length - 1;
+                        }
+                        optionMenu.setSubOptionIndex(subOptionIndex);
                     }
-                    optionMenu.setOptionIndex(optionsIndex);
-                }
-                break;
-            case KeyEvent.VK_RIGHT:
-                if (chooseIndex > 0) {
-                    switch (chooseIndex) {
-                        case 2:
-                            optionMenu.increaseMusicVolume();
-                            break;
-                        case 3:
-                            optionMenu.increaseSfxVolume();
-                            break;
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if (chooseIndex > 0) {
+                        chooseIndex = 0;
                     }
-                } else {
                     optionsIndex = optionMenu.getOptionIndex();
-                    if (optionsIndex < optionMenu.getOptions().length - 1) {
-                        optionsIndex++;
+                    if (optionsIndex > 0) {
+                        subOptionIndex = optionMenu.getSubOptionIndex();
+                        if (subOptionIndex < optionMenu.getButtons().length - 1) {
+                            subOptionIndex++;
+                        } else {
+                            subOptionIndex = 0;
+                        }
+                        optionMenu.setSubOptionIndex(subOptionIndex);
+                    }
+                    break;
+                case KeyEvent.VK_LEFT:
+                    if (chooseIndex > 0) {
+                        switch (chooseIndex) {
+                            case 2:
+                                optionMenu.decreaseMusicVolume();
+                                break;
+                            case 3:
+                                optionMenu.decreaseSfxVolume();
+                                break;
+                        }
                     } else {
-                        optionsIndex = 0;
+                        optionsIndex = optionMenu.getOptionIndex();
+                        if (optionsIndex > 0) {
+                            optionsIndex--;
+                        } else {
+                            optionsIndex = optionMenu.getOptions().length - 1;
+                        }
+                        optionMenu.setOptionIndex(optionsIndex);
                     }
-                    optionMenu.setOptionIndex(optionsIndex);
-                }
-                break;
-            case KeyEvent.VK_ENTER:
-                optionsIndex = optionMenu.getOptionIndex();
-                if (optionsIndex > 0) {
-                    subOptionIndex = optionMenu.getSubOptionIndex();
-                    switch (subOptionIndex) {
-                        case 0:
-                            if (chooseIndex > 0) {
-                                chooseIndex = 0;
-                            }
-                            Game.STATE = GameState.GAME_STATE;
-                            optionMenu.setOpen(false);
-                            optionMenu.resetOptionsIndex();
-                            break;
-                        case 1:
-                            if (chooseIndex > 0) {
-                                chooseIndex = 0;
-                            }
-                            if (optionMenu.isFullscreen()) {
-                                gameplay.getGame().changeWindowMode(Game.ScreenState.windowed);
-                                gameplay.resolutionChange(1650, 950);
-                            } else {
-                                gameplay.getGame().changeWindowMode(Game.ScreenState.fullscreen);
-                                gameplay.resolutionChange(1680, 1050);
-                            }
-                            optionMenu.setFullscreen(!optionMenu.isFullscreen());
-                            break;
-                        case 2:
-                            chooseIndex = 2;
-                            break;
-                        case 3:
-                            chooseIndex = 3;
-                            break;
-                        case 4:
-                            if (chooseIndex > 0) {
-                                chooseIndex = 0;
-                            }
-                            gameplay.getAudioPlayer().closeThread("background_music");
-                            gameplay.getGame().goBackToMenu();
-                            optionMenu.resetOptionsIndex();
-                            break;
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if (chooseIndex > 0) {
+                        switch (chooseIndex) {
+                            case 2:
+                                optionMenu.increaseMusicVolume();
+                                break;
+                            case 3:
+                                optionMenu.increaseSfxVolume();
+                                break;
+                        }
+                    } else {
+                        optionsIndex = optionMenu.getOptionIndex();
+                        if (optionsIndex < optionMenu.getOptions().length - 1) {
+                            optionsIndex++;
+                        } else {
+                            optionsIndex = 0;
+                        }
+                        optionMenu.setOptionIndex(optionsIndex);
                     }
-                } else {
-                    Game.STATE = GameState.GAME_STATE;
-                    optionMenu.setOpen(false);
-                    optionMenu.resetOptionsIndex();
-                }
-                break;
+                    break;
+                case KeyEvent.VK_ENTER:
+                    optionsIndex = optionMenu.getOptionIndex();
+                    if (optionsIndex > 0) {
+                        subOptionIndex = optionMenu.getSubOptionIndex();
+                        switch (subOptionIndex) {
+                            case 0:
+                                if (chooseIndex > 0) {
+                                    chooseIndex = 0;
+                                }
+                                Game.STATE = GameState.GAME_STATE;
+                                optionMenu.setOpen(false);
+                                optionMenu.resetOptionsIndex();
+                                break;
+                            case 1:
+                                if (chooseIndex > 0) {
+                                    chooseIndex = 0;
+                                }
+                                if (optionMenu.isFullscreen()) {
+                                    gameplay.getGame().changeWindowMode(Game.ScreenState.windowed);
+                                    gameplay.resolutionChange(1650, 950);
+                                } else {
+                                    gameplay.getGame().changeWindowMode(Game.ScreenState.fullscreen);
+                                    gameplay.resolutionChange(1680, 1050);
+                                }
+                                optionMenu.setFullscreen(!optionMenu.isFullscreen());
+                                break;
+                            case 2:
+                                chooseIndex = 2;
+                                break;
+                            case 3:
+                                chooseIndex = 3;
+                                break;
+                            case 4:
+                                if (chooseIndex > 0) {
+                                    chooseIndex = 0;
+                                }
+                                gameplay.getAudioPlayer().closeThread("background_music");
+                                gameplay.getGame().goBackToMenu();
+                                optionMenu.resetOptionsIndex();
+                                break;
+                        }
+                    } else {
+                        Game.STATE = GameState.GAME_STATE;
+                        optionMenu.setOpen(false);
+                        optionMenu.resetOptionsIndex();
+                    }
+                    break;
+            }
         }
     }
 
