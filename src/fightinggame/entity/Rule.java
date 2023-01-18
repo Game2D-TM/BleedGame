@@ -163,6 +163,7 @@ public class Rule {
         if (quest == null) {
             return;
         }
+        quest.setState(QuestState.ON_GOING);
         quests.putIfAbsent(quest.getId(), quest);
     }
 

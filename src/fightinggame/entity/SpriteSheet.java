@@ -1,7 +1,6 @@
 package fightinggame.entity;
 
 import fightinggame.resource.ImageManager;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -53,8 +52,8 @@ public class SpriteSheet {
         Image image = images.get(spriteIndex);
         if (image != null) {
             g.drawImage(image, x, y, width, height, null);
-            g.setColor(Color.red);
             //rectangle
+//            g.setColor(Color.red);
 //            g.drawRect(x, y, width, height);
         }
     }

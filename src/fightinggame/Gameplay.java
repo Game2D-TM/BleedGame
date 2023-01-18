@@ -53,7 +53,6 @@ import fightinggame.entity.quest.type.EnemyRequired;
 import fightinggame.entity.quest.type.ItemRequired;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.state.GameState;
-import fightinggame.entity.state.QuestState;
 import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
 import fightinggame.input.handler.game.player.PlayerAbilityHandler;
 import fightinggame.input.handler.game.player.PlayerMouseHandler;
@@ -71,7 +70,7 @@ import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
 
-    public static int GRAVITY = 7; //7
+    public static final int GRAVITY = 7; //7
     private int currentFps = 0;
 
     private Background background;
@@ -163,7 +162,7 @@ public class Gameplay extends JPanel implements Runnable {
 //        pirateCatInit(getPlatforms().get(14).get(15));
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
-        initGameItems();
+        initGameQuests();
         AudioPlayer.audioPlayers.clear();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
@@ -345,7 +344,7 @@ public class Gameplay extends JPanel implements Runnable {
         }
     }
 
-    public void initGameItems() {
+    public void initGameQuests() {
         //Init Key
         SpriteSheet keySheet = new SpriteSheet();
         keySheet.add("assets/res/item/key.png");
@@ -377,14 +376,13 @@ public class Gameplay extends JPanel implements Runnable {
         
         //Init Quest
         if (rule != null) {
-            Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor Orange", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State",
+            Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State",
                     player, this);
             quest.getRequireds().add(new ItemRequired(keyItem, 1, "Find Mystery Key", quest));
             quest.getRequireds().add(new EnemyRequired("Dior Firor",
                     15, "Kill Dior Firor", quest));
             quest.getRequireds().add(new EnemyRequired("Zach Fowler",
                     1, "Defeat Zach Fowler", quest));
-            quest.setState(QuestState.ON_GOING);
             rule.addQuest(quest);
         }
     }

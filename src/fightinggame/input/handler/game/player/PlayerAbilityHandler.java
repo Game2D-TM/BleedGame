@@ -32,6 +32,11 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_8) {
+            player.getStats().setHealth(100);
+            player.getStats().addEnergy(100);
+            player.setIsDeath(false);
+        }
         if (!player.isDeath() && Game.STATE == GameState.GAME_STATE) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_1:

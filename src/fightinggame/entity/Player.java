@@ -2,6 +2,8 @@ package fightinggame.entity;
 
 import fightinggame.entity.state.CharacterState;
 import fightinggame.Gameplay;
+import fightinggame.animation.effect.Effect;
+import fightinggame.animation.effect.player.PlayerHitEffect;
 import fightinggame.entity.ability.Ability;
 import fightinggame.animation.player.*;
 import fightinggame.entity.enemy.Enemy;
@@ -26,6 +28,7 @@ public class Player extends Character {
     private int speakCounter = 0;
     private int speakDialogueIndex = 1;
     private final List<Enemy> enemiesKilled = new ArrayList<>();
+    private Effect hitEffect;
 
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations,
@@ -45,6 +48,10 @@ public class Player extends Character {
                 new GamePosition(healthBar.getNamePos().getXPosition(),
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
         dialogue = new Dialogue(this, gameplay);
+        SpriteSheet exploreFireBallSheet = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect9.png"),
+                0, 0, 18, 18,
+                0, 0, 18, 18, 4);
+        hitEffect = new PlayerHitEffect(0, exploreFireBallSheet, stunTime);
     }
 
     @Override
@@ -62,10 +69,14 @@ public class Player extends Character {
         super.tick();
         healthBar.tick();
         if (isAttacked && !isDeath) {
+            if (hitEffect != null) {
+                hitEffect.tick();
+            }
             isStunCounter++;
             if (isStunCounter > stunTime) {
                 isAttacked = false;
                 isStunCounter = 0;
+                hitEffect.resetEffectCounter();
                 if (isLTR) {
                     currAnimation = animations.get(CharacterState.IDLE_LTR);
                 } else {
@@ -114,6 +125,13 @@ public class Player extends Character {
         if (isSpeak) {
             if (dialogue != null) {
                 dialogue.render(g);
+            }
+        }
+        if (hitEffect != null) {
+            if (hitEffect.isActive()) {
+                hitEffect.render(g, getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+                         getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
+                         getWidthHitBox(), getHeightHitBox() / 3);
             }
         }
 //        g.setColor(Color.red);
@@ -267,6 +285,7 @@ public class Player extends Character {
                         || (attackHitBox.getMaxY() > getYHitBox() && attackHitBox.getMaxY() <= getYMaxHitBox()
                         && attackHitBox.getYPosition() < getYHitBox())))) {
                     isAttacked = true;
+                    hitEffect.setActive(true);
                     if (attackDamage == -1) {
                         receiveDamage = stats.getHit(character.getStats());
                     } else {
@@ -283,6 +302,9 @@ public class Player extends Character {
                             currAnimation = animations.get(CharacterState.DEATH_LTR);
                         } else {
                             currAnimation = animations.get(CharacterState.DEATH_RTL);
+                        }
+                        if(hitEffect != null) {
+                            hitEffect.resetEffectCounter();
                         }
                     } else {
                         if (character.getStats().getBounceRange() < 50) {
@@ -443,5 +465,9 @@ public class Player extends Character {
     public void setStunTime(int stunTime) {
         this.stunTime = stunTime;
     }
-    
+
+    public Effect getHitEffect() {
+        return hitEffect;
+    }
+
 }
