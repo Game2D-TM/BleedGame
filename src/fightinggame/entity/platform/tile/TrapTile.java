@@ -8,7 +8,6 @@ import fightinggame.entity.Stats;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.platform.tile.trap.TrapLocation;
 import fightinggame.entity.state.CharacterState;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -43,10 +42,10 @@ public abstract class TrapTile extends Tile {
                 super.render(g);
             }
             // hitbox
-            g.setColor(Color.red);
-            g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                    getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
-                    getWidthHitBox(), getHeightHitBox());
+//            g.setColor(Color.red);
+//            g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                    getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+//                    getWidthHitBox(), getHeightHitBox());
         }
     }
 
