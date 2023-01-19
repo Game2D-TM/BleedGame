@@ -11,23 +11,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Entity {
+public class SpriteSheet {
 
     private BufferedImage sprite;
     private List<BufferedImage> images;
     private int spriteCounter = 0;
     private int spriteIndex = 0;
 
-    public Entity() {
+    public SpriteSheet() {
         images = new ArrayList<>();
     }
 
-    private Entity(BufferedImage sprite, List<BufferedImage> images) {
+    private SpriteSheet(BufferedImage sprite, List<BufferedImage> images) {
         this.sprite = sprite;
         this.images = images;
     }
 
-    public Entity(BufferedImage sprite, int cutX, int cutY, int cutWidth, int cutHeight,
+    public SpriteSheet(BufferedImage sprite, int cutX, int cutY, int cutWidth, int cutHeight,
             int x, int y, int width, int height, int imageNum) {
         this.sprite = sprite;
         getImages(cutX, cutY, cutWidth, cutHeight, x, y, width, height, imageNum);
@@ -105,7 +105,7 @@ public class Entity {
         return images.get(index);
     }
 
-    public static Map<String, Entity> loadSpriteSheetFromFolder(String folderPath) {
+    public static Map<String, SpriteSheet> loadSpriteSheetFromFolder(String folderPath) {
         try {
             File[] directories = new File(folderPath).listFiles(File::isDirectory);
             if (directories == null) {
@@ -114,9 +114,9 @@ public class Entity {
             if (directories.length == 0) {
                 return null;
             }
-            Map<String, Entity> spriteSheetMap = new HashMap<>();
+            Map<String, SpriteSheet> spriteSheetMap = new HashMap<>();
             for (File dir : directories) {
-                Entity a = new Entity();
+                SpriteSheet a = new SpriteSheet();
                 if (dir.listFiles().length == 0) {
                     continue;
                 }
@@ -133,9 +133,9 @@ public class Entity {
         return null;
     }
 
-    public Entity convertRTL() {
+    public SpriteSheet convertRTL() {
         List<BufferedImage> flipped = new ArrayList<>();
-        Entity result = new Entity();
+        SpriteSheet result = new SpriteSheet();
         for (int i = 0; i < this.images.size(); i++) {
             BufferedImage sprite = images.get(i);
             sprite = ImageManager.flipImage(sprite);
@@ -145,9 +145,9 @@ public class Entity {
         return result;
     }
 
-    public Entity rotateSheet(int radian) {
+    public SpriteSheet rotateSheet(int radian) {
         List<BufferedImage> rotate = new ArrayList<>();
-        Entity result = new Entity();
+        SpriteSheet result = new SpriteSheet();
         for (int i = 0; i < this.images.size(); i++) {
             BufferedImage sprite = images.get(i);
             sprite = ImageManager.rotateImage(sprite, radian);
@@ -158,10 +158,10 @@ public class Entity {
     }
 
     @Override
-    public Entity clone() {
+    public SpriteSheet clone() {
         List<BufferedImage> nImages = new ArrayList<>();
         nImages.addAll(images);
-        return new Entity(sprite, nImages);
+        return new SpriteSheet(sprite, nImages);
     }
 
     public int getSpriteCounter() {

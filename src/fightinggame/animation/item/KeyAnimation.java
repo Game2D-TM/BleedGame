@@ -1,11 +1,11 @@
 package fightinggame.animation.item;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 
 public class KeyAnimation extends Animation{
     
-    public KeyAnimation(int id, Entity sheet, int tickToExecute) {
+    public KeyAnimation(int id, SpriteSheet sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
     

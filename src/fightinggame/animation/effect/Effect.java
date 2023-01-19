@@ -1,7 +1,7 @@
 package fightinggame.animation.effect;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 
 public abstract class Effect extends Animation {
@@ -10,7 +10,7 @@ public abstract class Effect extends Animation {
     protected int effectCounter = 0;
     protected int effectLimit;
 
-    public Effect(int id, Entity sheet, int effectLimit) {
+    public Effect(int id, SpriteSheet sheet, int effectLimit) {
         super(id, sheet, 0);
         if (sheet.getImages().isEmpty()) {
             tickToExecute = -1;

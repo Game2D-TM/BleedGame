@@ -6,7 +6,7 @@ import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.item.Item;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +21,13 @@ public class Inventory {
     private int row = 6;
     private int column = 10;
     private Character character;
-    private Entity sheet;
+    private SpriteSheet sheet;
     private List<List<SlotInventory>> inventorySlots = new ArrayList();
     private GamePosition position;
     private Gameplay gameplay;
     private boolean isOpen;
 
-    public Inventory(Character character, Entity sheet, Gameplay gameplay) {
+    public Inventory(Character character, SpriteSheet sheet, Gameplay gameplay) {
         this.character = character;
         this.sheet = sheet;
         this.position = new GamePosition(0, 0, 0, 0);
@@ -47,7 +47,7 @@ public class Inventory {
                     List<SlotInventory> images = new ArrayList<>();
                     tempX = position.getXPosition();
                     for (int j = 1; j <= column; j++) {
-                        Entity nSheet = new Entity();
+                        SpriteSheet nSheet = new SpriteSheet();
                         nSheet.getImages().add(sheet.getImage(0));
                         nSheet.getImages().add(sheet.getImage(1));
                         nSheet.getImages().add(sheet.getImage(2));
@@ -317,11 +317,11 @@ public class Inventory {
         this.character = character;
     }
 
-    public Entity getSheet() {
+    public SpriteSheet getSheet() {
         return sheet;
     }
 
-    public void setSheet(Entity sheet) {
+    public void setSheet(SpriteSheet sheet) {
         this.sheet = sheet;
     }
 

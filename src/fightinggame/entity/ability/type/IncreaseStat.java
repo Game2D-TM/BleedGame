@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 
 public abstract class IncreaseStat extends Ability{
     
@@ -12,7 +12,7 @@ public abstract class IncreaseStat extends Ability{
     protected double amountIncrease;
     
     public IncreaseStat(int id, String name, int amountIncrease,
-            Entity skillIcon, GamePosition position, 
+            SpriteSheet skillIcon, GamePosition position, 
             Gameplay gameplay, Character character) {
         super(id, name, -1, 0, skillIcon, position, null, null, gameplay, character);
         this.amountIncrease = amountIncrease;

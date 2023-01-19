@@ -4,13 +4,13 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.IncreaseStat;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import java.util.List;
 
 public class AttackIncrease extends IncreaseStat{
 
     public AttackIncrease(int id, String name, int amountIncrease, 
-            Entity skillIcon, GamePosition position, Gameplay gameplay, Character character) {
+            SpriteSheet skillIcon, GamePosition position, Gameplay gameplay, Character character) {
         super(id, name, amountIncrease, skillIcon, position, gameplay, character);
     }
 

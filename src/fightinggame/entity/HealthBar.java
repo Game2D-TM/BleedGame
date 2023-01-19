@@ -15,7 +15,7 @@ public class HealthBar {
     private int maxHealth;
     private int maxEnergy;
     private BufferedImage avatar;
-    private Entity sheet;
+    private SpriteSheet sheet;
     private BufferedImage curHealthImage;
     private Shape ovalImage;
     private Character character;
@@ -26,7 +26,7 @@ public class HealthBar {
     private boolean canShow = true;
     private Font customFont;
 
-    public HealthBar(BufferedImage avatar, Entity healthBar, Character character, GamePosition healthBarPos,
+    public HealthBar(BufferedImage avatar, SpriteSheet healthBar, Character character, GamePosition healthBarPos,
             GamePosition avatarPos, int maxHealth, int maxEnergy) {
         this.avatar = avatar;
         this.sheet = healthBar;
@@ -178,11 +178,11 @@ public class HealthBar {
         this.avatar = avatar;
     }
 
-    public Entity getSheet() {
+    public SpriteSheet getSheet() {
         return sheet;
     }
 
-    public void setSheet(Entity sheet) {
+    public void setSheet(SpriteSheet sheet) {
         this.sheet = sheet;
     }
 

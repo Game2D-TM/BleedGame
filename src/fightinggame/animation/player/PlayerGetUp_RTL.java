@@ -1,11 +1,11 @@
 package fightinggame.animation.player;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 
 public class PlayerGetUp_RTL extends Animation{
     
-    public PlayerGetUp_RTL(int id, Entity sheet, int tickToExecute) {
+    public PlayerGetUp_RTL(int id, SpriteSheet sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
     

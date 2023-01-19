@@ -5,7 +5,7 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.ability.type.Heal;
 import java.awt.image.BufferedImage;
 
@@ -18,7 +18,7 @@ public class TimeHeal extends Heal {
     private boolean isUse;
 
     public TimeHeal(long timeLimit, int timeUseLimit, int healPoint, int id,
-            long resetTime, int energyLost, Entity skillIcon, Animation currAnimation,
+            long resetTime, int energyLost, SpriteSheet skillIcon, Animation currAnimation,
             GamePosition position, BufferedImage border,
             Gameplay gameplay, Character character) {
         super(healPoint, id, "Time Heal", resetTime, energyLost, skillIcon, currAnimation, position, border, gameplay, character);

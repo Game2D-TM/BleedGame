@@ -7,7 +7,7 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.type.Throwable;
 import fightinggame.entity.enemy.Enemy;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import fightinggame.entity.Character;
@@ -21,20 +21,20 @@ public class Fireball extends Throwable {
     private boolean isHit;
 
     public Fireball(int attackDamage, int speed, int id, long resetTime, int energyLost,
-            Entity skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL,
+            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL,
             Gameplay gameplay, Character character) {
         super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, gameplay, character);
-        Entity exploreFireBallSheet = new Entity(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect10.png"),
+        SpriteSheet exploreFireBallSheet = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect10.png"),
                 0, 0, 48, 48,
                 0, 0, 48, 48, 4);
         exploreEffect = new FireBallExploreEffect(0, exploreFireBallSheet, 150);
     }
 
-    public Fireball(int attackDamage, int speed, int id, long resetTime, int energyLost, Entity skillIcon,
+    public Fireball(int attackDamage, int speed, int id, long resetTime, int energyLost, SpriteSheet skillIcon,
             GamePosition position, Animation animationLTR, Animation animationRTL,
             BufferedImage border, Gameplay gameplay, Character character) {
         super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
-        Entity exploreFireBallSheet = new Entity(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect10.png"),
+        SpriteSheet exploreFireBallSheet = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect10.png"),
                 0, 0, 48, 48,
                 0, 0, 48, 48, 4);
         exploreEffect = new FireBallExploreEffect(0, exploreFireBallSheet, 150);

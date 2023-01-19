@@ -1,15 +1,15 @@
 package fightinggame.animation.player;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 
 public class PlayerJump_LTR extends Animation{
     
-    public PlayerJump_LTR(int id, Entity sheet, int tickToExecute) {
+    public PlayerJump_LTR(int id, SpriteSheet sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
 
-    public PlayerJump_LTR(int id, Entity sheet) {
+    public PlayerJump_LTR(int id, SpriteSheet sheet) {
         super(id, sheet);
     }
 

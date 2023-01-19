@@ -1,15 +1,15 @@
 package fightinggame.animation.player;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 
 public class PlayerLightAttack extends Animation{
     
-    public PlayerLightAttack(int id, Entity sheet, int tickToExecute) {
+    public PlayerLightAttack(int id, SpriteSheet sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
 
-    public PlayerLightAttack(int id, Entity sheet) {
+    public PlayerLightAttack(int id, SpriteSheet sheet) {
         super(id, sheet);
     }
     

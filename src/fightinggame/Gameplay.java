@@ -87,17 +87,17 @@ public class Gameplay extends JPanel implements Runnable {
     private OptionKeyboardHandler optionHandler;
     private TransitionScreen transitionScreen;
     private LoadingScreen loadingScreen;
-    private Map<String, Entity> playerSpriteSheetMap;
+    private Map<String, SpriteSheet> playerSpriteSheetMap;
 
     public Gameplay(Game game) {
         this.game = game;
         setDoubleBuffered(true);
         optionHandler = new OptionKeyboardHandler(ImageManager.loadImagesFromFolderToMap(DataManager.OPTION_GUIS), this);
         game.addKeyListener(optionHandler);
-        playerSpriteSheetMap = Entity.loadSpriteSheetFromFolder("assets/res/player");
+        playerSpriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
         transitionScreen = new TransitionScreen(this);
         audioPlayer = new AudioPlayer(DataManager.SOUNDS_PATH);
-        Entity loadingBackgroundSheet = new Entity();
+        SpriteSheet loadingBackgroundSheet = new SpriteSheet();
         loadingBackgroundSheet.add("assets/res/background/Loading/loading.png");
         BackgroundAnimation animation = new BackgroundAnimation(0, loadingBackgroundSheet, -1);
         loadingScreen = new LoadingScreen(animation, new ProgressBar(ImageManager.loadImagesFromFoldersToList("assets/res/gui/option_menu/Progressbar")),
@@ -204,12 +204,12 @@ public class Gameplay extends JPanel implements Runnable {
                             continue;
                         }
                         TrapLocation trapLoc = TrapLocation.valueOf(data[2].toUpperCase());
-                        Entity spearSheet = null;
-                        Entity spikeSheet = null;
+                        SpriteSheet spearSheet = null;
+                        SpriteSheet spikeSheet = null;
                         int width = -1, height = -1;
                         switch (trapType) {
                             case SPEAR:
-                                spearSheet = new Entity(ImageManager.loadImage("assets/res/background/Trap/Spear.png"),
+                                spearSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spear.png"),
                                         0, 0, 16, 64,
                                         0, 0, 16, 64, 7);
                                 if (trapLoc == TrapLocation.RIGHT
@@ -222,7 +222,7 @@ public class Gameplay extends JPanel implements Runnable {
                                 }
                                 break;
                             case SPIKE:
-                                spikeSheet = new Entity(ImageManager.loadImage("assets/res/background/Trap/Spike_B.png"),
+                                spikeSheet = new SpriteSheet(ImageManager.loadImage("assets/res/background/Trap/Spike_B.png"),
                                         0, 0, 32, 32,
                                         0, 0, 32, 32, 10); // 0, 8, 32, 14
                                 if (trapLoc == TrapLocation.RIGHT
@@ -347,7 +347,7 @@ public class Gameplay extends JPanel implements Runnable {
     public void initGameQuests() {
         
         //Init Key
-        Entity keySheet = new Entity();
+        SpriteSheet keySheet = new SpriteSheet();
         keySheet.add("assets/res/item/key.png");
         KeyAnimation keyAnimation = new KeyAnimation(1, keySheet, -1);
         Key keyItem = new Key(1, "Key Item", keyAnimation, null, this, 1);
@@ -360,7 +360,7 @@ public class Gameplay extends JPanel implements Runnable {
 
         //Energy Potion x15
         int amount = 15;
-        Entity energyPotionSheet = new Entity();
+        SpriteSheet energyPotionSheet = new SpriteSheet();
         energyPotionSheet.add("assets/res/item/s_energy_potion.png");
         PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
         Item item = new SmallEnergyPotion(itemCount, energyPotionAnimation, null,
@@ -597,7 +597,7 @@ public class Gameplay extends JPanel implements Runnable {
             }
             try {
                 tick();
-//                revalidate();
+                revalidate();
                 repaint();
             } catch (Exception ex) {
 //                System.out.println(ex.toString());
@@ -627,35 +627,35 @@ public class Gameplay extends JPanel implements Runnable {
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition(), 300, 259);
         String loc = EnemyAnimationResources.CAT_BOSS_SHEET_LOC;
-        Entity idleLTRSheet = new Entity(ImageManager.loadImage(loc + "/Idle.png"),
+        SpriteSheet idleLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Idle.png"),
                 0, 0, 96, 48,
                 27, 11, 40, 37, 5);
-        Entity hitLTRSheet = new Entity(ImageManager.loadImage(loc + "/Hit.png"),
+        SpriteSheet hitLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Hit.png"),
                 0, 0, 96, 48,
                 27, 7, 40, 41, 4);
-        Entity deathLTRSheet = new Entity(ImageManager.loadImage(loc + "/Death.png"),
+        SpriteSheet deathLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Death.png"),
                 0, 0, 96, 48,
                 30, 7, 40, 41, 15);
-        Entity runLTRSheet = new Entity(ImageManager.loadImage(loc + "/Run.png"),
+        SpriteSheet runLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Run.png"),
                 0, 0, 96, 48,
                 27, 11, 40, 37, 8);
-        Entity attack01LTRSheet = new Entity(ImageManager.loadImage(loc + "/Attack01.png"),
+        SpriteSheet attack01LTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Attack01.png"),
                 384, 0, 96, 48,
                 29, 11, 65, 37, 2);
-        Entity attack02LTRSheet = new Entity(ImageManager.loadImage(loc + "/Attack02.png"),
+        SpriteSheet attack02LTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Attack02.png"),
                 0, 0, 96, 48,
                 24, 11, 42, 37, 6);
-        Entity attack03LTRSheet = new Entity(ImageManager.loadImage(loc + "/Attack03.png"),
+        SpriteSheet attack03LTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Attack03.png"),
                 0, 0, 96, 48,
                 27, 11, 40, 37, 7);
 
-        Entity idleRTLSheet = idleLTRSheet.convertRTL();
-        Entity hitRTLSheet = hitLTRSheet.convertRTL();
-        Entity deathRTLSheet = deathLTRSheet.convertRTL();
-        Entity runRTLSheet = runLTRSheet.convertRTL();
-        Entity attack01RTLSheet = attack01LTRSheet.convertRTL();
-        Entity attack02RTLSheet = attack02LTRSheet.convertRTL();
-        Entity attack03RTLSheet = attack03LTRSheet.convertRTL();
+        SpriteSheet idleRTLSheet = idleLTRSheet.convertRTL();
+        SpriteSheet hitRTLSheet = hitLTRSheet.convertRTL();
+        SpriteSheet deathRTLSheet = deathLTRSheet.convertRTL();
+        SpriteSheet runRTLSheet = runLTRSheet.convertRTL();
+        SpriteSheet attack01RTLSheet = attack01LTRSheet.convertRTL();
+        SpriteSheet attack02RTLSheet = attack02LTRSheet.convertRTL();
+        SpriteSheet attack03RTLSheet = attack03LTRSheet.convertRTL();
 
         EnemyIdle idleRTL = new EnemyIdle(0, idleRTLSheet);
         EnemyIdle idleLTR = new EnemyIdle(1, idleLTRSheet);
@@ -733,7 +733,7 @@ public class Gameplay extends JPanel implements Runnable {
                 diorColor = DiorColor.Yellow;
                 break;
         }
-        Map<String, Entity> spriteSheetMap = Entity.loadSpriteSheetFromFolder("assets/res/enemy/Dior Firor/"
+        Map<String, SpriteSheet> spriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/enemy/Dior Firor/"
                 + diorColor.toString());
         // Init enemy position
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
@@ -815,16 +815,16 @@ public class Gameplay extends JPanel implements Runnable {
                 middlePlatform.getYPosition(), 350, 259);
 
         //Init Attack Move
-        Entity attackSpecialLTR = playerSpriteSheetMap.get("Attack01").clone();
-        Entity attackSpecialRTL = playerSpriteSheetMap.get("Attack01").convertRTL();
+        SpriteSheet attackSpecialLTR = playerSpriteSheetMap.get("Attack01").clone();
+        SpriteSheet attackSpecialRTL = playerSpriteSheetMap.get("Attack01").convertRTL();
         // Add special attack new sheet
         attackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("Attack02").getImages());
         attackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("Attack03").getImages());
         attackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("Attack02").convertRTL().getImages());
         attackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("Attack03").convertRTL().getImages());
         // Init Fire Attack Move
-        Entity fireAttackSpecialLTR = playerSpriteSheetMap.get("FireAttack01").clone();
-        Entity fireAttackSpecialRTL = playerSpriteSheetMap.get("FireAttack01").convertRTL();
+        SpriteSheet fireAttackSpecialLTR = playerSpriteSheetMap.get("FireAttack01").clone();
+        SpriteSheet fireAttackSpecialRTL = playerSpriteSheetMap.get("FireAttack01").convertRTL();
         // Add special attack new sheet
         fireAttackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("FireAttack02").getImages());
         fireAttackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("FireAttack03").getImages());
@@ -995,7 +995,7 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.LEDGEGRAB_RTL, ledgeGrabRTL);//New
 
         //Init Inventory
-        Entity inventorySheet = new Entity();
+        SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/inventory"));
 
         //Init Player
@@ -1009,7 +1009,7 @@ public class Gameplay extends JPanel implements Runnable {
 
         //Init Items
         //Init Fire Sword
-        Entity fireSwordSheet = new Entity();
+        SpriteSheet fireSwordSheet = new SpriteSheet();
         fireSwordSheet.add("assets/res/item/icon_items/Swords/Fire_Sworld.png");
         FireSwordAnimation fireSwordAnimation = new FireSwordAnimation(1, fireSwordSheet, -1);
         Map<CharacterState, Animation> itemEquipAnimations = new HashMap<CharacterState, Animation>();
@@ -1070,7 +1070,7 @@ public class Gameplay extends JPanel implements Runnable {
         int randNum = random.nextInt(2);
         Item item = null;
         if (randNum == 0) {
-            Entity healthPotionSheet = new Entity();
+            SpriteSheet healthPotionSheet = new SpriteSheet();
             healthPotionSheet.add("assets/res/item/s_health_potion.png");
             PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
             item = new SmallHealthPotion(itemCount, healthPotionAnimation, character,
@@ -1078,7 +1078,7 @@ public class Gameplay extends JPanel implements Runnable {
             Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, this, character);
             item.getAbilities().add(potionHeal);
         } else {
-            Entity energyPotionSheet = new Entity();
+            SpriteSheet energyPotionSheet = new SpriteSheet();
             energyPotionSheet.add("assets/res/item/s_energy_potion.png");
             PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
             item = new SmallEnergyPotion(itemCount, energyPotionAnimation, character,
@@ -1096,17 +1096,17 @@ public class Gameplay extends JPanel implements Runnable {
         List<BufferedImage> fireBallsRTL = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL", 30, 365, 580, 200);
         if (character instanceof Player) {
             BufferedImage redBorder = ImageManager.loadImage("assets/res/ability/border-red.png");
-            Entity greaterHealSheet = new Entity();
+            SpriteSheet greaterHealSheet = new SpriteSheet();
             greaterHealSheet.getImages().add(ImageManager.loadImage("assets/res/ability/Greater-Heal.png"));
             GamePosition firstSkillPosition = new GamePosition(character.getHealthBar().getHealthBarPos().getXPosition(),
                     character.getHealthBar().getHealthBarPos().getMaxY() + 90, 80, 80);
             Ability greaterHeal = new GreaterHeal(15, 1, 2500, 5, greaterHealSheet, null,
                     firstSkillPosition, redBorder, this, character);
             abilities.add(greaterHeal);
-            Entity fireballIcon = new Entity();
+            SpriteSheet fireballIcon = new SpriteSheet();
             fireballIcon.getImages().add(ImageManager.loadImage("assets/res/ability/Fire-Ball.png"));
-            Entity sheetLTR = new Entity();
-            Entity sheetRTL = new Entity();
+            SpriteSheet sheetLTR = new SpriteSheet();
+            SpriteSheet sheetRTL = new SpriteSheet();
             if (fireBallsLTR == null || fireBallsRTL == null) {
                 return;
             }
@@ -1123,8 +1123,8 @@ public class Gameplay extends JPanel implements Runnable {
         } else {
             if (character instanceof DiorEnemy) {
                 if (((DiorEnemy) character).getColor() == DiorColor.Red) {
-                    Entity sheetLTR = new Entity();
-                    Entity sheetRTL = new Entity();
+                    SpriteSheet sheetLTR = new SpriteSheet();
+                    SpriteSheet sheetRTL = new SpriteSheet();
                     if (fireBallsLTR == null || fireBallsRTL == null) {
                         return;
                     }

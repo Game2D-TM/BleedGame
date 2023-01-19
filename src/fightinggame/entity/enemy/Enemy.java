@@ -20,7 +20,7 @@ import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import java.io.File;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public abstract class Enemy extends Character {
 
     @Override
     protected void healthBarInit(int maxHealth) {
-        Entity healthBarSheet = new Entity();
+        SpriteSheet healthBarSheet = new SpriteSheet();
         healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
                 1, 2, 126, 12));
         healthBar = new HealthBar(avatar, healthBarSheet, this,

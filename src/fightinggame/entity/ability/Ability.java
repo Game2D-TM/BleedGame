@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.input.handler.GameHandler;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.Character;
 import java.awt.Color;
 import java.awt.Font;
@@ -22,7 +22,7 @@ public abstract class Ability {
     protected long coolDown = 0;
     protected long resetTimeCounter = 0;
     protected boolean canUse = true;
-    protected Entity skillIcon;
+    protected SpriteSheet skillIcon;
     protected Animation animationLTR;
     protected Animation animationRTL;
     protected Animation currAnimation;
@@ -33,7 +33,7 @@ public abstract class Ability {
     protected Character character;
     protected boolean isLTR;
 
-    public Ability(int id, String name, long resetTime, int energyLost, Entity skillIcon, GamePosition position,
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, GamePosition position,
             Animation animationLTR, Animation animationRTL, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
@@ -54,7 +54,7 @@ public abstract class Ability {
         }
     }
 
-    public Ability(int id, String name, long resetTime, int energyLost, Entity skillIcon, GamePosition position,
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, GamePosition position,
             Animation animationLTR, Animation animationRTL, BufferedImage border, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
@@ -76,7 +76,7 @@ public abstract class Ability {
         }
     }
 
-    public Ability(int id, String name, long resetTime, int energyLost, Entity skillIcon
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon
             , Animation currAnimation, GamePosition position, BufferedImage border
             , Gameplay gameplay, Character character) {
         this.id = id;
@@ -167,11 +167,11 @@ public abstract class Ability {
         this.resetTime = resetTime;
     }
 
-    public Entity getSheet() {
+    public SpriteSheet getSheet() {
         return skillIcon;
     }
 
-    public void setSheet(Entity sheet) {
+    public void setSheet(SpriteSheet sheet) {
         this.skillIcon = sheet;
     }
 

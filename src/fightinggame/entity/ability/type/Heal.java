@@ -6,7 +6,7 @@ import fightinggame.entity.ability.Ability;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -14,7 +14,7 @@ public abstract class Heal extends Ability {
 
     protected int healPoint;
 
-    public Heal(int healPoint, int id, String name, long resetTime, int energyLost, Entity skillIcon, Animation currAnimation,
+    public Heal(int healPoint, int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, Animation currAnimation,
             GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
         super(id, name, resetTime, energyLost, skillIcon, currAnimation, position, border, gameplay, character);
         this.healPoint = healPoint;

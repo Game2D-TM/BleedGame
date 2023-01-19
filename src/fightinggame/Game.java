@@ -21,7 +21,7 @@ public class Game extends JFrame {
     public static ScreenState current;
     private static GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private static GraphicsDevice ev = env.getDefaultScreenDevice();
-    public static final int FPS = 165;
+    public static final int FPS = 144;
     public static GameState STATE = GameState.MENU_STATE;
 
     private Gameplay gameplay;
@@ -31,8 +31,8 @@ public class Game extends JFrame {
 
     public static void main(String[] args) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = (int)screenSize.getWidth();
-        int height = (int)screenSize.getHeight();
+        int width = (int) screenSize.getWidth();
+        int height = (int) screenSize.getHeight();
         new Game(width, height);
     }
 
@@ -65,11 +65,7 @@ public class Game extends JFrame {
 
     public void init() {
         gameplay = new Gameplay(this);
-        if (current == ScreenState.fullscreen) {
-            gameplay.setPreferredSize(new Dimension(getWidth(), getHeight()));
-        } else {
-            gameplay.setPreferredSize(new Dimension(getWidth() - 16, getHeight() - 39));
-        } // 16, 39
+        gameplay.setPreferredSize(new Dimension(getWidth(), getHeight())); // - 16 //  - 39
         add(gameplay, BorderLayout.CENTER);
         pack();
         gameplay.initCamera();

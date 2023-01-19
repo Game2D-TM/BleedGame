@@ -5,16 +5,16 @@ import java.awt.Graphics;
 public abstract class Animation {
     
     protected int id;
-    protected Entity sheet;
+    protected SpriteSheet sheet;
     protected int tickToExecute = 10;
     
-    public Animation(int id, Entity sheet, int tickToExecute) {
+    public Animation(int id, SpriteSheet sheet, int tickToExecute) {
         this.id = id;
         this.sheet = sheet;
         this.tickToExecute = tickToExecute;
     }
 
-    public Animation(int id, Entity sheet) {
+    public Animation(int id, SpriteSheet sheet) {
         this.id = id;
         this.sheet = sheet;
     }
@@ -35,11 +35,11 @@ public abstract class Animation {
         this.id = id;
     }
     
-    public Entity getSheet() {
+    public SpriteSheet getSheet() {
         return sheet;
     }
     
-    public void setSheet(Entity sheet) {
+    public void setSheet(SpriteSheet sheet) {
         this.sheet = sheet;
     }
 

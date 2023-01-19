@@ -5,7 +5,7 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
-import fightinggame.entity.Entity;
+import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.ability.Ability;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -14,7 +14,7 @@ public abstract class EnergyRecovery extends Ability {
 
     private int point;
 
-    public EnergyRecovery(int point, int id, String name, long resetTime, int energyLost, Entity skillIcon, Animation currAnimation, GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
+    public EnergyRecovery(int point, int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, Animation currAnimation, GamePosition position, BufferedImage border, Gameplay gameplay, Character character) {
         super(id, name, resetTime, energyLost, skillIcon, currAnimation, position, border, gameplay, character);
         this.point = point;
     }

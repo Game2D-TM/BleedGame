@@ -52,7 +52,7 @@ public abstract class Character {
     protected int energyAmountRenderTick = 0;
 
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
-            Gameplay gameplay, boolean isLTR, Entity inventorySheet) {
+            Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
         this.id = id;
         this.name = name;
         this.position = position;
