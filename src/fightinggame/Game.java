@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.Toolkit;
 import javax.swing.JFrame;
 
 public class Game extends JFrame {
@@ -20,7 +21,7 @@ public class Game extends JFrame {
     public static ScreenState current;
     private static GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private static GraphicsDevice ev = env.getDefaultScreenDevice();
-    public static final int FPS = 144;
+    public static final int FPS = 165;
     public static GameState STATE = GameState.MENU_STATE;
 
     private Gameplay gameplay;
@@ -29,7 +30,10 @@ public class Game extends JFrame {
     private MenuKeyboardHandler menuHandler;
 
     public static void main(String[] args) {
-        new Game(1650, 950);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = (int)screenSize.getWidth();
+        int height = (int)screenSize.getHeight();
+        new Game(width, height);
     }
 
     public Game(int width, int height) throws HeadlessException {
@@ -44,7 +48,7 @@ public class Game extends JFrame {
             }
         });
         DataManager.loadSceneData();
-        changeWindowMode(ScreenState.fullscreen);
+        changeWindowMode(ScreenState.borderless);
         menuHandler = new MenuKeyboardHandler(this, getWidth(), getHeight());
         addKeyListener(menuHandler);
         repaint();
