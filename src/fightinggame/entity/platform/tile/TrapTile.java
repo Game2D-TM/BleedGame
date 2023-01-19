@@ -68,6 +68,7 @@ public abstract class TrapTile extends Tile {
                                 player.setCurrAnimation(player.getAnimations().get(CharacterState.KNOCKDOWN_RTL));
                                 player.getPosition().setXPosition(player.getPosition().getXPosition() + hitBounce);
                             }
+                            player.setReceiveDamage(hitDamage);
                             player.setStunTime(150);
                             if (nHealth > 0) {
                                 stats.setHealth(nHealth);
@@ -100,6 +101,7 @@ public abstract class TrapTile extends Tile {
                                     } else {
                                         enemy.setIsDeath(true);
                                     }
+                                    enemy.setReceiveDamage(hitDamage);
                                 }
                                 activeTrap = true;
                             }
