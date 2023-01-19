@@ -4,3 +4,4 @@ spike:6,4,right,middle
 spike:6,4,top,middle
 spear:4,20,left,down_corner
 spear:10,49,right,down_corner
+spear:10,25,left,down_corner

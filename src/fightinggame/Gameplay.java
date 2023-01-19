@@ -48,6 +48,7 @@ import fightinggame.entity.platform.tile.trap.SpikeTrap;
 import fightinggame.entity.platform.tile.trap.TrapLocation;
 import fightinggame.entity.platform.tile.trap.TrapType;
 import fightinggame.entity.quest.Quest;
+import fightinggame.entity.quest.QuestRequired;
 import fightinggame.entity.quest.QuestType;
 import fightinggame.entity.quest.type.EnemyRequired;
 import fightinggame.entity.quest.type.ItemRequired;
@@ -121,7 +122,7 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void resolutionChange(int width, int height) {
-        // error
+//        error
 //        setPreferredSize(new Dimension(width - 16, height - 39));
 //        initCamera();
 //        initFirstScene();
@@ -345,7 +346,7 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void initGameQuests() {
-        
+
         //Init Key
         SpriteSheet keySheet = new SpriteSheet();
         keySheet.add("assets/res/item/key.png");
@@ -374,19 +375,91 @@ public class Gameplay extends JPanel implements Runnable {
             item.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
             chest.getItems().add(item);
         }
-        
-        //Init Quest
-        if (rule != null) {
-            Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State",
-                    player, this);
-            quest.getRequireds().add(new ItemRequired("Key Item", 1, "Find Mystery Key", quest));
-            quest.getRequireds().add(new EnemyRequired("Dior Firor",
-                    15, "Kill Dior Firor", quest));
-            quest.getRequireds().add(new EnemyRequired("Zach Fowler",
-                    1, "Defeat Zach Fowler", quest));
-            rule.addQuest(quest);
+        if (rule == null) {
+            return;
         }
-        
+        int currSceneIndex = DataManager.getCurrentSceneIndex();
+        if (currSceneIndex <= 0) {
+            return;
+        }
+        // Init Quest
+        File questFile = DataManager.getFile("quests_" + currSceneIndex);
+        File requiredsFile = DataManager.getFile("requireds_" + currSceneIndex);
+        if (questFile != null && requiredsFile != null) {
+            List<String> questLines = DataManager.readFileToList(questFile);
+            List<String> requiredLines = DataManager.readFileToList(requiredsFile);
+            if (questLines != null && questLines.size() > 0
+                    && requiredLines != null && requiredLines.size() > 0) {
+                try {
+                    for (int i = 0; i < questLines.size(); i++) {
+                        String line = questLines.get(i);
+                        if (line == null || line.length() == 0) {
+                            continue;
+                        }
+                        String[] splits = line.split(":");
+                        if (splits == null || splits.length < 2) {
+                            continue;
+                        }
+                        String type = splits[0].trim();
+                        String[] data = splits[1].trim().split(",");
+                        if (data == null
+                                || data.length < 3) {
+                            continue;
+                        }
+                        String questId = data[0].trim();
+                        String questName = data[1].trim();
+                        String questDescription = data[2].trim();
+                        QuestType questType = QuestType.valueOf(type.toUpperCase());
+                        if (questType == null) {
+                            continue;
+                        }
+                        Quest quest = new Quest(questId, questName, questType,
+                                questDescription, player, this);
+                        for (int j = 0; j < requiredLines.size(); j++) {
+                            line = requiredLines.get(j);
+                            if (line == null || line.length() == 0) {
+                                continue;
+                            }
+                            splits = line.split(":");
+                            if (splits == null || splits.length < 2) {
+                                continue;
+                            }
+                            type = splits[0].trim();
+                            data = splits[1].trim().split(",");
+                            if (data == null
+                                    || data.length < 4) {
+                                continue;
+                            }
+                            String name = data[0].trim();
+                            amount = Utils.getInt(data[1].trim());
+                            if (amount < 0) {
+                                continue;
+                            }
+                            String requiredName = data[2].trim();
+                            String requiredQuestId = data[3].trim();
+                            if (!quest.getId().equalsIgnoreCase(requiredQuestId)) {
+                                continue;
+                            }
+                            List<QuestRequired> requireds = quest.getRequireds();
+                            switch (type) {
+                                case "item":
+                                    requireds.add(new ItemRequired(name, amount, requiredName, quest));
+                                    break;
+                                case "enemy":
+                                    requireds.add(new EnemyRequired(name,
+                                            amount, requiredName, quest));
+                                    break;
+                            }
+                        }
+                        if (rule != null) {
+                            rule.addQuest(quest);
+                        }
+                    }
+                } catch (Exception ex) {
+
+                }
+            }
+        }
     }
 
     public void initVictoryPosition() {
@@ -785,6 +858,7 @@ public class Gameplay extends JPanel implements Runnable {
         EnemyHeavyAttack attackLTR = new EnemyHeavyAttack(9, spriteSheetMap.get("Attack_LTR"), 25);
 
         Map<CharacterState, Animation> enemyAnimations = new HashMap();
+
         enemyAnimations.put(CharacterState.IDLE_RTL, idleRTL);
         enemyAnimations.put(CharacterState.IDLE_LTR, idleLTR);
         enemyAnimations.put(CharacterState.GET_HIT_RTL, hitRTL);
@@ -795,6 +869,7 @@ public class Gameplay extends JPanel implements Runnable {
         enemyAnimations.put(CharacterState.RUNBACK, runBack);
         enemyAnimations.put(CharacterState.ATTACK01_RTL, attackRTL);
         enemyAnimations.put(CharacterState.ATTACK01_LTR, attackLTR);
+
         Enemy enemy = new DiorEnemy(diorColor, 0, "Dior Firor " + diorColor,
                 500, defEnemyPosition,
                 enemyAnimations, this, 60);
@@ -830,6 +905,7 @@ public class Gameplay extends JPanel implements Runnable {
         fireAttackSpecialLTR.getImages().addAll(playerSpriteSheetMap.get("FireAttack03").getImages());
         fireAttackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("FireAttack02").convertRTL().getImages());
         fireAttackSpecialRTL.getImages().addAll(playerSpriteSheetMap.get("FireAttack03").convertRTL().getImages());
+
         //Init animations tick
         int hit_tick = 16, idle_tick = 10, fire_idle_tick = 10,
                 run_tick = 10, attack1_tick = 16, attack2_tick = 13,
@@ -917,14 +993,15 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, playerSpriteSheetMap.get("WallRun01").convertRTL(), wallRun_tick);
         PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, playerSpriteSheetMap.get("WallSlide01").convertRTL(), wallSlide_tick);
         PlayerSprint_RTL sprintRTL = new PlayerSprint_RTL(19, playerSpriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
+
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
 
         //Run directions
         playerAnimations.put(CharacterState.RUNFORWARD, runLTR);
         playerAnimations.put(CharacterState.RUNBACK, runRTL);
-        playerAnimations.put(CharacterState.SPRINT_LTR, sprintLTR);//New
-        playerAnimations.put(CharacterState.SPRINT_RTL, sprintRTL);//New
+        playerAnimations.put(CharacterState.SPRINT_LTR, sprintLTR);
+        playerAnimations.put(CharacterState.SPRINT_RTL, sprintRTL);
         playerAnimations.put(CharacterState.WALLRUN_LTR, wallRunLTR);//New
         playerAnimations.put(CharacterState.WALLRUN_RTL, wallRunRTL);//New
         playerAnimations.put(CharacterState.WALLSLIDE_LTR, wallSlideLTR);
@@ -943,14 +1020,14 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.ATTACK02_RTL, attack02RTL);
         playerAnimations.put(CharacterState.ATTACK03_LTR, attack03LTR);
         playerAnimations.put(CharacterState.ATTACK03_RTL, attack03RTL);
-        playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR); //New
-        playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);//New
-        playerAnimations.put(CharacterState.AIRATTACK02_LTR, airAttack02LTR);//New
-        playerAnimations.put(CharacterState.AIRATTACK02_RTL, airAttack02RTL);//New
-        playerAnimations.put(CharacterState.AIRATTACK03_LTR, airAttack03LTR);//New
-        playerAnimations.put(CharacterState.AIRATTACK03_RTL, airAttack03RTL);//New
-        playerAnimations.put(CharacterState.AIRATTACKLOOP_LTR, airAttackLoopLTR);//New
-        playerAnimations.put(CharacterState.AIRATTACKLOOP_RTL, airAttackLoopRTL);//New
+        playerAnimations.put(CharacterState.AIRATTACK01_LTR, airAttack01LTR);
+        playerAnimations.put(CharacterState.AIRATTACK01_RTL, airAttack01RTL);
+        playerAnimations.put(CharacterState.AIRATTACK02_LTR, airAttack02LTR);
+        playerAnimations.put(CharacterState.AIRATTACK02_RTL, airAttack02RTL);
+        playerAnimations.put(CharacterState.AIRATTACK03_LTR, airAttack03LTR);
+        playerAnimations.put(CharacterState.AIRATTACK03_RTL, airAttack03RTL);
+        playerAnimations.put(CharacterState.AIRATTACKLOOP_LTR, airAttackLoopLTR);
+        playerAnimations.put(CharacterState.AIRATTACKLOOP_RTL, airAttackLoopRTL);
 
         //Get Hit
         playerAnimations.put(CharacterState.GET_HIT_LTR, hitLTR);
@@ -977,8 +1054,8 @@ public class Gameplay extends JPanel implements Runnable {
         //Falldown
         playerAnimations.put(CharacterState.FALLDOWN_LTR, fallDownLTR);
         playerAnimations.put(CharacterState.FALLDOWN_RTL, fallDownRTL);
-        playerAnimations.put(CharacterState.KNOCKDOWN_LTR, knockDownLTR);//New
-        playerAnimations.put(CharacterState.KNOCKDOWN_RTL, knockDownRTL);//New
+        playerAnimations.put(CharacterState.KNOCKDOWN_LTR, knockDownLTR);
+        playerAnimations.put(CharacterState.KNOCKDOWN_RTL, knockDownRTL);
         playerAnimations.put(CharacterState.GETUP_LTR, getUpLTR);//New
         playerAnimations.put(CharacterState.GETUP_RTL, getUpRTL);//New
 
@@ -1013,7 +1090,7 @@ public class Gameplay extends JPanel implements Runnable {
         fireSwordSheet.add("assets/res/item/icon_items/Swords/Fire_Sworld.png");
         FireSwordAnimation fireSwordAnimation = new FireSwordAnimation(1, fireSwordSheet, -1);
         Map<CharacterState, Animation> itemEquipAnimations = new HashMap<CharacterState, Animation>();
-        
+
         itemEquipAnimations.put(CharacterState.IDLE_LTR, fireIdleLTR);
         itemEquipAnimations.put(CharacterState.IDLE_RTL, fireIdleRTL);
         itemEquipAnimations.put(CharacterState.ATTACK01_LTR, fireAttack01LTR);
@@ -1034,7 +1111,7 @@ public class Gameplay extends JPanel implements Runnable {
         AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
         fireSword.getAbilities().add(attackIncrease);
 
-        // Test Fire Sword
+//        Test Fire Sword
 //        fireSword.setCharacter(player);
 //        attackIncrease.setCharacter(player);
 //        fireSword.use();
