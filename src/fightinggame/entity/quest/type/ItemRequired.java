@@ -7,22 +7,18 @@ import fightinggame.entity.quest.QuestRequired;
 
 public class ItemRequired extends QuestRequired {
 
-    private final Item item;
+    private final String itemName;
 
-    public ItemRequired(Item item, int amount, String name, Quest quest) {
+    public ItemRequired(String itemName, int amount, String name, Quest quest) {
         super(name, amount, quest);
-        this.item = item;
-    }
-
-    public Item getItem() {
-        return item;
+        this.itemName = itemName;
     }
 
     @Override
     public void tick() {
         Player player = quest.getPlayer();
         if (player != null) {
-            Item playerItem = player.getInventory().getItemByName(item.getName());
+            Item playerItem = player.getInventory().getItemByName(itemName);
             if (playerItem != null) {
                 increaseCurrentAmount();
                 player.getInventory().removeItemFromInventory(playerItem);

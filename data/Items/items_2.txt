@@ -1,0 +1,2 @@
+key:1,Key Item,1,chest3
+s_energy_potion:0,15,chest2

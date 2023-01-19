@@ -345,6 +345,7 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void initGameQuests() {
+        
         //Init Key
         Entity keySheet = new Entity();
         keySheet.add("assets/res/item/key.png");
@@ -378,13 +379,14 @@ public class Gameplay extends JPanel implements Runnable {
         if (rule != null) {
             Quest quest = new Quest("QM_1", "The Mystery Key && Dior Firor", QuestType.MAIN_QUEST, "Go Around Map And Find The Key To Open The Way To Next State",
                     player, this);
-            quest.getRequireds().add(new ItemRequired(keyItem, 1, "Find Mystery Key", quest));
+            quest.getRequireds().add(new ItemRequired("Key Item", 1, "Find Mystery Key", quest));
             quest.getRequireds().add(new EnemyRequired("Dior Firor",
                     15, "Kill Dior Firor", quest));
             quest.getRequireds().add(new EnemyRequired("Zach Fowler",
                     1, "Defeat Zach Fowler", quest));
             rule.addQuest(quest);
         }
+        
     }
 
     public void initVictoryPosition() {
@@ -613,7 +615,8 @@ public class Gameplay extends JPanel implements Runnable {
     @Override
     public void paint(Graphics g) {
         render(g);
-        if (Game.STATE != GameState.LOADING_STATE) {
+        if (Game.STATE != GameState.LOADING_STATE
+                && Game.STATE != GameState.TRANSITION_STATE) {
             g.setColor(Color.red);
             g.setFont(DataManager.getFont(30f));
             g.drawString(currentFps + " FPS", getWidth() - 100, getHeight() - 25);
@@ -1010,6 +1013,7 @@ public class Gameplay extends JPanel implements Runnable {
         fireSwordSheet.add("assets/res/item/icon_items/Swords/Fire_Sworld.png");
         FireSwordAnimation fireSwordAnimation = new FireSwordAnimation(1, fireSwordSheet, -1);
         Map<CharacterState, Animation> itemEquipAnimations = new HashMap<CharacterState, Animation>();
+        
         itemEquipAnimations.put(CharacterState.IDLE_LTR, fireIdleLTR);
         itemEquipAnimations.put(CharacterState.IDLE_RTL, fireIdleRTL);
         itemEquipAnimations.put(CharacterState.ATTACK01_LTR, fireAttack01LTR);
