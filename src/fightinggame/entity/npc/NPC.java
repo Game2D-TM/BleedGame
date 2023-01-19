@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
-import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.Entity;
 import fightinggame.entity.state.CharacterState;
 import java.util.Map;
 
@@ -13,7 +13,7 @@ public class NPC extends Character{
     public NPC(int id, String name, int health
             , GamePosition position, Map<CharacterState
             , Animation> animations, Gameplay gameplay
-            , boolean isLTR, SpriteSheet inventorySheet) {
+            , boolean isLTR, Entity inventorySheet) {
         super(id, name, health, position, animations, gameplay, isLTR, inventorySheet);
     }
 

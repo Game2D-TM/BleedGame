@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
-import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.Entity;
 import java.awt.image.BufferedImage;
 import fightinggame.entity.Character;
 public abstract class Throwable extends Ability {
@@ -18,7 +18,7 @@ public abstract class Throwable extends Ability {
     protected int throwCounter = 0;
     
     public Throwable(int attackDamage, int speed, int id, String name, long resetTime, int energyLost, 
-            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
+            Entity skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
             , Gameplay gameplay, Character character) {
         super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, gameplay, character);
         this.attackDamage = attackDamage;
@@ -26,7 +26,7 @@ public abstract class Throwable extends Ability {
     }
 
     public Throwable(int attackDamage, int speed, int id, String name, long resetTime, int energyLost, 
-            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
+            Entity skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL
             , BufferedImage border, Gameplay gameplay, Character character) {
         super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
         this.attackDamage = attackDamage;

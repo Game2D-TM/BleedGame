@@ -32,7 +32,7 @@ public class Player extends Character {
 
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations,
-            Gameplay gameplay, SpriteSheet inventorySheet) {
+            Gameplay gameplay, Entity inventorySheet) {
         super(id, name, health, position, animations, gameplay, true, inventorySheet);
         avatar = ImageManager.loadImage(new File("assets/res/gui/avatar/player.png"));
         healthBarInit(health);
@@ -48,7 +48,7 @@ public class Player extends Character {
                 new GamePosition(healthBar.getNamePos().getXPosition(),
                         healthBar.getNamePos().getYPosition() + 30, 0, 0));
         dialogue = new Dialogue(this, gameplay);
-        SpriteSheet exploreFireBallSheet = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect9.png"),
+        Entity exploreFireBallSheet = new Entity(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect9.png"),
                 0, 0, 18, 18,
                 0, 0, 18, 18, 4);
         hitEffect = new PlayerHitEffect(0, exploreFireBallSheet, stunTime);
@@ -56,7 +56,7 @@ public class Player extends Character {
 
     @Override
     protected void healthBarInit(int maxHealth) {
-        SpriteSheet healthBarSheet = new SpriteSheet();
+        Entity healthBarSheet = new Entity();
         healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
                 1, 2, 126, 12));
         healthBar = new HealthBar(avatar, healthBarSheet, this,

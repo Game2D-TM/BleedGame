@@ -1,11 +1,11 @@
 package fightinggame.animation.player;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.Entity;
 
 public class PlayerSpellCastLoop extends Animation{
     
-    public PlayerSpellCastLoop(int id, SpriteSheet sheet, int tickToExecute) {
+    public PlayerSpellCastLoop(int id, Entity sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
     

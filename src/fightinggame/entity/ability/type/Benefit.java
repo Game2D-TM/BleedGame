@@ -5,19 +5,19 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
-import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.Entity;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
 public abstract class Benefit extends Ability {
 
     public Benefit(int id, String name, long resetTime, int energyLost,
-            SpriteSheet skillIcon, GamePosition position,
+            Entity skillIcon, GamePosition position,
              Animation animationLTR, Animation animationRTL, Gameplay gameplay, Character character) {
         super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, gameplay, character);
     }
 
-    public Benefit(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon,
+    public Benefit(int id, String name, long resetTime, int energyLost, Entity skillIcon,
             GamePosition position, Animation animationLTR, Animation animationRTL,
              BufferedImage border, Gameplay gameplay, Character character) {
         super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);

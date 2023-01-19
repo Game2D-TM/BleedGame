@@ -1,16 +1,16 @@
 package fightinggame.animation.item;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.Entity;
 import java.awt.Graphics;
 
 public class SlotAnimation extends Animation{
     
-    public SlotAnimation(int id, SpriteSheet sheet, int tickToExecute) {
+    public SlotAnimation(int id, Entity sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
 
-    public SlotAnimation(int id, SpriteSheet sheet) {
+    public SlotAnimation(int id, Entity sheet) {
         super(id, sheet);
     }
 

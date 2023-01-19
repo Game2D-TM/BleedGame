@@ -1,15 +1,15 @@
 package fightinggame.animation.player;
 
 import fightinggame.entity.Animation;
-import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.Entity;
 
 public class PlayerSlide_LTR extends Animation{
     
-    public PlayerSlide_LTR(int id, SpriteSheet sheet, int tickToExecute) {
+    public PlayerSlide_LTR(int id, Entity sheet, int tickToExecute) {
         super(id, sheet, tickToExecute);
     }
 
-    public PlayerSlide_LTR(int id, SpriteSheet sheet) {
+    public PlayerSlide_LTR(int id, Entity sheet) {
         super(id, sheet);
     }
     
