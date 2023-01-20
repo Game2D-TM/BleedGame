@@ -67,6 +67,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 public class Gameplay extends JPanel implements Runnable {
@@ -89,6 +91,8 @@ public class Gameplay extends JPanel implements Runnable {
     private TransitionScreen transitionScreen;
     private LoadingScreen loadingScreen;
     private Map<String, SpriteSheet> playerSpriteSheetMap;
+    private List<BufferedImage> fireBallsLTR = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/LTR", 200, 365, 580, 200);
+    private List<BufferedImage> fireBallsRTL = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL", 30, 365, 580, 200);
 
     public Gameplay(Game game) {
         this.game = game;
@@ -135,7 +139,13 @@ public class Gameplay extends JPanel implements Runnable {
             @Override
             public void run() {
                 initScene(sceneName, sceneDataFilePath);
+                loadingScreen.setFinish(true);
                 rule.setTimeLimit(7);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Gameplay.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 Game.STATE = GameState.GAME_STATE;
             }
         }).start();
@@ -375,6 +385,21 @@ public class Gameplay extends JPanel implements Runnable {
             item.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
             chest.getItems().add(item);
         }
+        //Health Potion x10
+        SpriteSheet healthPotionSheet = new SpriteSheet();
+        healthPotionSheet.add("assets/res/item/s_health_potion.png");
+        PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
+        item = new SmallHealthPotion(itemCount, healthPotionAnimation, null,
+                this, 10);
+        Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, this, null);
+        item.getAbilities().add(potionHeal);
+        gameObject = background.getGameObjectsTouchable().get("chest4");
+        if (gameObject != null) {
+            Chest chest = (Chest) gameObject;
+            item.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH, Item.ITEM_HEIGHT));
+            chest.getItems().add(item);
+        }
+        
         if (rule == null) {
             return;
         }
@@ -1169,8 +1194,6 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void abilitiesCharacterInit(List<Ability> abilities, Character character) {
-        List<BufferedImage> fireBallsLTR = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/LTR", 200, 365, 580, 200);
-        List<BufferedImage> fireBallsRTL = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL", 30, 365, 580, 200);
         if (character instanceof Player) {
             BufferedImage redBorder = ImageManager.loadImage("assets/res/ability/border-red.png");
             SpriteSheet greaterHealSheet = new SpriteSheet();
@@ -1199,20 +1222,20 @@ public class Gameplay extends JPanel implements Runnable {
             return;
         } else {
             if (character instanceof DiorEnemy) {
-                if (((DiorEnemy) character).getColor() == DiorColor.Red) {
-                    SpriteSheet sheetLTR = new SpriteSheet();
-                    SpriteSheet sheetRTL = new SpriteSheet();
-                    if (fireBallsLTR == null || fireBallsRTL == null) {
-                        return;
-                    }
-                    sheetLTR.setImages(fireBallsLTR);
-                    sheetRTL.setImages(fireBallsRTL);
-                    Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
-                    Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
-                    Fireball fireball = new Fireball(20, 15, 2, 1000, 0, null, null,
-                            fireBallAnimationLTR, fireBallAnimationRTL, this, character);
-                    abilities.add(fireball);
+//                if (((DiorEnemy) character).getColor() == DiorColor.Red) {
+                SpriteSheet sheetLTR = new SpriteSheet();
+                SpriteSheet sheetRTL = new SpriteSheet();
+                if (fireBallsLTR == null || fireBallsRTL == null) {
+                    return;
                 }
+                sheetLTR.setImages(fireBallsLTR);
+                sheetRTL.setImages(fireBallsRTL);
+                Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
+                Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
+                Fireball fireball = new Fireball(20, 15, 2, 2000, 0, null, null,
+                        fireBallAnimationLTR, fireBallAnimationRTL, this, character);
+                abilities.add(fireball);
+//                }
                 return;
             }
             if (character instanceof PirateCat) {

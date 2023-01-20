@@ -13,7 +13,7 @@ import fightinggame.entity.Character;
 import fightinggame.entity.Dialogue;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.GamePosition;
-import fightinggame.entity.HealthBar;
+import fightinggame.entity.StatusBar;
 import fightinggame.entity.Player;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.platform.Platform;
@@ -53,7 +53,7 @@ public abstract class Enemy extends Character {
             Gameplay gameplay, int rangeRandomSpeed) {
         super(id, name, health, position, animations, gameplay, false, null);
         healthBarInit(health);
-        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(1530f, 10f, 100, 100));
+        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(gameplay.getGame().getWidth() - 160, 10f, 100, 100));
         healthBar.setAppearTimeLimit(1000);
         Random rand = new Random();
         stats.setHealth(health);
@@ -63,11 +63,14 @@ public abstract class Enemy extends Character {
     @Override
     protected void healthBarInit(int maxHealth) {
         SpriteSheet healthBarSheet = new SpriteSheet();
-        healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
-                1, 2, 126, 12));
-        healthBar = new HealthBar(avatar, healthBarSheet, this,
-                new GamePosition(975, 20, 550, 80), new GamePosition(1540, 8, 180, 120),
+//        healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
+//                1, 2, 126, 12));
+        healthBarSheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/status-bar/HealthBar"));
+        healthBar = new StatusBar(avatar, healthBarSheet, this,
+                new GamePosition(gameplay.getGame().getWidth() - (550 + 180), 20, 550, 80), new GamePosition(gameplay.getGame().getWidth() - 160, 8, 180, 120),
                 maxHealth, 100);
+        //975, 20, 550, 80
+        //1540, 8, 180, 120
     }
 
     @Override

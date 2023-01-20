@@ -7,11 +7,11 @@ dior:9,5
 dior:8,25
 dior:1,43
 dior:1,40
-pirate_cat:1,37
+pirate_cat:9,47
 dior:1,45
 dior:6,7
 dior:2,9
 dior:9,43
 dior:9,45
-dior:9,47
+dior:1,37
 dior:3,15

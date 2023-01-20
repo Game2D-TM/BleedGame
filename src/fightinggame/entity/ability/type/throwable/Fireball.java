@@ -116,7 +116,7 @@ public class Fireball extends Throwable {
         super.render(g);
         if (currAnimation != null) {
             if (spawnPosition != null && isThrow) {
-                if (gameplay.getCamera().checkPositionRelateToCamera(spawnPosition)) {
+//                if (gameplay.getCamera().checkPositionRelateToCamera(spawnPosition)) {
                     if (isHit) {
                         int nX = spawnPosition.getXPosition();
                         if(isLTR) {
@@ -137,7 +137,7 @@ public class Fireball extends Throwable {
                                 spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                                 spawnPosition.getWidth(), spawnPosition.getHeight());
                     }
-                }
+//                }
             }
         }
         // attack hitbox

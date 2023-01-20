@@ -35,43 +35,41 @@ public class DiorEnemy extends Enemy {
                 break;
             case Blue:
                 experience = 90;
-                stats.setAttackDamage(stats.getAttackDamage() + 5);
+                stats.setAttackDamage(stats.getAttackDamage() + 10);
                 stats.setSpeed(stats.getSpeed() + 10);
                 stats.setHealth(stats.getHealth() + 50);
                 break;
             case Green:
-                experience = 70;
-                stats.setAttackDamage(stats.getAttackDamage() + 10);
+                experience = 80;
+                stats.setAttackDamage(stats.getAttackDamage() + 15);
                 stats.setSpeed(stats.getSpeed() - 10);
                 stats.setHealth(stats.getHealth() - 50);
                 break;
             case Orange:
-                experience = 60;
-                stats.setAttackDamage(stats.getAttackDamage() - 5);
+                experience = 80;
                 stats.setSpeed(stats.getSpeed() + 20);
                 stats.setHealth(stats.getHealth() + 100);
                 break;
             case Purple:
-                experience = 50;
+                experience = 80;
                 stats.setSpeed(stats.getSpeed() - 5);
                 stats.setHealth(stats.getHealth() + 200);
                 break;
             case White:
                 experience = 80;
-                stats.setAttackDamage(stats.getAttackDamage() - 8);
+                stats.setAttackDamage(stats.getAttackDamage() - 3);
                 stats.setSpeed(stats.getSpeed() - 5);
                 stats.setHealth(stats.getHealth() + 400);
                 break;
             case Yellow:
                 experience = 80;
-                stats.setAttackDamage(stats.getAttackDamage() - 5);
                 stats.setSpeed(stats.getSpeed() + 30);
                 stats.setHealth(stats.getHealth() + 50);
                 break;
         }
         healthBar.setMaxHealth(stats.getHealth());
-        if (stats.getSpeed() <= 30) {
-            stats.setSpeed(30);
+        if (stats.getSpeed() <= 35) {
+            stats.setSpeed(35);
         }
         dialogue = new Dialogue(this, gameplay);
     }
@@ -79,7 +77,7 @@ public class DiorEnemy extends Enemy {
     @Override
     public void tick() {
         super.tick();
-        if (color == DiorColor.Red) {
+//        if (color == DiorColor.Red) {
             if (!isAttack && !isDeath) {
                 if (checkPlayerOnSight()) {
                     Fireball fireBallAbility = ((Fireball) abilities.get(0));
@@ -115,7 +113,7 @@ public class DiorEnemy extends Enemy {
                     }
                 }
             }
-        }
+//        }
     }
 
     @Override

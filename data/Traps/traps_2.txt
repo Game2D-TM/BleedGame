@@ -5,3 +5,11 @@ spike:6,4,top,middle
 spear:4,20,left,down_corner
 spear:10,49,right,down_corner
 spear:10,25,left,down_corner
+spike:7,25,bottom,middle
+spike:7,25,right,middle
+spike:6,28,bottom,middle
+spike:6,28,right,middle
+spike:4,31,bottom,middle
+spike:4,31,right,middle
+spike:7,35,bottom,middle
+spike:7,35,left,middle

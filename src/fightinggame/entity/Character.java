@@ -31,7 +31,7 @@ public abstract class Character {
     protected final Inventory inventory;
     protected final List<Ability> abilities = new ArrayList<>();
     protected BufferedImage avatar;
-    protected HealthBar healthBar;
+    protected StatusBar healthBar;
     protected boolean isAttacked = false;
     protected boolean isAttack = false;
     protected boolean isSpellCast = false;
@@ -539,11 +539,11 @@ public abstract class Character {
         this.avatar = avatar;
     }
 
-    public HealthBar getHealthBar() {
+    public StatusBar getHealthBar() {
         return healthBar;
     }
 
-    public void setHealthBar(HealthBar healthBar) {
+    public void setHealthBar(StatusBar healthBar) {
         this.healthBar = healthBar;
     }
 

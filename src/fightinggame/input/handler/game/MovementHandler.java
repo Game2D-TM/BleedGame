@@ -136,6 +136,7 @@ public abstract class MovementHandler extends GameHandler {
                                 if (character.isLTR()) {
                                     if (character.getCurrAnimation() instanceof PlayerWallAction_LTR); else {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_LTR));
+                                        return;
                                     }
                                     if (!character.isLTR()) {
                                         if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
@@ -145,6 +146,7 @@ public abstract class MovementHandler extends GameHandler {
                                 } else {
                                     if (character.getCurrAnimation() instanceof PlayerWallAction_RTL); else {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_RTL));
+                                        return;
                                     }
                                     if (character.isLTR()) {
                                         if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {
@@ -231,6 +233,7 @@ public abstract class MovementHandler extends GameHandler {
                                 if (character.isLTR()) {
                                     if (character.getCurrAnimation() instanceof PlayerWallAction_LTR); else {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_LTR));
+                                        return;
                                     }
                                     if (!character.isLTR()) {
                                         if (character.getCurrAnimation() instanceof PlayerFallDown_RTL); else {
@@ -240,6 +243,7 @@ public abstract class MovementHandler extends GameHandler {
                                 } else {
                                     if (character.getCurrAnimation() instanceof PlayerWallAction_RTL); else {
                                         character.setCurrAnimation(character.getAnimations().get(CharacterState.WALLSLIDE_RTL));
+                                        return;
                                     }
                                     if (character.isLTR()) {
                                         if (character.getCurrAnimation() instanceof PlayerFallDown_LTR); else {

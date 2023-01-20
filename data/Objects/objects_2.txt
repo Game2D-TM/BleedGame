@@ -4,3 +4,4 @@ nontouch:,shelt,shelt,mid,13,20,1000,800
 nontouch:,wood,wood,mid,12,17,400,150
 nontouch:,door_1,door,mid,12,3,200,400
 chest:open_chest,close_chest,chest,mid,10,42,-1,-1
+chest:open_chest,close_chest,chest,mid,10,27,-1,-1

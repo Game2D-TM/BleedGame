@@ -57,9 +57,12 @@ public class Player extends Character {
     @Override
     protected void healthBarInit(int maxHealth) {
         SpriteSheet healthBarSheet = new SpriteSheet();
-        healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
-                1, 2, 126, 12));
-        healthBar = new HealthBar(avatar, healthBarSheet, this,
+        SpriteSheet energyBarSheet = new SpriteSheet();
+//        healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
+//                1, 2, 126, 12));
+        healthBarSheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/status-bar/HealthBar"));
+        energyBarSheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/status-bar/EnergyBar"));
+        healthBar = new StatusBar(avatar, healthBarSheet, energyBarSheet, this,
                 new GamePosition(120, 20, 550, 80), new GamePosition(15, 8, 100, 110),
                 maxHealth, 100);
     }
@@ -120,8 +123,6 @@ public class Player extends Character {
     public void render(Graphics g) {
         super.render(g);
         healthBar.render(g);
-        g.drawString("Score: " + score, getPlayerScorePos().getXPosition(),
-                getPlayerScorePos().getYPosition());
         if (isSpeak) {
             if (dialogue != null) {
                 dialogue.render(g);

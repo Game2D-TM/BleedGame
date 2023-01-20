@@ -114,6 +114,7 @@ public class PirateCat extends Enemy {
 //                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
 //                getWidthHitBox(), getHeightHitBox());
         // attack hitbox
+//        g.setColor(Color.red);
 //        g.fillRect(attackHitBox().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
 //                attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
 //                attackHitBox().getWidth(), attackHitBox().getHeight());
@@ -160,9 +161,9 @@ public class PirateCat extends Enemy {
         attackHeight = position.getHeight() / 2 - 10 + position.getHeight() / 3 - 10;
         attackWidth = stats.getAttackRange();
         if (!isLTR) {
-            attackX = position.getXPosition() - stats.getAttackRange();
+            attackX = position.getXPosition() - stats.getAttackRange() - 10;
         } else {
-            attackX = position.getMaxX();
+            attackX = position.getMaxX() + 10;
         }
         return new GamePosition(attackX, attackY, attackWidth, attackHeight);
     }

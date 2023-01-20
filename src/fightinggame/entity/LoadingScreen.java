@@ -15,6 +15,7 @@ public class LoadingScreen {
     private int loadingCounter = 0;
     private int loadingLimit = 180;
     private int percent = 0;
+    private boolean finish;
 
     public LoadingScreen(BackgroundAnimation backgroundAnimation, ProgressBar progressBar,
             GamePosition position) {
@@ -31,7 +32,11 @@ public class LoadingScreen {
                 if (!progressBar.isEmpty()) {
                     progressBar.next();
                     loadingCounter = 0;
-                    percent += 5;
+                    if(!finish) {
+                        if(percent < 100) {
+                            percent += 5;
+                        }
+                    }
                 }
             }
         }
@@ -100,4 +105,13 @@ public class LoadingScreen {
         this.loadingLimit = loadingLimit;
     }
 
+    public boolean isFinish() {
+        return finish;
+    }
+
+    public void setFinish(boolean finish) {
+        percent = 100;
+        this.finish = finish;
+    }
+    
 }
