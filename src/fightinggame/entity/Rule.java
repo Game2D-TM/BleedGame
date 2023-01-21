@@ -59,7 +59,7 @@ public class Rule {
             } else {
                 if (timeLimit != null) {
                     if (GameTimer.getInstance().countDownEnd(timeLimit)) {
-                        player.setIsDeath(true);
+//                        player.setIsDeath(true);
                     }
                 }
                 if (missionComplete) {

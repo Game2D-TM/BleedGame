@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class PlayerMovementHandler extends MovementHandler implements KeyListener {
+public class PlayerKeyboardHandler extends MovementHandler implements KeyListener {
 
     private final Player player;
     private double yAfterJump = 0;
@@ -41,13 +41,18 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
     private int heavyAttackCounter = 0;
     private int heavyAttackLimit = 100;
     private boolean canHeavyAttack = false;
+    private boolean eBtnPressed;
+    private boolean spaceBtnPressed;
+    private boolean upArrowPressed;
+    private boolean downArrowPressed;
+    private boolean enterPressed;
 
-    public PlayerMovementHandler() {
+    public PlayerKeyboardHandler() {
         super(null, null);
         this.player = null;
     }
 
-    public PlayerMovementHandler(Player player, String name, Gameplay gameplay) {
+    public PlayerKeyboardHandler(Player player, String name, Gameplay gameplay) {
         super(gameplay, name);
         this.player = player;
     }
@@ -197,6 +202,26 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
     @Override
     public void keyPressed(KeyEvent e) {
         if (player.isAttacked() || player.isDeath() || player.isSpecialAttack() || Game.STATE == GameState.OPTION_STATE) {
+            return;
+        }
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_E:
+                eBtnPressed = true;
+                break;
+            case KeyEvent.VK_ENTER:
+                enterPressed = true;
+                break;
+            case KeyEvent.VK_SPACE:
+                spaceBtnPressed = true;
+                break;
+            case KeyEvent.VK_UP:
+                upArrowPressed = true;
+                break;
+            case KeyEvent.VK_DOWN:
+                downArrowPressed = true;
+                break;
+        }
+        if (Game.STATE == GameState.DIALOGUE_STATE) {
             return;
         }
         keyPresses.add(e.getKeyCode());
@@ -413,7 +438,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                 }
                             }
                         } else {
-                            if((player.isFallDown() || player.isInAir() || player.isSlide())) {
+                            if ((player.isFallDown() || player.isInAir() || player.isSlide())) {
                                 break;
                             }
                             Animation attack = null;
@@ -488,6 +513,9 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
     public void keyReleased(KeyEvent e) {
         keyPresses.remove(e.getKeyCode());
         switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                upArrowPressed = false;
+                break;
             case KeyEvent.VK_A:
             case KeyEvent.VK_LEFT:
                 if (player.isSprint()) {
@@ -497,6 +525,7 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_S:
             case KeyEvent.VK_DOWN:
+                downArrowPressed = false;
                 player.getPosition().isCrouch = false;
                 break;
             case KeyEvent.VK_D:
@@ -508,6 +537,15 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_CONTROL:
                 player.getPosition().isSlide = false;
+                break;
+            case KeyEvent.VK_E:
+                eBtnPressed = false;
+                break;
+            case KeyEvent.VK_SPACE:
+                spaceBtnPressed = false;
+                break;
+            case KeyEvent.VK_ENTER:
+                enterPressed = false;
                 break;
         }
         if (!player.isDeath()) {
@@ -522,6 +560,42 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                 }
             }
         }
+    }
+
+    public boolean eBtnPressed() {
+        return eBtnPressed;
+    }
+
+    public boolean isSpaceBtnPressed() {
+        return spaceBtnPressed;
+    }
+
+    public void setSpaceBtnPressed(boolean isSpacePressed) {
+        spaceBtnPressed = isSpacePressed;
+    }
+
+    public boolean isUpArrowPressed() {
+        return upArrowPressed;
+    }
+
+    public void setUpArrowPressed(boolean upArrowPressed) {
+        this.upArrowPressed = upArrowPressed;
+    }
+
+    public boolean isDownArrowPressed() {
+        return downArrowPressed;
+    }
+
+    public void setDownArrowPressed(boolean downArrowPressed) {
+        this.downArrowPressed = downArrowPressed;
+    }
+
+    public boolean isEnterPressed() {
+        return enterPressed;
+    }
+
+    public void setEnterPressed(boolean enterPressed) {
+        this.enterPressed = enterPressed;
     }
 
 }

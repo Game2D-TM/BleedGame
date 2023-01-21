@@ -40,6 +40,8 @@ import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.item.equipment.EquipmentItemType;
 import fightinggame.entity.item.equipment.weapon.Sword;
+import fightinggame.entity.npc.merchant.Advanturer;
+import fightinggame.entity.npc.NPC;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.TrapTile;
@@ -56,7 +58,7 @@ import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.game.player.PlayerAbilityHandler;
 import fightinggame.input.handler.game.player.PlayerMouseHandler;
-import fightinggame.input.handler.game.player.PlayerMovementHandler;
+import fightinggame.input.handler.game.player.PlayerKeyboardHandler;
 import fightinggame.input.handler.menu.OptionKeyboardHandler;
 import fightinggame.resource.AudioPlayer;
 import fightinggame.resource.DataManager;
@@ -72,13 +74,14 @@ import javax.swing.JPanel;
 public class Gameplay extends JPanel implements Runnable {
 
     public static final int GRAVITY = 7; //7
-    public static final int FIRST_SCENE = 1;
+    public static final int FIRST_SCENE = 4;
     private int currentFps = 0;
 
     private Background background;
     private GameMap map;
     private Player player;
     private final List<Enemy> enemies = new ArrayList<Enemy>();
+    private final List<NPC> npcs = new ArrayList<NPC>();
     private final Game game;
     private int itemCount = 0;
     private Thread spawnEnemiesThread;
@@ -164,7 +167,9 @@ public class Gameplay extends JPanel implements Runnable {
         enemies.clear();
         itemsOnGround.clear();
         playerInit(getPlatforms().get(11).get(3));
-        initEnemies();
+        NPC npc = new Advanturer().init(getPlatforms().get(16).get(8), this);
+        npcs.add(npc);
+//        initEnemies();
 //        pirateCatInit(getPlatforms().get(14).get(15));
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
@@ -1027,7 +1032,7 @@ public class Gameplay extends JPanel implements Runnable {
         player.getAbility(0).getHandlers().add(abilityHandler);
         player.getAbility(1).getHandlers().add(abilityHandler);
         game.addKeyListener(abilityHandler);
-        PlayerMovementHandler keyBoardHandler = new PlayerMovementHandler(player, "player_movement", this);
+        PlayerKeyboardHandler keyBoardHandler = new PlayerKeyboardHandler(player, "player_movement", this);
         PlayerMouseHandler mouseHandler = new PlayerMouseHandler(player, "player_mouse", this);
         player.getController().add(keyBoardHandler);
         player.getController().add(mouseHandler);
@@ -1132,7 +1137,8 @@ public class Gameplay extends JPanel implements Runnable {
             }
             return;
         }
-        if (Game.STATE == GameState.GAME_STATE) {
+        if (Game.STATE == GameState.GAME_STATE
+                || Game.STATE == GameState.DIALOGUE_STATE) {
             GameTimer.getInstance().tick();
             if (background != null) {
                 background.tick();
@@ -1156,6 +1162,14 @@ public class Gameplay extends JPanel implements Runnable {
                     Item item = itemsOnGround.get(i);
                     if (item != null) {
                         item.tick();
+                    }
+                }
+            }
+            if (npcs != null) {
+                if (npcs.size() > 0) {
+                    for (int i = 0; i < npcs.size(); i++) {
+                        NPC npc = npcs.get(i);
+                        npc.tick();
                     }
                 }
             }
@@ -1209,6 +1223,14 @@ public class Gameplay extends JPanel implements Runnable {
                         if (camera.checkPositionRelateToCamera(enemy.getPosition())) {
                             enemy.render(g2);
                         }
+                    }
+                }
+            }
+            if (npcs != null) {
+                if (npcs.size() > 0) {
+                    for (int i = 0; i < npcs.size(); i++) {
+                        NPC npc = npcs.get(i);
+                        npc.render(g2);
                     }
                 }
             }

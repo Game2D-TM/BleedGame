@@ -157,12 +157,7 @@ public class Player extends Character {
 //                    , attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition()
 //                    , attackHitBox().getWidth(), attackHitBox().getHeight());
     }
-
-    @Override
-    public void healthBarTick() {
-
-    }
-
+    
     @Override
     public int getXHitBox() {
         if (currAnimation != null) {

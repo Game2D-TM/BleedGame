@@ -63,7 +63,6 @@ public class StatusBar {
     }
 
     public void tick() {
-        character.healthBarTick();
         if (appearTimeLimit > 0 && canShow) {
             healthBarShowCounter++;
             if (healthBarShowCounter > appearTimeLimit) {

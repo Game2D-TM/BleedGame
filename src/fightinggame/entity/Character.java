@@ -76,7 +76,6 @@ public abstract class Character {
 
     protected abstract void healthBarInit(int maxHealth);
 
-    public abstract void healthBarTick();
 
     public void tick() {
         if (currAnimation != null) {

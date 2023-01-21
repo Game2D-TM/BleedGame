@@ -376,11 +376,6 @@ public abstract class Enemy extends Character {
     }
 
     @Override
-    public void healthBarTick() {
-
-    }
-
-    @Override
     public boolean checkHit(GamePosition attackHitBox, boolean isAttack,
             Character character, int attackDamage) {
         if (isAttack && !isDeath) {

@@ -19,7 +19,7 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
 
     private final Player player;
     private final Gameplay gameplay;
-
+    
     public PlayerAbilityHandler(Player player, String name, Gameplay gameplay) {
         super(name);
         this.player = player;

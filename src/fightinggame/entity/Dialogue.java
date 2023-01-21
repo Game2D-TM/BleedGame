@@ -1,6 +1,7 @@
 package fightinggame.entity;
 
 import fightinggame.Gameplay;
+import fightinggame.entity.npc.NPC;
 import fightinggame.resource.DataManager;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -57,7 +58,7 @@ public class Dialogue {
                         g2.drawString(split, position.getXPosition() + 50, yText);
                         yText += 30;
                     }
-                    if (character instanceof Player) {
+                    if (character instanceof Player || character instanceof NPC) {
                         g2.drawString("space to continue", position.getMaxX() - 250, position.getMaxY() - 30);
                     }
                 }
@@ -73,6 +74,15 @@ public class Dialogue {
         }
         return true;
     }
+    
+    public boolean haveNextText() {
+        if(haveDialogue()) {
+            if (index < texts.size() - 1) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void next() {
         if (haveDialogue()) {
@@ -82,6 +92,17 @@ public class Dialogue {
                 index = 0;
                 endDialogue = true;
                 texts = null;
+            }
+        }
+    }
+    
+    public void nextLoop() {
+        if (haveDialogue()) {
+            if (index < texts.size() - 1) {
+                index++;
+            } else {
+                index = 0;
+                endDialogue = true;
             }
         }
     }
@@ -125,6 +146,10 @@ public class Dialogue {
 
     public void setGameplay(Gameplay gameplay) {
         this.gameplay = gameplay;
+    }
+
+    public GamePosition getPosition() {
+        return position;
     }
 
 }
