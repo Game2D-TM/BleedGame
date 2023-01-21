@@ -20,20 +20,11 @@ public class Camera {
     public void tick() {
         if (position != null) {
             if (player != null) {
-                if (!player.isAttack) {
+//                if (!player.isAttack) {
 //                if (player.getPosition().getXPosition() <= position.getXPosition() + 300 || player.getPosition().getMaxX() >= position.getMaxX() - 300) {
-                    int nX = player.getPosition().getXPosition()
-                            - position.getWidth() / 4;
-                    int nY = player.getPosition().getYPosition()
-                            - position.getHeight() / 2;
-                    if (nX >= gameplay.getScenePosition().getXPosition() && nX + position.getWidth() <= gameplay.getScenePosition().getMaxX()) {
-                        position.setXPosition(nX);
-                    }
-                    if (nY >= gameplay.getScenePosition().getYPosition() && nY + position.getHeight() <= gameplay.getScenePosition().getMaxY()) {
-                        position.setYPosition(nY);
-                    }
+                getNewCameraPosition();
 //                }
-                }
+//                }
             }
         }
     }
@@ -47,9 +38,24 @@ public class Camera {
 //        }
     }
 
+    public void getNewCameraPosition() {
+        int nX = player.getPosition().getXPosition()
+                - position.getWidth() / 4;
+        int nY = player.getPosition().getYPosition()
+                - position.getHeight() / 2;
+        if (nX >= gameplay.getScenePosition().getXPosition() && nX + position.getWidth() <= gameplay.getScenePosition().getMaxX()) {
+            position.setXPosition(nX);
+        }
+        if (nY >= gameplay.getScenePosition().getYPosition() && nY + position.getHeight() <= gameplay.getScenePosition().getMaxY()) {
+            position.setYPosition(nY);
+        }
+    }
+
     public boolean checkPositionRelateToCamera(GamePosition position) {
         GamePosition cameraPos = this.position;
-        if(cameraPos == null) return false;
+        if (cameraPos == null) {
+            return false;
+        }
         if (((cameraPos.getXPosition() <= position.getXPosition() && cameraPos.getMaxX() >= position.getMaxX())
                 || (cameraPos.getXPosition() >= position.getXPosition() && cameraPos.getXPosition()
                 <= position.getMaxX() && cameraPos.getMaxX() > position.getMaxX())

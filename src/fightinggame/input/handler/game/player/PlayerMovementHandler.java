@@ -4,7 +4,6 @@ import fightinggame.Game;
 import fightinggame.entity.state.MoveState;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerCrouch;
-import fightinggame.animation.player.PlayerHit;
 import fightinggame.animation.player.PlayerJump_LTR;
 import fightinggame.animation.player.PlayerJump_RTL;
 import fightinggame.animation.player.PlayerRun_LTR;
@@ -317,16 +316,10 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                     case KeyEvent.VK_J:
                     case KeyEvent.VK_K:
                     case KeyEvent.VK_L:
-                        if (player.isAttack() || player.getPosition().isMoving()
-                                || player.getPosition().isCrouch) {
+                        if (player.isAttack() || player.isAttacked() || player.getPosition().isCrouch) {
                             break;
                         }
-                        if (!player.isAttack() && !player.getPosition().isMoving() && !player.isAttacked()) {
-                            if (player.getCurrAnimation() != null) {
-                                if (player.getCurrAnimation() instanceof PlayerHit) {
-                                    break;
-                                }
-                            }
+                        if (!player.getPosition().isMoving()) {
                             Animation attack = null;
                             if ((player.isFallDown() || player.isInAir())) {
                                 if (player.isAirAttack()) {
@@ -419,6 +412,24 @@ public class PlayerMovementHandler extends MovementHandler implements KeyListene
                                     attackEnemies(attack, player.attackHitBox(), 50);
                                 }
                             }
+                        } else {
+                            if((player.isFallDown() || player.isInAir() || player.isSlide())) {
+                                break;
+                            }
+                            Animation attack = null;
+                            if (player.isLTR()) {
+                                attack = player.getAnimations().get(CharacterState.ATTACK03_LTR);
+                            } else {
+                                attack = player.getAnimations().get(CharacterState.ATTACK03_RTL);
+                            }
+                            int attackRange = player.getStats().getAttackRange();
+                            if (player.isLTR()) {
+                                player.getPosition().setWidth(player.getPosition().getWidth() + attackRange); // 120
+                            } else {
+                                player.getPosition().setXPosition(player.getPosition().getXPosition() - attackRange);
+                                player.getPosition().setWidth(player.getPosition().getWidth() + attackRange);
+                            }
+                            attackEnemies(attack, player.attackHitBox(), 50);
                         }
                         break;
                 }

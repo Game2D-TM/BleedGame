@@ -52,7 +52,7 @@ public class NPC extends Character{
 
     @Override
     public GamePosition attackHitBox() {
-        return position;
+        return null;
     }
     
 }

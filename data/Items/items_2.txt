@@ -1,2 +1,4 @@
-key:1,Key Item,1,chest3
-s_energy_potion:0,15,chest2
+collectable:key,1,chest3
+collectable:s_energy_potion,15,chest2
+collectable:s_health_potion,10,chest4
+equipment:fire_sword,1,chest1

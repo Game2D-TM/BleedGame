@@ -28,6 +28,7 @@ public class Rule {
     private Platform firstPlatform;
     private Platform secondPlatform;
     private LocalTime timeLimit;
+    private int sceneTimeLimit;
     private final Map<String, Quest> quests = new HashMap<>();
     private Map<String, BufferedImage> questImages;
     private boolean isRenderQuest = true;
@@ -37,7 +38,6 @@ public class Rule {
         this.gameplay = gameplay;
         this.firstPlatform = firPlatform;
         this.secondPlatform = secondPlatform;
-        setTimeLimit(7);
         questImages = ImageManager.loadImagesFromFolderToMap("assets/res/gui/quest");
     }
 
@@ -261,6 +261,14 @@ public class Rule {
 
     public void setIsRenderQuest(boolean isRenderQuest) {
         this.isRenderQuest = isRenderQuest;
+    }
+
+    public int getSceneTimeLimit() {
+        return sceneTimeLimit;
+    }
+
+    public void setSceneTimeLimit(int sceneTimeLimit) {
+        this.sceneTimeLimit = sceneTimeLimit;
     }
 
 }

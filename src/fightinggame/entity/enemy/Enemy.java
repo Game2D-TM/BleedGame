@@ -48,6 +48,10 @@ public abstract class Enemy extends Character {
     protected File dialogueFile;
     protected int attackCounter = 0;
     protected int attackLimit = 50;
+    
+    public Enemy() {
+        
+    }
 
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, int rangeRandomSpeed) {
@@ -58,6 +62,15 @@ public abstract class Enemy extends Character {
         Random rand = new Random();
         stats.setHealth(health);
         stats.setSpeed(rand.nextInt(rangeRandomSpeed) + 30);
+    }
+    
+    public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
+            Gameplay gameplay) {
+        super(id, name, health, position, animations, gameplay, false, null);
+        healthBarInit(health);
+        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(gameplay.getGame().getWidth() - 160, 10f, 100, 100));
+        healthBar.setAppearTimeLimit(1000);
+        stats.setHealth(health);
     }
 
     @Override
@@ -266,6 +279,8 @@ public abstract class Enemy extends Character {
 //                getHeightHitBox() + DEF_HEIGHT_VISION_POS);
 
     }
+    
+    public abstract Enemy init(Platform firstPlatform, Gameplay gameplay);
 
     public void setDefAttackedCounter() {
         isAttackedCounter = 0;

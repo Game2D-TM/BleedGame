@@ -71,6 +71,17 @@ public class Player extends Character {
     public void tick() {
         super.tick();
         healthBar.tick();
+        if (isDeath) {
+            if (isLTR) {
+                if (currAnimation instanceof PlayerDeath); else {
+                    currAnimation = animations.get(CharacterState.DEATH_LTR);
+                }
+            } else {
+                if (currAnimation instanceof PlayerDeath); else {
+                    currAnimation = animations.get(CharacterState.DEATH_RTL);
+                }
+            }
+        }
         if (isAttacked && !isDeath) {
             if (hitEffect != null) {
                 hitEffect.tick();
@@ -131,8 +142,8 @@ public class Player extends Character {
         if (hitEffect != null) {
             if (hitEffect.isActive()) {
                 hitEffect.render(g, getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                         getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
-                         getWidthHitBox(), getHeightHitBox() / 3);
+                        getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
+                        getWidthHitBox(), getHeightHitBox() / 3);
             }
         }
 //        g.setColor(Color.red);
@@ -299,12 +310,7 @@ public class Player extends Character {
                     }
                     if (stats.getHealth() <= 0) {
                         isDeath = true;
-                        if (isLTR) {
-                            currAnimation = animations.get(CharacterState.DEATH_LTR);
-                        } else {
-                            currAnimation = animations.get(CharacterState.DEATH_RTL);
-                        }
-                        if(hitEffect != null) {
+                        if (hitEffect != null) {
                             hitEffect.resetEffectCounter();
                         }
                     } else {

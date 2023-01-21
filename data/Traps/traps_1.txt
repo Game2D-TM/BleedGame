@@ -1,0 +1,2 @@
+spear:14,8,top,right_corner
+spear:14,10,top,right_corner

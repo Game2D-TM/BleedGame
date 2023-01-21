@@ -51,6 +51,10 @@ public abstract class Character {
     protected int energyAmount = 0;
     protected int energyAmountRenderTick = 0;
 
+    public Character() {
+        inventory = null;
+    }
+    
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
         this.id = id;

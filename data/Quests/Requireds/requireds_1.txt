@@ -1,0 +1,2 @@
+enemy:Dior Firor, 1,Kill Dior Firor,QM_1
+item:Key Item,1,Find Mystery Key,QM_1
