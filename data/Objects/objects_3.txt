@@ -1,0 +1,6 @@
+chest:open_chest,close_chest,chest,mid,22,44,-1,-1
+chest:open_chest,close_chest,chest,mid,9,30,-1,-1
+chest:open_chest,close_chest,chest,mid,17,80,-1,-1
+chest:open_chest,close_chest,chest,mid,17,81,-1,-1
+nontouch:,shelt,shelt,mid,41,82,1000,800
+nontouch:,wood,wood,mid,40,79,400,150

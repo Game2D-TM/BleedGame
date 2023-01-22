@@ -40,8 +40,8 @@ import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.item.equipment.EquipmentItemType;
 import fightinggame.entity.item.equipment.weapon.Sword;
-import fightinggame.entity.npc.merchant.Advanturer;
 import fightinggame.entity.npc.NPC;
+import fightinggame.entity.npc.merchant.Advanturer;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.TrapTile;
@@ -74,7 +74,7 @@ import javax.swing.JPanel;
 public class Gameplay extends JPanel implements Runnable {
 
     public static final int GRAVITY = 7; //7
-    public static final int FIRST_SCENE = 4;
+    public static final int FIRST_SCENE = 3;
     private int currentFps = 0;
 
     private Background background;
@@ -167,17 +167,22 @@ public class Gameplay extends JPanel implements Runnable {
         enemies.clear();
         itemsOnGround.clear();
         playerInit(getPlatforms().get(11).get(3));
-        NPC npc = new Advanturer().init(getPlatforms().get(16).get(8), this);
-        npcs.add(npc);
-//        initEnemies();
+        initEnemies();
 //        pirateCatInit(getPlatforms().get(14).get(15));
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
+        initNpcs();
         initGameItems();
         initGameQuests();
         AudioPlayer.audioPlayers.clear();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
+    }
+
+    public void initNpcs() {
+        npcs.clear();
+        NPC npc = new Advanturer().init(getPlatforms().get(16).get(8), this);
+        npcs.add(npc);
     }
 
     public void initTraps() { // 10,43, 10,44

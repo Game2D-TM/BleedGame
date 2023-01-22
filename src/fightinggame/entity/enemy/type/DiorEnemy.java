@@ -20,6 +20,7 @@ import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.throwable.Fireball;
+import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
 import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
@@ -325,7 +326,7 @@ public class DiorEnemy extends Enemy {
         enemy.getController().add(movementHandler);
         SpriteSheet sheetLTR = new SpriteSheet();
         SpriteSheet sheetRTL = new SpriteSheet();
-        
+
         // Abilities Init
         List<BufferedImage> fireBallsLTR = AssetsManager.fireBallsLTR;
         List<BufferedImage> fireBallsRTL = AssetsManager.fireBallsRTL;
@@ -339,32 +340,36 @@ public class DiorEnemy extends Enemy {
         Fireball fireball = new Fireball(20, 15, 2, 2000, 0, null, null,
                 fireBallAnimationLTR, fireBallAnimationRTL, gameplay, enemy);
         enemy.getAbilities().add(fireball);
-        
-        // Item Init
+        dropItems(enemy.getInventory(), gameplay);
+        // level up to 8
+//        enemy.getStats().addExperience(10000);
+        return enemy;
+    }
+
+    @Override
+    public void dropItems(Inventory inventory, Gameplay gameplay) {
+        Random random = new Random();
         int randNum = random.nextInt(2);
         Item item = null;
         if (randNum == 0) {
             SpriteSheet healthPotionSheet = new SpriteSheet();
             healthPotionSheet.add("assets/res/item/s_health_potion.png");
             PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
-            item = new SmallHealthPotion(0, healthPotionAnimation, enemy,
+            item = new SmallHealthPotion(0, healthPotionAnimation, inventory.getCharacter(),
                     gameplay, 1);
-            Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, enemy);
+            Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, inventory.getCharacter());
             item.getAbilities().add(potionHeal);
         } else {
             SpriteSheet energyPotionSheet = new SpriteSheet();
             energyPotionSheet.add("assets/res/item/s_energy_potion.png");
             PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
-            item = new SmallEnergyPotion(0, energyPotionAnimation, enemy,
+            item = new SmallEnergyPotion(0, energyPotionAnimation, inventory.getCharacter(),
                     gameplay, 1);
             EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
-                    null, null, null, null, gameplay, enemy);
+                    null, null, null, null, gameplay, inventory.getCharacter());
             item.getAbilities().add(energyRecovery);
         }
-        enemy.getInventory().addItemToInventory(item);
-        // level up to 8
-//        enemy.getStats().addExperience(10000);
-        return enemy;
+        inventory.addItemToInventory(item);
     }
 
 }

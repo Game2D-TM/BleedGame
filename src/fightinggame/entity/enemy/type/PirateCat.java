@@ -2,12 +2,21 @@ package fightinggame.entity.enemy.type;
 
 import fightinggame.Gameplay;
 import fightinggame.animation.enemy.*;
+import fightinggame.animation.item.PotionAnimation;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.ability.Ability;
+import fightinggame.entity.ability.type.EnergyRecovery;
+import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
+import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.healing.TimeHeal;
 import fightinggame.entity.enemy.Enemy;
+import fightinggame.entity.inventory.Inventory;
+import fightinggame.entity.item.Item;
+import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
+import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
@@ -16,6 +25,7 @@ import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class PirateCat extends Enemy {
 
@@ -249,11 +259,38 @@ public class PirateCat extends Enemy {
         pirateCat.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", gameplay, pirateCat);
         pirateCat.getController().add(movementHandler);
+        dropItems(pirateCat.getInventory(), gameplay);
         //ablities Init
         TimeHeal timeHeal = new TimeHeal(5000, 500, 10, 0,
                 6000, 0, null, null, null, null, gameplay, pirateCat);
         pirateCat.getAbilities().add(timeHeal);
         return pirateCat;
+    }
+
+    @Override
+    public void dropItems(Inventory inventory, Gameplay gameplay) {
+        Random random = new Random();
+        int randNum = random.nextInt(2);
+        Item item = null;
+        if (randNum == 0) {
+            SpriteSheet healthPotionSheet = new SpriteSheet();
+            healthPotionSheet.add("assets/res/item/s_health_potion.png");
+            PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
+            item = new SmallHealthPotion(0, healthPotionAnimation, inventory.getCharacter(),
+                    gameplay, 1);
+            Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, inventory.getCharacter());
+            item.getAbilities().add(potionHeal);
+        } else {
+            SpriteSheet energyPotionSheet = new SpriteSheet();
+            energyPotionSheet.add("assets/res/item/s_energy_potion.png");
+            PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
+            item = new SmallEnergyPotion(0, energyPotionAnimation, inventory.getCharacter(),
+                    gameplay, 1);
+            EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
+                    null, null, null, null, gameplay, inventory.getCharacter());
+            item.getAbilities().add(energyRecovery);
+        }
+        inventory.addItemToInventory(item);
     }
 
 }

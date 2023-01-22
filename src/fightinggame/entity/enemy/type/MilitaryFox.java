@@ -7,10 +7,19 @@ import fightinggame.animation.enemy.EnemyHit;
 import fightinggame.animation.enemy.EnemyIdle;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
+import fightinggame.animation.item.PotionAnimation;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.ability.Ability;
+import fightinggame.entity.ability.type.EnergyRecovery;
+import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
+import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.enemy.Enemy;
+import fightinggame.entity.inventory.Inventory;
+import fightinggame.entity.item.Item;
+import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
+import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
@@ -19,11 +28,13 @@ import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class MilitaryFox extends Enemy {
 
-    public MilitaryFox() {}
-    
+    public MilitaryFox() {
+    }
+
     public MilitaryFox(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations, Gameplay gameplay) {
         super(id, name, health, position, animations, gameplay);
         avatar = ImageManager.loadImage("assets/res/gui/avatar/military_fox.png");
@@ -60,7 +71,7 @@ public class MilitaryFox extends Enemy {
 
     @Override
     public int getXHitBox() {
-        if(currAnimation instanceof EnemyIdle) {
+        if (currAnimation instanceof EnemyIdle) {
             return position.getXPosition() + 40;
         } else if (currAnimation instanceof EnemyRunForward) {
             return position.getXPosition() + 35;
@@ -84,7 +95,7 @@ public class MilitaryFox extends Enemy {
 
     @Override
     public int getWidthHitBox() {
-        if(currAnimation instanceof EnemyIdle) {
+        if (currAnimation instanceof EnemyIdle) {
             return position.getWidth() - 80;
         } else if (currAnimation instanceof EnemyRunForward) {
             return position.getWidth() - 70;
@@ -185,7 +196,34 @@ public class MilitaryFox extends Enemy {
         militaryFox.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", gameplay, militaryFox);
         militaryFox.getController().add(movementHandler);
+        dropItems(militaryFox.getInventory(), gameplay);
         return militaryFox;
+    }
+
+    @Override
+    public void dropItems(Inventory inventory, Gameplay gameplay) {
+        Random random = new Random();
+        int randNum = random.nextInt(2);
+        Item item = null;
+        if (randNum == 0) {
+            SpriteSheet healthPotionSheet = new SpriteSheet();
+            healthPotionSheet.add("assets/res/item/s_health_potion.png");
+            PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
+            item = new SmallHealthPotion(0, healthPotionAnimation, inventory.getCharacter(),
+                    gameplay, 1);
+            Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, inventory.getCharacter());
+            item.getAbilities().add(potionHeal);
+        } else {
+            SpriteSheet energyPotionSheet = new SpriteSheet();
+            energyPotionSheet.add("assets/res/item/s_energy_potion.png");
+            PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
+            item = new SmallEnergyPotion(0, energyPotionAnimation, inventory.getCharacter(),
+                    gameplay, 1);
+            EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
+                    null, null, null, null, gameplay, inventory.getCharacter());
+            item.getAbilities().add(energyRecovery);
+        }
+        inventory.addItemToInventory(item);
     }
 
 }

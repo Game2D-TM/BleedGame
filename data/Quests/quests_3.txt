@@ -1,0 +1,1 @@
+main_quest:QM_1, Defeat enemies and find mystery key, Go Around Map And Find The Key To Open The Way To Next State

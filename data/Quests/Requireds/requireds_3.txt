@@ -1,0 +1,5 @@
+item:Key Item,2,Find Mystery Key,QM_1
+enemy:Dior Firor, 15,Kill Dior Firor,QM_1
+enemy:Zach Fowler, 3,Defeat Zach Fowler,QM_1
+enemy:Military Fox, 5,Kill Military Fox,QM_1
+enemy:Solider Fox, 5,Kill Solider Fox,QM_1

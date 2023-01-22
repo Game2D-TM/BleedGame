@@ -2,7 +2,6 @@ package fightinggame.entity;
 
 import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class SpriteSheet {
     }
 
     public void render(Graphics g, int x, int y, int width, int height) {
-        Image image = images.get(spriteIndex);
+        BufferedImage image = images.get(spriteIndex);
         if (image != null) {
             g.drawImage(image, x, y, width, height, null);
             //rectangle

@@ -21,6 +21,7 @@ import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
 import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.inventory.Inventory;
 import java.io.File;
 import java.util.List;
 
@@ -281,6 +282,8 @@ public abstract class Enemy extends Character {
     }
     
     public abstract Enemy init(Platform firstPlatform, Gameplay gameplay);
+    
+    public abstract void dropItems(Inventory inventory, Gameplay gameplay);
 
     public void setDefAttackedCounter() {
         isAttackedCounter = 0;

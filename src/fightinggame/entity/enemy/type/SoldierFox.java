@@ -7,10 +7,19 @@ import fightinggame.animation.enemy.EnemyHit;
 import fightinggame.animation.enemy.EnemyIdle;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
+import fightinggame.animation.item.PotionAnimation;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.ability.Ability;
+import fightinggame.entity.ability.type.EnergyRecovery;
+import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
+import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.enemy.Enemy;
+import fightinggame.entity.inventory.Inventory;
+import fightinggame.entity.item.Item;
+import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
+import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.input.handler.game.enemy.EnemyMovementHandler;
@@ -19,6 +28,7 @@ import fightinggame.resource.ImageManager;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class SoldierFox extends Enemy {
 
@@ -60,7 +70,7 @@ public class SoldierFox extends Enemy {
 
     @Override
     public Enemy init(Platform firstPlatform, Gameplay gameplay) {
-        
+
         GamePosition defEnemyPosition = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition(), 180, 249);
         String loc = EnemyAnimationResources.SOLDIER_FOX_SHEET_LOC;
@@ -114,19 +124,20 @@ public class SoldierFox extends Enemy {
         soldierDog.setInsidePlatform(firstPlatform);
         EnemyMovementHandler movementHandler = new EnemyMovementHandler("enemy_movement", gameplay, soldierDog);
         soldierDog.getController().add(movementHandler);
+        dropItems(soldierDog.getInventory(), gameplay);
         return soldierDog;
     }
 
     @Override
     public int getXHitBox() {
-        if(currAnimation instanceof EnemyIdle) {
+        if (currAnimation instanceof EnemyIdle) {
             return position.getXPosition() + 20;
-        } else if(currAnimation instanceof EnemyRunForward) {
+        } else if (currAnimation instanceof EnemyRunForward) {
             return position.getXPosition() + 20;
-        } else if(currAnimation instanceof EnemyRunBack) {
+        } else if (currAnimation instanceof EnemyRunBack) {
             return position.getXPosition() + 40;
-        } else if(currAnimation instanceof EnemyHit) {
-            if(isLTR) {
+        } else if (currAnimation instanceof EnemyHit) {
+            if (isLTR) {
                 return position.getXPosition() + 40;
             } else {
                 return position.getXPosition() + 20;
@@ -137,14 +148,14 @@ public class SoldierFox extends Enemy {
 
     @Override
     public int getWidthHitBox() {
-        if(currAnimation instanceof EnemyIdle) {
+        if (currAnimation instanceof EnemyIdle) {
             return position.getWidth() - 80;
-        } else if(currAnimation instanceof EnemyRunForward) {
+        } else if (currAnimation instanceof EnemyRunForward) {
             return position.getWidth() - 65;
-        } else if(currAnimation instanceof EnemyRunBack) {
+        } else if (currAnimation instanceof EnemyRunBack) {
             return position.getWidth() - 60;
-        } else if(currAnimation instanceof EnemyHit) {
-            if(isLTR) {
+        } else if (currAnimation instanceof EnemyHit) {
+            if (isLTR) {
                 return position.getWidth() - 50;
             } else {
                 return position.getWidth() - 60;
@@ -175,6 +186,32 @@ public class SoldierFox extends Enemy {
             attackX = position.getMaxX() - attackWidth + 10;
         }
         return new GamePosition(attackX, attackY, attackWidth, attackHeight);
+    }
+
+    @Override
+    public void dropItems(Inventory inventory, Gameplay gameplay) {
+        Random random = new Random();
+        int randNum = random.nextInt(2);
+        Item item = null;
+        if (randNum == 0) {
+            SpriteSheet healthPotionSheet = new SpriteSheet();
+            healthPotionSheet.add("assets/res/item/s_health_potion.png");
+            PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
+            item = new SmallHealthPotion(0, healthPotionAnimation, inventory.getCharacter(),
+                    gameplay, 1);
+            Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, inventory.getCharacter());
+            item.getAbilities().add(potionHeal);
+        } else {
+            SpriteSheet energyPotionSheet = new SpriteSheet();
+            energyPotionSheet.add("assets/res/item/s_energy_potion.png");
+            PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
+            item = new SmallEnergyPotion(0, energyPotionAnimation, inventory.getCharacter(),
+                    gameplay, 1);
+            EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
+                    null, null, null, null, gameplay, inventory.getCharacter());
+            item.getAbilities().add(energyRecovery);
+        }
+        inventory.addItemToInventory(item);
     }
 
 }
