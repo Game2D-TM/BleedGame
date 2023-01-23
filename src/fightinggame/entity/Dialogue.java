@@ -119,7 +119,6 @@ public class Dialogue {
     public void setEndDialogue(boolean endDialogue) {
         if (endDialogue) {
             index = 0;
-            texts = null;
         }
         this.endDialogue = endDialogue;
     }

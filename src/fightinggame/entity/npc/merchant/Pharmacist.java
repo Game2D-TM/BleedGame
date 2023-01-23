@@ -1,13 +1,16 @@
 package fightinggame.entity.npc.merchant;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.enemy.EnemyHeavyAttack;
-import fightinggame.animation.enemy.EnemyIdle;
-import fightinggame.animation.enemy.EnemyRunBack;
-import fightinggame.animation.enemy.EnemyRunForward;
+import fightinggame.animation.player.PlayerHeavyAttack;
+import fightinggame.animation.player.PlayerIdle;
+import fightinggame.animation.player.PlayerRun_LTR;
+import fightinggame.animation.player.PlayerRun_RTL;
 import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.item.Item;
+import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
+import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
 import fightinggame.entity.npc.MerchantNPC;
 import fightinggame.entity.npc.NPC;
 import fightinggame.entity.platform.Platform;
@@ -15,23 +18,31 @@ import fightinggame.entity.state.CharacterState;
 import fightinggame.input.handler.game.npc.NPCMovementHandler;
 import fightinggame.resource.EnemyAnimationResources;
 import fightinggame.resource.ImageManager;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Advanturer extends MerchantNPC {
+public class Pharmacist extends MerchantNPC {
 
-    public Advanturer(int id, String name, GamePosition position, Map<CharacterState, Animation> animations, Gameplay gameplay, boolean isLTR) {
+    public Pharmacist(int id, String name, GamePosition position, Map<CharacterState, Animation> animations, Gameplay gameplay, boolean isLTR) {
         super(id, name, position, animations, gameplay, isLTR);
+        shopAvatar = ImageManager.loadImage("assets/res/gui/avatar/pharmacist_shop_avatar.png");
+        List<String> texts = new ArrayList<>();
+        texts.add("Hi, Advanturer!");
+        texts.add("My name is " + name + ". Nice to see you!");
+        texts.add("I produce some potions wanna check it out?");
+        dialogue.setTexts(texts);
     }
 
-    public Advanturer() {
+    public Pharmacist() {
     }
-    
+
     @Override
     public NPC init(Platform firstPlatform, Gameplay gameplay) {
         GamePosition npcPos = new GamePosition(firstPlatform.getPosition().getXPosition(),
                 firstPlatform.getPosition().getYPosition(), 180, 220);
-        String loc = EnemyAnimationResources.ADVANTURER_SHEET_LOC;
+        String loc = EnemyAnimationResources.PHARMACIST_SHEET_LOC;
         SpriteSheet idleLTRSheet = new SpriteSheet(ImageManager.loadImage(loc + "/Idle.png"),
                 0, 0, 64, 80,
                 20, 15, 38, 50, 4);
@@ -46,27 +57,27 @@ public class Advanturer extends MerchantNPC {
         SpriteSheet runRTLSheet = runLTRSheet.convertRTL();
         SpriteSheet attack01RTLSheet = attack01LTRSheet.convertRTL();
 
-        EnemyIdle idleRTL = new EnemyIdle(0, idleRTLSheet);
-        EnemyIdle idleLTR = new EnemyIdle(1, idleLTRSheet);
-        EnemyRunForward runForward = new EnemyRunForward(6, runRTLSheet, 40);
-        EnemyRunBack runBack = new EnemyRunBack(7, runLTRSheet, 40);
-        EnemyHeavyAttack attack01RTL = new EnemyHeavyAttack(8, attack01RTLSheet, 3);
-        EnemyHeavyAttack attack01LTR = new EnemyHeavyAttack(9, attack01LTRSheet, 3);
+        PlayerIdle idleRTL = new PlayerIdle(0, idleRTLSheet);
+        PlayerIdle idleLTR = new PlayerIdle(1, idleLTRSheet);
+        PlayerRun_LTR run_LTR = new PlayerRun_LTR(6, runRTLSheet, 40);
+        PlayerRun_RTL run_RTL = new PlayerRun_RTL(7, runLTRSheet, 40);
+        PlayerHeavyAttack attack01RTL = new PlayerHeavyAttack(8, attack01RTLSheet, 3);
+        PlayerHeavyAttack attack01LTR = new PlayerHeavyAttack(9, attack01LTRSheet, 3);
 
         Map<CharacterState, Animation> npcAnimations = new HashMap();
 
         npcAnimations.put(CharacterState.IDLE_RTL, idleRTL);
         npcAnimations.put(CharacterState.IDLE_LTR, idleLTR);
-        npcAnimations.put(CharacterState.RUNFORWARD, runForward);
-        npcAnimations.put(CharacterState.RUNBACK, runBack);
+        npcAnimations.put(CharacterState.RUNFORWARD, run_LTR);
+        npcAnimations.put(CharacterState.RUNBACK, run_RTL);
         npcAnimations.put(CharacterState.ATTACK01_RTL, attack01RTL);
         npcAnimations.put(CharacterState.ATTACK01_LTR, attack01LTR);
 
-        NPC advanturerNpc = new Advanturer(0, "Olivia Holster", npcPos, npcAnimations, gameplay, false);
-        advanturerNpc.setInsidePlatform(firstPlatform);
-        NPCMovementHandler movementHandler = new NPCMovementHandler(advanturerNpc, gameplay, "Olivia Holster Movement Handler");
-        advanturerNpc.getController().add(movementHandler);
-        return advanturerNpc;
+        NPC pharmacistNPC = new Pharmacist(0, "Olivia Holster", npcPos, npcAnimations, gameplay, false);
+        pharmacistNPC.setInsidePlatform(firstPlatform);
+        NPCMovementHandler movementHandler = new NPCMovementHandler(pharmacistNPC, gameplay, pharmacistNPC.getName() + " Movement Handler");
+        pharmacistNPC.getController().add(movementHandler);
+        return pharmacistNPC;
     }
 
     @Override
@@ -92,6 +103,17 @@ public class Advanturer extends MerchantNPC {
     @Override
     public GamePosition attackHitBox() {
         return null;
+    }
+
+    @Override
+    public void initItems() {
+        Item item;
+        item = new SmallHealthPotion(0, this,
+                gameplay, 15, 10);
+        inventory.addItemToInventory(item);
+        item = new SmallEnergyPotion(0, this,
+                gameplay, 15, 10);
+        inventory.addItemToInventory(item);
     }
 
 }

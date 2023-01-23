@@ -46,6 +46,9 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
     private boolean upArrowPressed;
     private boolean downArrowPressed;
     private boolean enterPressed;
+    private boolean rightArrowPressed;
+    private boolean leftArrowPressed;
+    private boolean escPressed;
 
     public PlayerKeyboardHandler() {
         super(null, null);
@@ -219,6 +222,15 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_DOWN:
                 downArrowPressed = true;
+                break;
+            case KeyEvent.VK_RIGHT:
+                rightArrowPressed = true;
+                break;
+            case KeyEvent.VK_LEFT:
+                leftArrowPressed = true;
+                break;
+            case KeyEvent.VK_ESCAPE:
+                escPressed = true;
                 break;
         }
         if (Game.STATE == GameState.DIALOGUE_STATE) {
@@ -518,6 +530,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_A:
             case KeyEvent.VK_LEFT:
+                leftArrowPressed = false;
                 if (player.isSprint()) {
                     player.getPosition().isSprint = false;
                 }
@@ -530,6 +543,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_D:
             case KeyEvent.VK_RIGHT:
+                rightArrowPressed = false;
                 if (player.isSprint()) {
                     player.getPosition().isSprint = false;
                 }
@@ -546,6 +560,9 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                 break;
             case KeyEvent.VK_ENTER:
                 enterPressed = false;
+                break;
+            case KeyEvent.VK_ESCAPE:
+                escPressed = false;
                 break;
         }
         if (!player.isDeath()) {
@@ -597,5 +614,31 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
     public void setEnterPressed(boolean enterPressed) {
         this.enterPressed = enterPressed;
     }
+
+    public boolean isRightArrowPressed() {
+        return rightArrowPressed;
+    }
+
+    public void setRightArrowPressed(boolean rightArrowPressed) {
+        this.rightArrowPressed = rightArrowPressed;
+    }
+
+    public boolean isLeftArrowPressed() {
+        return leftArrowPressed;
+    }
+
+    public void setLeftArrowPressed(boolean leftArrowPressed) {
+        this.leftArrowPressed = leftArrowPressed;
+    }
+
+    public boolean isEscPressed() {
+        return escPressed;
+    }
+
+    public void setEscPressed(boolean escPressed) {
+        this.escPressed = escPressed;
+    }
+    
+    
 
 }

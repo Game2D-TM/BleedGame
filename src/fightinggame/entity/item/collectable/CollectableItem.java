@@ -14,6 +14,10 @@ public abstract class CollectableItem extends Item {
         super(id, name, animation, character, gameplay, amount);
     }
 
+    public CollectableItem(int id, String name, Animation animation, Character character, Gameplay gameplay, int amount, int price) {
+        super(id, name, animation, character, gameplay, amount, price);
+    }
+
     @Override
     public boolean checkHit(Character character) {
         boolean result = super.checkHit(character);

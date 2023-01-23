@@ -42,10 +42,10 @@ public abstract class NPC extends Character {
         g.drawString(name, position.getXPosition() + 20 - gameplay.getCamera().getPosition().getXPosition()
                 , position.getYPosition() - 20 - gameplay.getCamera().getPosition().getYPosition());
                 //hitbox
-        g.setColor(Color.red);
-        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
-                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
-                getWidthHitBox(), getHeightHitBox());
+//        g.setColor(Color.red);
+//        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+//                getWidthHitBox(), getHeightHitBox());
     }
     
     

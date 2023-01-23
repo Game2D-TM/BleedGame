@@ -1,14 +1,18 @@
 package fightinggame.entity.item.collectable.quest;
 
 import fightinggame.Gameplay;
-import fightinggame.entity.Animation;
+import fightinggame.animation.item.KeyAnimation;
 import fightinggame.entity.Character;
+import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.item.collectable.CollectableItem;
 
 public class Key extends CollectableItem {
 
-    public Key(int id, String name, Animation animation, Character character, Gameplay gameplay, int amount) {
-        super(id, name, animation, character, gameplay, amount);
+    public Key(int id, String name, Character character, Gameplay gameplay, int amount) {
+        super(id, name, null, character, gameplay, amount);
+        SpriteSheet keySheet = new SpriteSheet();
+        keySheet.add("assets/res/item/key.png");
+        animation = new KeyAnimation(1, keySheet, -1);
     }
 
     @Override
@@ -18,7 +22,7 @@ public class Key extends CollectableItem {
 
     @Override
     public Key clone() {
-        return new Key(id, name, animation, character, gameplay, amount);
+        return new Key(id, name, character, gameplay, amount);
     }
 
     @Override
@@ -50,5 +54,5 @@ public class Key extends CollectableItem {
     public int getYMaxHitBox() {
         return position.getMaxY();
     }
-    
+
 }

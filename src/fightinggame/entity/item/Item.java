@@ -21,7 +21,9 @@ public abstract class Item {
     protected Animation animation;
     protected Character character;
     protected GamePosition position;
-    protected int amount;
+    protected int amount = 0;
+    protected int price = 0;
+    protected String description;
     protected final List<GameHandler> handlers = new ArrayList<>();
     protected final List<Ability> abilities = new ArrayList<>();
     protected Gameplay gameplay;
@@ -38,6 +40,17 @@ public abstract class Item {
         this.character = character;
         this.amount = amount;
         this.gameplay = gameplay;
+    }
+    
+    public Item(int id, String name, Animation animation, Character character,
+            Gameplay gameplay, int amount, int price) {
+        this.id = id;
+        this.name = name;
+        this.animation = animation;
+        this.character = character;
+        this.amount = amount;
+        this.gameplay = gameplay;
+        this.price = price;
     }
 
     public void tick() {
@@ -225,6 +238,22 @@ public abstract class Item {
 
     public void setCharacter(Character character) {
         this.character = character;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

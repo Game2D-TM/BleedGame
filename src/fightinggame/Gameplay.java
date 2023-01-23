@@ -4,7 +4,6 @@ import fightinggame.animation.BackgroundAnimation;
 import fightinggame.animation.ability.FireBallAnimation;
 import fightinggame.animation.player.*;
 import fightinggame.animation.trap.*;
-import fightinggame.animation.item.*;
 import fightinggame.animation.item.equipment.FireSwordAnimation;
 import fightinggame.entity.*;
 import fightinggame.entity.background.*;
@@ -22,10 +21,7 @@ import fightinggame.entity.LoadingScreen;
 import fightinggame.entity.ProgressBar;
 import fightinggame.entity.Rule;
 import fightinggame.entity.TransitionScreen;
-import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
-import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
-import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.background.touchable.Chest;
@@ -41,7 +37,8 @@ import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.item.equipment.EquipmentItemType;
 import fightinggame.entity.item.equipment.weapon.Sword;
 import fightinggame.entity.npc.NPC;
-import fightinggame.entity.npc.merchant.Advanturer;
+import fightinggame.entity.npc.NPCType;
+import fightinggame.entity.npc.merchant.Pharmacist;
 import fightinggame.entity.platform.Platform;
 import fightinggame.entity.platform.tile.Tile;
 import fightinggame.entity.platform.tile.TrapTile;
@@ -92,6 +89,7 @@ public class Gameplay extends JPanel implements Runnable {
     private OptionKeyboardHandler optionHandler;
     private TransitionScreen transitionScreen;
     private LoadingScreen loadingScreen;
+    private boolean hideGUI;
 
     public Gameplay(Game game) {
         this.game = game;
@@ -168,7 +166,6 @@ public class Gameplay extends JPanel implements Runnable {
         itemsOnGround.clear();
         playerInit(getPlatforms().get(11).get(3));
         initEnemies();
-//        pirateCatInit(getPlatforms().get(14).get(15));
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
         initNpcs();
@@ -181,8 +178,51 @@ public class Gameplay extends JPanel implements Runnable {
 
     public void initNpcs() {
         npcs.clear();
-        NPC npc = new Advanturer().init(getPlatforms().get(16).get(8), this);
-        npcs.add(npc);
+        int currSceneIndex = DataManager.getCurrentSceneIndex();
+        if (currSceneIndex <= 0) {
+            return;
+        }
+        File npcFile = DataManager.getFile("npcs_" + currSceneIndex);
+        if (npcFile != null) {
+            List<String> lines = DataManager.readFileToList(npcFile);
+            if (lines != null && lines.size() > 0) {
+                for (int i = 0; i < lines.size(); i++) {
+                    String line = lines.get(i);
+                    if (line == null || line.isEmpty()) {
+                        continue;
+                    }
+                    String[] splits = line.split(":");
+                    if (splits == null || splits.length < 2) {
+                        continue;
+                    }
+                    String type = splits[0].trim();
+                    String data = splits[1].trim();
+                    splits = data.split(",");
+                    if (splits == null || splits.length < 2) {
+                        continue;
+                    }
+                    int row = Utils.getInt(splits[0].trim());
+                    int column = Utils.getInt(splits[1].trim());
+                    if (row < 0 || column < 0) {
+                        continue;
+                    }
+                    Platform platform = getPlatforms().get(row).get(column);
+                    if (platform == null) {
+                        continue;
+                    }
+                    NPCType npcType = NPCType.valueOf(type.toUpperCase());
+                    NPC npc = null;
+                    switch (npcType) {
+                        case PHARMACIST:
+                            npc = new Pharmacist().init(getPlatforms().get(16).get(8), this);
+                            break;
+                    }
+                    if (npc != null) {
+                        npcs.add(npc);
+                    }
+                }
+            }
+        }
     }
 
     public void initTraps() { // 10,43, 10,44
@@ -394,10 +434,7 @@ public class Gameplay extends JPanel implements Runnable {
                             CollectableItemType collectType = CollectableItemType.valueOf(itemName.toUpperCase());
                             switch (collectType) {
                                 case KEY:
-                                    SpriteSheet keySheet = new SpriteSheet();
-                                    keySheet.add("assets/res/item/key.png");
-                                    KeyAnimation keyAnimation = new KeyAnimation(1, keySheet, -1);
-                                    Key keyItem = new Key(1, "Key Item", keyAnimation, null, this, amount);
+                                    Key keyItem = new Key(1, "Key Item", null, this, amount);
                                     GameObject gameObject = background.getGameObjectsTouchable().get(chestName);
                                     if (gameObject != null) {
                                         Chest chest = (Chest) gameObject;
@@ -406,14 +443,8 @@ public class Gameplay extends JPanel implements Runnable {
                                     }
                                     break;
                                 case S_ENERGY_POTION:
-                                    SpriteSheet energyPotionSheet = new SpriteSheet();
-                                    energyPotionSheet.add("assets/res/item/s_energy_potion.png");
-                                    PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
-                                    Item item = new SmallEnergyPotion(itemCount, energyPotionAnimation, null,
+                                    Item item = new SmallEnergyPotion(itemCount, null,
                                             this, amount);
-                                    EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
-                                            null, null, null, null, this, null);
-                                    item.getAbilities().add(energyRecovery);
                                     gameObject = background.getGameObjectsTouchable().get(chestName);
                                     if (gameObject != null) {
                                         Chest chest = (Chest) gameObject;
@@ -422,13 +453,7 @@ public class Gameplay extends JPanel implements Runnable {
                                     }
                                     break;
                                 case S_HEALTH_POTION:
-                                    SpriteSheet healthPotionSheet = new SpriteSheet();
-                                    healthPotionSheet.add("assets/res/item/s_health_potion.png");
-                                    PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
-                                    item = new SmallHealthPotion(itemCount, healthPotionAnimation, null,
-                                            this, amount);
-                                    Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, this, null);
-                                    item.getAbilities().add(potionHeal);
+                                    item = new SmallHealthPotion(itemCount, null, this, amount);
                                     gameObject = background.getGameObjectsTouchable().get(chestName);
                                     if (gameObject != null) {
                                         Chest chest = (Chest) gameObject;
@@ -1231,16 +1256,10 @@ public class Gameplay extends JPanel implements Runnable {
                     }
                 }
             }
-            if (npcs != null) {
-                if (npcs.size() > 0) {
-                    for (int i = 0; i < npcs.size(); i++) {
-                        NPC npc = npcs.get(i);
-                        npc.render(g2);
-                    }
+            if (!isHideGUI()) {
+                if (map != null) {
+                    map.render(g2);
                 }
-            }
-            if (map != null) {
-                map.render(g2);
             }
             if (itemsOnGround.size() > 0) {
                 for (int i = 0; i < itemsOnGround.size(); i++) {
@@ -1257,6 +1276,16 @@ public class Gameplay extends JPanel implements Runnable {
             }
             if (player != null) {
                 player.render(g2);
+            }
+            if (npcs != null) {
+                if (npcs.size() > 0) {
+                    for (int i = 0; i < npcs.size(); i++) {
+                        NPC npc = npcs.get(i);
+                        if (camera.checkPositionRelateToCamera(npc.getPosition())) {
+                            npc.render(g2);
+                        }
+                    }
+                }
             }
             transitionScreen.render(g2);
         }
@@ -1330,6 +1359,14 @@ public class Gameplay extends JPanel implements Runnable {
 
     public OptionKeyboardHandler getOptionHandler() {
         return optionHandler;
+    }
+
+    public boolean isHideGUI() {
+        return hideGUI;
+    }
+
+    public void setHideGUI(boolean hideGUI) {
+        this.hideGUI = hideGUI;
     }
 
 }

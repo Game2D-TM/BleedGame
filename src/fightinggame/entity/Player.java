@@ -133,10 +133,12 @@ public class Player extends Character {
     @Override
     public void render(Graphics g) {
         super.render(g);
-        healthBar.render(g);
-        if (isSpeak) {
-            if (dialogue != null) {
-                dialogue.render(g);
+        if (!gameplay.isHideGUI()) {
+            healthBar.render(g);
+            if (isSpeak) {
+                if (dialogue != null) {
+                    dialogue.render(g);
+                }
             }
         }
         if (hitEffect != null) {
@@ -157,7 +159,7 @@ public class Player extends Character {
 //                    , attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition()
 //                    , attackHitBox().getWidth(), attackHitBox().getHeight());
     }
-    
+
     @Override
     public int getXHitBox() {
         if (currAnimation != null) {
@@ -395,6 +397,10 @@ public class Player extends Character {
 
     public int getScore() {
         return score;
+    }
+    
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public void addScore(int point) {

@@ -1,30 +1,48 @@
 package fightinggame.entity.item.collectable.healing;
 
 import fightinggame.Gameplay;
-import fightinggame.entity.Animation;
+import fightinggame.animation.item.PotionAnimation;
 import fightinggame.entity.Character;
+import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.ability.Ability;
 import fightinggame.entity.ability.type.Heal;
+import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.collectable.CollectableItem;
 
 public class SmallHealthPotion extends CollectableItem {
 
-    public SmallHealthPotion(int id, Animation animation, Character character,
-            Gameplay gameplay, int amount) {
-        super(id, "S Health Potion", animation, character, gameplay, amount);
+    public SmallHealthPotion(int id, Character character, Gameplay gameplay, int amount) {
+        super(id, "S Health Potion", null, character, gameplay, amount);
+        SpriteSheet healthPotionSheet = new SpriteSheet();
+        healthPotionSheet.add("assets/res/item/s_health_potion.png");
+        animation = new PotionAnimation(0, healthPotionSheet, -1);
+        Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, character);
+        abilities.add(potionHeal);
+        description = "[S Health Potion] Recover 10 HP.";
+    }
+
+    public SmallHealthPotion(int id, Character character, Gameplay gameplay, int amount, int price) {
+        super(id, "S Health Potion", null, character, gameplay, amount, price);
+        SpriteSheet healthPotionSheet = new SpriteSheet();
+        healthPotionSheet.add("assets/res/item/s_health_potion.png");
+        animation = new PotionAnimation(0, healthPotionSheet, -1);
+        Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, character);
+        abilities.add(potionHeal);
+        description = "[S Health Potion] Recover 10 HP.";
     }
 
     @Override
     public boolean checkHit(Character character) {
         boolean result = super.checkHit(character);
-        if(result) {
+        if (result) {
             gameplay.getAudioPlayer().startThread("health_pickup", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
             return true;
         }
         return false;
     }
-    
+
     @Override
     public boolean use() {
         Heal heal = (Heal) abilities.get(0);
@@ -82,8 +100,7 @@ public class SmallHealthPotion extends CollectableItem {
 
     @Override
     public Item clone() {
-        return new SmallHealthPotion(id, animation,
-                 character, gameplay, amount);
+        return new SmallHealthPotion(id, character, gameplay, amount);
     }
 
 }

@@ -54,7 +54,7 @@ public abstract class Character {
     public Character() {
         inventory = null;
     }
-    
+
     public Character(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay, boolean isLTR, SpriteSheet inventorySheet) {
         this.id = id;
@@ -75,7 +75,6 @@ public abstract class Character {
     }
 
     protected abstract void healthBarInit(int maxHealth);
-
 
     public void tick() {
         if (currAnimation != null) {
@@ -371,13 +370,15 @@ public abstract class Character {
                 }
             }
         }
-        if (abilities.size() > 0) {
-            for (int i = 0; i < abilities.size(); i++) {
-                abilities.get(i).render(g);
+        if (!gameplay.isHideGUI()) {
+            if (abilities.size() > 0) {
+                for (int i = 0; i < abilities.size(); i++) {
+                    abilities.get(i).render(g);
+                }
             }
-        }
-        if (inventory != null) {
-            inventory.render(g);
+            if (inventory != null) {
+                inventory.render(g);
+            }
         }
     }
 
@@ -649,5 +650,5 @@ public abstract class Character {
     public void setEnergyAmount(int energyAmount) {
         this.energyAmount = energyAmount;
     }
-    
+
 }

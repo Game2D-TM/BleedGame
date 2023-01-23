@@ -49,9 +49,9 @@ public abstract class Enemy extends Character {
     protected File dialogueFile;
     protected int attackCounter = 0;
     protected int attackLimit = 50;
-    
+
     public Enemy() {
-        
+
     }
 
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
@@ -64,7 +64,7 @@ public abstract class Enemy extends Character {
         stats.setHealth(health);
         stats.setSpeed(rand.nextInt(rangeRandomSpeed) + 30);
     }
-    
+
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
             Gameplay gameplay) {
         super(id, name, health, position, animations, gameplay, false, null);
@@ -269,8 +269,10 @@ public abstract class Enemy extends Character {
     @Override
     public void render(Graphics g) {
         super.render(g);
-        if (healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
-            healthBar.render(g);
+        if (!gameplay.isHideGUI()) {
+            if (healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
+                healthBar.render(g);
+            }
         }
         // vision hitbox
 //        g.setColor(Color.red);
@@ -280,9 +282,9 @@ public abstract class Enemy extends Character {
 //                getHeightHitBox() + DEF_HEIGHT_VISION_POS);
 
     }
-    
+
     public abstract Enemy init(Platform firstPlatform, Gameplay gameplay);
-    
+
     public abstract void dropItems(Inventory inventory, Gameplay gameplay);
 
     public void setDefAttackedCounter() {

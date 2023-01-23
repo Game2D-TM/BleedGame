@@ -28,5 +28,5 @@ public class EnemyAnimationResources {
     
     // NPC
     
-    public static String ADVANTURER_SHEET_LOC = "assets/res/npc/adventurer/";
+    public static String PHARMACIST_SHEET_LOC = "assets/res/npc/adventurer/";
 }

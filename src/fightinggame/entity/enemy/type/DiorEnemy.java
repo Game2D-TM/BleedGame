@@ -8,17 +8,12 @@ import fightinggame.animation.enemy.EnemyHit;
 import fightinggame.animation.enemy.EnemyIdle;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
-import fightinggame.animation.item.PotionAnimation;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Dialogue;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.SpriteSheet;
-import fightinggame.entity.ability.Ability;
-import fightinggame.entity.ability.type.EnergyRecovery;
-import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
-import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
@@ -352,22 +347,9 @@ public class DiorEnemy extends Enemy {
         int randNum = random.nextInt(2);
         Item item = null;
         if (randNum == 0) {
-            SpriteSheet healthPotionSheet = new SpriteSheet();
-            healthPotionSheet.add("assets/res/item/s_health_potion.png");
-            PotionAnimation healthPotionAnimation = new PotionAnimation(0, healthPotionSheet, -1);
-            item = new SmallHealthPotion(0, healthPotionAnimation, inventory.getCharacter(),
-                    gameplay, 1);
-            Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, inventory.getCharacter());
-            item.getAbilities().add(potionHeal);
+            item = new SmallHealthPotion(0, inventory.getCharacter(), gameplay, 1);
         } else {
-            SpriteSheet energyPotionSheet = new SpriteSheet();
-            energyPotionSheet.add("assets/res/item/s_energy_potion.png");
-            PotionAnimation energyPotionAnimation = new PotionAnimation(0, energyPotionSheet, -1);
-            item = new SmallEnergyPotion(0, energyPotionAnimation, inventory.getCharacter(),
-                    gameplay, 1);
-            EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
-                    null, null, null, null, gameplay, inventory.getCharacter());
-            item.getAbilities().add(energyRecovery);
+            item = new SmallEnergyPotion(0, inventory.getCharacter(), gameplay, 1);
         }
         inventory.addItemToInventory(item);
     }

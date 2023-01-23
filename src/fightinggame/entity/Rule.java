@@ -110,41 +110,43 @@ public class Rule {
     }
 
     public void render(Graphics g) {
-        g.setFont(DataManager.getFont(50f));
-        g.setColor(new Color(133, 0, 0));
-        g.drawString(GameTimer.getInstance().countDownString(timeLimit, GameTimer.FORMAT_MS),
-                gameplay.getWidth() / 2 - 50, 80);
-        if (isRenderQuest) {
-            if (quests.size() > 0) {
-                g.drawImage(questImages.get("page"), gameplay.getWidth() - 260, 270,
-                        250, 300, null);
-                g.drawImage(questImages.get("title"), gameplay.getWidth() - 260, 270,
-                        250, 50, null, null);
-                g.setFont(DataManager.getFont(30f));
-                g.setColor(new Color(133, 0, 0));
-                g.drawString("Quest", gameplay.getWidth() - 170, 310);
-                g.setFont(DataManager.getFont(20f));
-                for (String id : quests.keySet()) {
-                    Quest quest = quests.get(id);
-                    if (quest != null) {
-                        List<QuestRequired> requireds = quest.getRequireds();
-                        if (requireds != null && requireds.size() > 0) {
-                            int yTitle = 350;
-                            int yCheck = 335;
-                            for (int i = 0; i < requireds.size(); i++) {
-                                if (i > 4) {
-                                    break;
-                                }
-                                QuestRequired required = requireds.get(i);
-                                if (required != null) {
-                                    g.drawString(required.toString(),
-                                            gameplay.getWidth() - 220, yTitle);
-                                    if (required.isFinished()) {
-                                        g.drawImage(questImages.get("check"), gameplay.getWidth() - 245, yCheck,
-                                                15, 15, null, null);
+        if (!gameplay.isHideGUI()) {
+            g.setFont(DataManager.getFont(50f));
+            g.setColor(new Color(133, 0, 0));
+            g.drawString(GameTimer.getInstance().countDownString(timeLimit, GameTimer.FORMAT_MS),
+                    gameplay.getWidth() / 2 - 50, 80);
+            if (isRenderQuest) {
+                if (quests.size() > 0) {
+                    g.drawImage(questImages.get("page"), gameplay.getWidth() - 260, 270,
+                            250, 300, null);
+                    g.drawImage(questImages.get("title"), gameplay.getWidth() - 260, 270,
+                            250, 50, null, null);
+                    g.setFont(DataManager.getFont(30f));
+                    g.setColor(new Color(133, 0, 0));
+                    g.drawString("Quest", gameplay.getWidth() - 170, 310);
+                    g.setFont(DataManager.getFont(20f));
+                    for (String id : quests.keySet()) {
+                        Quest quest = quests.get(id);
+                        if (quest != null) {
+                            List<QuestRequired> requireds = quest.getRequireds();
+                            if (requireds != null && requireds.size() > 0) {
+                                int yTitle = 350;
+                                int yCheck = 335;
+                                for (int i = 0; i < requireds.size(); i++) {
+                                    if (i > 4) {
+                                        break;
                                     }
-                                    yTitle += 50;
-                                    yCheck += 50;
+                                    QuestRequired required = requireds.get(i);
+                                    if (required != null) {
+                                        g.drawString(required.toString(),
+                                                gameplay.getWidth() - 220, yTitle);
+                                        if (required.isFinished()) {
+                                            g.drawImage(questImages.get("check"), gameplay.getWidth() - 245, yCheck,
+                                                    15, 15, null, null);
+                                        }
+                                        yTitle += 50;
+                                        yCheck += 50;
+                                    }
                                 }
                             }
                         }
@@ -214,7 +216,7 @@ public class Rule {
     public void addSecondsTimeLimit(int seconds) {
         timeLimit = timeLimit.plusSeconds(seconds);
     }
-    
+
     public void subtractSecondsTimeLimit(int seconds) {
         timeLimit = timeLimit.minusSeconds(seconds);
     }
