@@ -1,37 +1,36 @@
-package fightinggame.entity.item.collectable.healing;
+package fightinggame.entity.item.collectable.buff;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.item.PotionAnimation;
+import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
 import fightinggame.entity.inventory.Inventory;
-import fightinggame.entity.item.Item;
 import fightinggame.entity.item.collectable.CollectableItem;
 
-public class SmallEnergyPotion extends CollectableItem {
+public abstract class EnergyPotion extends CollectableItem {
 
-    public SmallEnergyPotion(int id, Character character, Gameplay gameplay, int amount) {
-        super(id, "S Energy Potion", null, character, gameplay, amount);
-        SpriteSheet energyPotionSheet = new SpriteSheet();
-        energyPotionSheet.add("assets/res/item/s_energy_potion.png");
-        animation = new PotionAnimation(0, energyPotionSheet, -1);
-        EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
+    protected int recoverPoint;
+
+    public EnergyPotion(int id, String name,
+            Animation animation,
+            Character character, Gameplay gameplay, int amount, int recoverPoint) {
+        super(id, name, animation, character, gameplay, amount);
+        this.recoverPoint = recoverPoint;
+        EnergyRecovery energyRecovery = new PotionEnergyRecovery(recoverPoint, 0, 1000,
                 null, null, null, null, gameplay, character);
         abilities.add(energyRecovery);
-        description = "[S Energy Potion] Recover 10 MP.";
+        description = "[" + name + "] Recover " + recoverPoint + " MP.";
     }
 
-    public SmallEnergyPotion(int id, Character character, Gameplay gameplay, int amount, int price) {
-        super(id, "S Energy Potion", null, character, gameplay, amount, price);
-        SpriteSheet energyPotionSheet = new SpriteSheet();
-        energyPotionSheet.add("assets/res/item/s_energy_potion.png");
-        animation = new PotionAnimation(0, energyPotionSheet, -1);
-        EnergyRecovery energyRecovery = new PotionEnergyRecovery(10, 0, 1000,
+    public EnergyPotion(int id, String name, Animation animation, Character character,
+            Gameplay gameplay, int amount, int price, int recoverPoint) {
+        super(id, name, animation, character, gameplay, amount, price);
+        this.recoverPoint = recoverPoint;
+        EnergyRecovery energyRecovery = new PotionEnergyRecovery(recoverPoint, 0, 1000,
                 null, null, null, null, gameplay, character);
         abilities.add(energyRecovery);
-        description = "[S Energy Potion] Recover 10 MP.";
+        description = "[" + name + "] Recover " + recoverPoint + " MP.";
     }
 
     @Override
@@ -70,11 +69,6 @@ public class SmallEnergyPotion extends CollectableItem {
     }
 
     @Override
-    public Item clone() {
-        return new SmallEnergyPotion(id, character, gameplay, amount);
-    }
-
-    @Override
     public int getXHitBox() {
         return position.getXPosition() + 20;
     }
@@ -90,18 +84,16 @@ public class SmallEnergyPotion extends CollectableItem {
     }
 
     @Override
-    public int getXMaxHitBox() {
-        return getXHitBox() + getWidthHitBox();
-    }
-
-    @Override
     public int getYHitBox() {
         return position.getYPosition();
     }
 
-    @Override
-    public int getYMaxHitBox() {
-        return getYHitBox() + getHeightHitBox();
+    public int getRecoverPoint() {
+        return recoverPoint;
+    }
+
+    public void setRecoverPoint(int recoverPoint) {
+        this.recoverPoint = recoverPoint;
     }
 
 }

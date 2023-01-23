@@ -166,11 +166,15 @@ public abstract class Item {
 
     public abstract int getHeightHitBox();
 
-    public abstract int getXMaxHitBox();
+    public int getXMaxHitBox() {
+        return getXHitBox() + getWidthHitBox();
+    }
 
     public abstract int getYHitBox();
 
-    public abstract int getYMaxHitBox();
+    public int getYMaxHitBox() {
+        return getYHitBox() + getHeightHitBox();
+    }
 
     public void setAnimation(Animation animation) {
         this.animation = animation;
@@ -237,6 +241,17 @@ public abstract class Item {
     }
 
     public void setCharacter(Character character) {
+        if(this.character.equals(character)) {
+            return;
+        }
+        if(abilities != null && abilities.size() > 0) {
+            for(int i = 0; i < abilities.size(); i++) {
+                Ability ability = abilities.get(i);
+                if(ability != null) {
+                    ability.setCharacter(character);
+                }
+            }
+        }
         this.character = character;
     }
 

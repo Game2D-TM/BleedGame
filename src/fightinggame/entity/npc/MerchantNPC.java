@@ -79,6 +79,7 @@ public abstract class MerchantNPC extends NPC {
             player.setScore(apPoint);
             Item nItem = itemInInventory.clone();
             nItem.setAmount(1);
+            nItem.setCharacter(player);
             player.getInventory().addItemToInventory(nItem);
             return true;
         }
@@ -109,6 +110,7 @@ public abstract class MerchantNPC extends NPC {
             }
             Item nItem = item.clone();
             nItem.setAmount(1);
+            nItem.setCharacter(this);
             inventory.addItemToInventory(nItem);
             return true;
         }
@@ -385,8 +387,8 @@ public abstract class MerchantNPC extends NPC {
                         List<Item> items = choosenInventory.getAllItemsFromInventory();
                         if (items != null && items.size() > 0) {
                             int length;
-                            if (items.size() > 5) {
-                                length = 5;
+                            if (items.size() > 10) {
+                                length = 10;
                             } else {
                                 length = items.size();
                             }

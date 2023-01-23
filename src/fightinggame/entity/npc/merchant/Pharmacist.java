@@ -9,8 +9,12 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.item.Item;
-import fightinggame.entity.item.collectable.healing.SmallEnergyPotion;
-import fightinggame.entity.item.collectable.healing.SmallHealthPotion;
+import fightinggame.entity.item.collectable.buff.LargeEnergyPotion;
+import fightinggame.entity.item.collectable.buff.LargeHealthPotion;
+import fightinggame.entity.item.collectable.buff.MediumEnergyPotion;
+import fightinggame.entity.item.collectable.buff.MediumHealthPotion;
+import fightinggame.entity.item.collectable.buff.SmallEnergyPotion;
+import fightinggame.entity.item.collectable.buff.SmallHealthPotion;
 import fightinggame.entity.npc.MerchantNPC;
 import fightinggame.entity.npc.NPC;
 import fightinggame.entity.platform.Platform;
@@ -113,6 +117,14 @@ public class Pharmacist extends MerchantNPC {
         inventory.addItemToInventory(item);
         item = new SmallEnergyPotion(0, this,
                 gameplay, 15, 10);
+        inventory.addItemToInventory(item);
+        item = new MediumHealthPotion(0, this, gameplay, 15, 20);
+        inventory.addItemToInventory(item);
+        item = new MediumEnergyPotion(0, this, gameplay, 15, 20);
+        inventory.addItemToInventory(item);
+        item = new LargeEnergyPotion(0, this, gameplay, 15, 30);
+        inventory.addItemToInventory(item);
+        item = new LargeHealthPotion(0, this, gameplay, 15, 30);
         inventory.addItemToInventory(item);
     }
 

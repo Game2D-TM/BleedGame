@@ -1,36 +1,36 @@
-package fightinggame.entity.item.collectable.healing;
+package fightinggame.entity.item.collectable.buff;
 
 import fightinggame.Gameplay;
-import fightinggame.animation.item.PotionAnimation;
+import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.ability.type.Heal;
 import fightinggame.entity.ability.type.healing.PotionHeal;
 import fightinggame.entity.inventory.Inventory;
-import fightinggame.entity.item.Item;
 import fightinggame.entity.item.collectable.CollectableItem;
 
-public class SmallHealthPotion extends CollectableItem {
+public abstract class HealthPotion extends CollectableItem {
 
-    public SmallHealthPotion(int id, Character character, Gameplay gameplay, int amount) {
-        super(id, "S Health Potion", null, character, gameplay, amount);
-        SpriteSheet healthPotionSheet = new SpriteSheet();
-        healthPotionSheet.add("assets/res/item/s_health_potion.png");
-        animation = new PotionAnimation(0, healthPotionSheet, -1);
-        Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, character);
+    protected int healPoint;
+
+    public HealthPotion(int id, String name,
+            Animation animation, Character character,
+            Gameplay gameplay, int amount, int healPoint) {
+        super(id, name, animation, character, gameplay, amount);
+        this.healPoint = healPoint;
+        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, null, null, gameplay, character);
         abilities.add(potionHeal);
-        description = "[S Health Potion] Recover 10 HP.";
+        description = "[" + name + "] Recover " + healPoint + " HP.";
     }
 
-    public SmallHealthPotion(int id, Character character, Gameplay gameplay, int amount, int price) {
-        super(id, "S Health Potion", null, character, gameplay, amount, price);
-        SpriteSheet healthPotionSheet = new SpriteSheet();
-        healthPotionSheet.add("assets/res/item/s_health_potion.png");
-        animation = new PotionAnimation(0, healthPotionSheet, -1);
-        Ability potionHeal = new PotionHeal(10, 0, 1000, null, null, null, null, gameplay, character);
+    public HealthPotion(int id, String name,
+            Animation animation, Character character,
+            Gameplay gameplay, int amount, int price, int healPoint) {
+        super(id, name, animation, character, gameplay, amount, price);
+        this.healPoint = healPoint;
+        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, null, null, gameplay, character);
         abilities.add(potionHeal);
-        description = "[S Health Potion] Recover 10 HP.";
+        description = "[" + name + "] Recover " + healPoint + " HP.";
     }
 
     @Override
@@ -84,23 +84,16 @@ public class SmallHealthPotion extends CollectableItem {
     }
 
     @Override
-    public int getXMaxHitBox() {
-        return getXHitBox() + getWidthHitBox();
-    }
-
-    @Override
     public int getYHitBox() {
         return position.getYPosition();
     }
 
-    @Override
-    public int getYMaxHitBox() {
-        return getYHitBox() + getHeightHitBox();
+    public int getHealPoint() {
+        return healPoint;
     }
 
-    @Override
-    public Item clone() {
-        return new SmallHealthPotion(id, character, gameplay, amount);
+    public void setHealPoint(int healPoint) {
+        this.healPoint = healPoint;
     }
 
 }
