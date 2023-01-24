@@ -7,32 +7,42 @@ import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.SpriteSheet;
+import fightinggame.entity.Stats;
+import fightinggame.resource.DataManager;
+import fightinggame.resource.ImageManager;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Inventory {
 
     public static int ITEM_SLOT_WIDTH = 90;
     public static int ITEM_SLOT_HEIGHT = 90;
     public static int ITEM_SLOT_ANIMATION_TICK = -1;
-    public static int DISTANCE_X_TO_CAMERA = 650;
+    public static int DISTANCE_X_TO_CAMERA = 670;
     public static int DISTANCE_Y_TO_CAMERA = 250;
     private int row = 6;
-    private int column = 10;
+    private int column = 7;
     private Character character;
     private SpriteSheet sheet;
     private List<List<SlotInventory>> inventorySlots = new ArrayList();
     private GamePosition position;
     private Gameplay gameplay;
     private boolean isOpen;
-
+    private Map<String, BufferedImage> statsGuis;
+    
     public Inventory(Character character, SpriteSheet sheet, Gameplay gameplay) {
         this.character = character;
         this.sheet = sheet;
         this.position = new GamePosition(0, 0, 0, 0);
         this.gameplay = gameplay;
         init();
+        if(character instanceof Player) {
+            statsGuis = ImageManager.loadImagesFromFolderToMap("assets/res/gui/stats/player");
+        }
     }
 
     private void init() {
@@ -141,6 +151,84 @@ public class Inventory {
                                 }
                             }
                         }
+                    }
+                    Stats stats = character.getStats();
+                    Player player = gameplay.getPlayer();
+                    if (statsGuis != null && statsGuis.size() > 0) {
+                        int x = 100, y = 210;
+                        g.drawImage(statsGuis.get("background_stats"), x, y,
+                                gameplay.getWidth() / 3, gameplay.getHeight() / 2 + 100, null);
+                        x += 30;
+                        y += 20;
+                        g.drawImage(statsGuis.get("avatar_border"), x, y, 220, 150, null);
+                        x += 35;
+                        y += 15;
+                        g.drawImage(player.getAvatar(), x, y, 150, 100, gameplay);
+                        g.setFont(DataManager.getFont(30f));
+                        g.setColor(new Color(133, 0, 0));
+                        x = 380;
+                        y = 280;
+                        g.drawString(player.getName(), x, y);
+                        y += 40;
+                        g.drawString("Level: " + stats.getLevel(), x, y);
+                        y += 40;
+                        g.drawString("AP: " + player.getScore(), x, y);
+                        x = 145;
+                        y = 420;
+                        g.drawString("HP: " + stats.getHealth() + "/" + player.getHealthBar().getMaxHealth(), x, y);
+                        y += 40;
+                        g.drawString("MP: " + stats.getEnergy() + "/" + player.getHealthBar().getMaxEnergy(), x, y);
+                        y += 40;
+                        g.drawString("Experience: " + (int)stats.getLevelExperience() + "/" + (int)stats.getNextLevelExperience(), x, y);
+                        y += 40;
+                        g.drawString("Attack Damage: " + stats.getAttackDamage(), x, y);
+                        y += 40;
+                        g.drawString("Critical Damage: " + stats.getCritDamage(), x, y);
+                        y += 40;
+                        g.drawString("Critical Change: " + stats.getCritChangeString(), x, y);
+                        y += 40;
+                        g.drawString("Defence Damage: " + stats.getDefenceDamage(), x, y);
+                        y += 40;
+                        g.drawString("Defence Change: " + stats.getDefenceChangeString(), x, y);
+                        
+                        x = gameplay.getWidth() / 3;
+                        y = 390;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                        x += 35;
+                        y = 390;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y += 40;
+                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                        y = 210;
+                        g.drawString("Level Up Point: " + stats.getLevelUpPoint(), 145, (y + (gameplay.getHeight() / 2 + 100)) - 55);
+                        g.drawImage(statsGuis.get("plus"), gameplay.getWidth() / 3 + 20, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
+                        g.drawImage(statsGuis.get("cancel"), gameplay.getWidth() / 3 - 30, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
                     }
                 }
             }

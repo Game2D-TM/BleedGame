@@ -158,7 +158,7 @@ public class Stats {
 
     // need to code
     public void increaseLevelUpPoint() {
-        if (levelUpCount < 5) {
+        if (levelUpCount < 2) {
             levelUpCount++;
         } else {
             levelUpCount = 0;
@@ -290,6 +290,10 @@ public class Stats {
     public float getCritChange() {
         return critChange;
     }
+    
+    public String getCritChangeString() {
+        return (int)(critChange * 100) + "%";
+    }
 
     public void setCritChange(float critChange) {
         this.critChange = critChange;
@@ -313,6 +317,9 @@ public class Stats {
 
     public float getDefenceChange() {
         return defenceChange;
+    }
+    public String getDefenceChangeString() {
+        return (defenceChange * 100) + "%";
     }
 
     public void setDefenceChange(float defenceChange) {

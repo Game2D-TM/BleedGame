@@ -71,7 +71,7 @@ import javax.swing.JPanel;
 public class Gameplay extends JPanel implements Runnable {
 
     public static final int GRAVITY = 7; //7
-    public static final int FIRST_SCENE = 3;
+    public static final int FIRST_SCENE = 2;
     private int currentFps = 0;
 
     private Background background;
