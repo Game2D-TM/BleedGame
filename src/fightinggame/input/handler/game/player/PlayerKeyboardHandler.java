@@ -4,6 +4,7 @@ import fightinggame.Game;
 import fightinggame.entity.state.MoveState;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerCrouch;
+import fightinggame.animation.player.PlayerIdle;
 import fightinggame.animation.player.PlayerJump_LTR;
 import fightinggame.animation.player.PlayerJump_RTL;
 import fightinggame.animation.player.PlayerRun_LTR;
@@ -107,6 +108,23 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                             player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_LTR));
                         } else {
                             player.setCurrAnimation(player.getAnimations().get(CharacterState.FALLDOWN_RTL));
+                        }
+                    }
+                    if (player.getPosition().isMoveRight) {
+                        if (player.getCurrAnimation() != null && player.getCurrAnimation() instanceof PlayerIdle) {
+                            if (player.isSprint()) {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.SPRINT_LTR));
+                            } else {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                            }
+                        }
+                    } else if (player.getPosition().isMoveLeft) {
+                        if (player.getCurrAnimation() != null && player.getCurrAnimation() instanceof PlayerIdle) {
+                            if (player.isSprint()) {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.SPRINT_RTL));
+                            } else {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                            }
                         }
                     }
                     player.setIsAttack(false);
@@ -566,6 +584,9 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                 break;
         }
         if (!player.isDeath()) {
+            if (player.isUseItem()) {
+                return;
+            }
             if (!player.isAttack() && !player.isAttacked()) {
                 if (player.getPosition().isNotPressKey() && !player.isSpecialAttack()
                         && !player.isInAir() && !player.isFallDown()) {
@@ -638,7 +659,5 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
     public void setEscPressed(boolean escPressed) {
         this.escPressed = escPressed;
     }
-    
-    
 
 }

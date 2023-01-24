@@ -23,6 +23,7 @@ public class Player extends Character {
     private boolean isAirAttack;
     private boolean isSpecialAttack;
     private boolean isDoubleJump;
+    private boolean isUseItem;
     private Dialogue dialogue;
     private boolean isSpeak;
     private int speakCounter = 0;
@@ -52,8 +53,6 @@ public class Player extends Character {
                 0, 0, 18, 18,
                 0, 0, 18, 18, 4);
         hitEffect = new PlayerHitEffect(0, exploreFireBallSheet, stunTime);
-        
-        score = 10000;
     }
 
     @Override
@@ -480,4 +479,11 @@ public class Player extends Character {
         return hitEffect;
     }
 
+    public boolean isUseItem() {
+        return isUseItem;
+    }
+
+    public void setIsUseItem(boolean isUseItem) {
+        this.isUseItem = isUseItem;
+    }
 }

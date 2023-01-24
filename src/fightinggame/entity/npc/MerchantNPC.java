@@ -80,6 +80,10 @@ public abstract class MerchantNPC extends NPC {
             Item nItem = itemInInventory.clone();
             nItem.setAmount(1);
             nItem.setCharacter(player);
+            if(nItem.getPrice() > 0) {
+                int nPrice = nItem.getPrice() / 2;
+                nItem.setPrice(nPrice);
+            }
             player.getInventory().addItemToInventory(nItem);
             return true;
         }
@@ -180,6 +184,7 @@ public abstract class MerchantNPC extends NPC {
                                 case 1:
                                     if (keyHandler.isEscPressed()) {
                                         shopOptionsIndex = 0;
+                                        itemIndex = 0;
                                         keyHandler.setEscPressed(false);
                                     }
                                     List<Item> items = null;

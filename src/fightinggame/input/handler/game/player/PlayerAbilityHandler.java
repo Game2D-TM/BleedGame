@@ -19,11 +19,30 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
 
     private final Player player;
     private final Gameplay gameplay;
-    
+    private int useItemCounter = 0;
+    private int useItemLimit = 100;
+
     public PlayerAbilityHandler(Player player, String name, Gameplay gameplay) {
         super(name);
         this.player = player;
         this.gameplay = gameplay;
+    }
+
+    @Override
+    public void tick() {
+        if (player.isUseItem()) {
+            if (useItemCounter <= useItemLimit) {
+                useItemCounter++;
+            } else {
+                if (player.isLTR()) {
+                    player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_LTR));
+                } else {
+                    player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_RTL));
+                }
+                player.setIsUseItem(false);
+                useItemCounter = 0;
+            }
+        }
     }
 
     @Override
@@ -90,15 +109,20 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                     if (item == null) {
                         item = player.getInventory().getItemByName("M Health Potion");
                     }
-                    if(item == null) {
+                    if (item == null) {
                         item = player.getInventory().getItemByName("L Health Potion");
                     }
-                    if(item == null) {
+                    if (item == null) {
                         break;
                     }
                     if (item instanceof HealthPotion) {
                         if (item.use()) {
-
+                            player.setIsUseItem(true);
+                            if (player.isLTR()) {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.USEITEM_LTR));
+                            } else {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.USEITEM_RTL));
+                            }
                         } else {
                             System.out.println("Is Cooldown.");
                         }
@@ -109,15 +133,20 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                     if (item == null) {
                         item = player.getInventory().getItemByName("M Energy Potion");
                     }
-                    if(item == null) {
+                    if (item == null) {
                         item = player.getInventory().getItemByName("L Energy Potion");
                     }
-                    if(item == null) {
+                    if (item == null) {
                         break;
                     }
                     if (item instanceof EnergyPotion) {
                         if (item.use()) {
-
+                            player.setIsUseItem(true);
+                            if (player.isLTR()) {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.USEITEM_LTR));
+                            } else {
+                                player.setCurrAnimation(player.getAnimations().get(CharacterState.USEITEM_RTL));
+                            }
                         } else {
                             System.out.println("Is Cooldown.");
                         }
@@ -153,11 +182,6 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                 }
                 break;
         }
-    }
-
-    @Override
-    public void tick() {
-
     }
 
 }

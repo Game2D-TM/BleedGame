@@ -12,8 +12,10 @@ public class AssetsManager {
     public static Map<String, SpriteSheet> playerSpriteSheetMap;
     
     static {
-        fireBallsLTR = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/LTR", 200, 365, 580, 200);
-        fireBallsRTL = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL", 30, 365, 580, 200);
+        fireBallsLTR = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/LTR"
+                                                                        , 200, 365, 580, 200);
+        fireBallsRTL = ImageManager.loadImagesWithCutFromFolderToList("assets/res/ability/Fire Ball/RTL"
+                                                                        , 30, 365, 580, 200);
         playerSpriteSheetMap = SpriteSheet.loadSpriteSheetFromFolder("assets/res/player");
     }
 }

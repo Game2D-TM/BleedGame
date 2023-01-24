@@ -3,6 +3,7 @@ package fightinggame.entity.item.collectable.buff;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
+import fightinggame.entity.ability.Ability;
 import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
 import fightinggame.entity.inventory.Inventory;
@@ -45,11 +46,19 @@ public abstract class EnergyPotion extends CollectableItem {
 
     @Override
     public boolean use() {
-        EnergyRecovery energyRecovery = (EnergyRecovery) abilities.get(0);
-        if (energyRecovery == null) {
+        if(abilities.size() <= 0) {
             return false;
         }
-        boolean result = energyRecovery.execute();
+        boolean result = false;
+        for(int i = 0 ; i < abilities.size() ; i++) {
+            Ability ability = abilities.get(i);
+            if(ability != null) {
+                boolean temp = ability.execute();
+                if(temp) {
+                    result = true;
+                }
+            }
+        }
         if (result) {
             if (amount > 0) {
                 int nAmount = amount - 1;

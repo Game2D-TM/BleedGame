@@ -56,5 +56,6 @@ public enum CharacterState {
     SPELLCASTLOOP_RTL,
     SLIDE_LTR,
     SLIDE_RTL,
-    
+    USEITEM_LTR,
+    USEITEM_RTL
 }

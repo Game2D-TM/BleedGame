@@ -913,7 +913,7 @@ public class Gameplay extends JPanel implements Runnable {
                 getUp_tick = 15, knockDown_tick = 21,
                 ledgeClimb_tick = 15, ledgeGrap_tick = 15,
                 wallRun_tick = 15, wallSlide_tick = 15,
-                sprint_tick = 10;
+                sprint_tick = 10, useItem_tick = 34;
 
         //LTR
         PlayerHit hitLTR = new PlayerHit(3, playerSpriteSheetMap.get("HurtAnim01"), hit_tick);
@@ -941,6 +941,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerWallAction_LTR wallRunLTR = new PlayerWallAction_LTR(17, playerSpriteSheetMap.get("WallRun01"), wallRun_tick);
         PlayerWallAction_LTR wallSlideLTR = new PlayerWallAction_LTR(18, playerSpriteSheetMap.get("WallSlide01"), wallSlide_tick);
         PlayerSprint_LTR sprintLTR = new PlayerSprint_LTR(19, playerSpriteSheetMap.get("Sprint01"), sprint_tick);
+        PlayerUseItem playerUseItemLTR = new PlayerUseItem(20, playerSpriteSheetMap.get("UseItem01"), useItem_tick);
 
         //RTL
         PlayerHit hitRTL = new PlayerHit(3, playerSpriteSheetMap.get("HurtAnim01").convertRTL(), hit_tick);
@@ -968,7 +969,8 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerWallAction_RTL wallRunRTL = new PlayerWallAction_RTL(17, playerSpriteSheetMap.get("WallRun01").convertRTL(), wallRun_tick);
         PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, playerSpriteSheetMap.get("WallSlide01").convertRTL(), wallSlide_tick);
         PlayerSprint_RTL sprintRTL = new PlayerSprint_RTL(19, playerSpriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
-
+        PlayerUseItem playerUseItemRTL = new PlayerUseItem(20, playerSpriteSheetMap.get("UseItem01").convertRTL(), useItem_tick);
+        
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
 
@@ -1043,7 +1045,11 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.LEDGECLIMB_RTL, ledgeClimbRTL);//New
         playerAnimations.put(CharacterState.LEDGEGRAB_LTR, ledgeGrabLTR);//New
         playerAnimations.put(CharacterState.LEDGEGRAB_RTL, ledgeGrabRTL);//New
-
+        
+        //Use Item
+        playerAnimations.put(CharacterState.USEITEM_LTR, playerUseItemLTR);
+        playerAnimations.put(CharacterState.USEITEM_RTL, playerUseItemRTL);
+        
         //Init Inventory
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/inventory"));
