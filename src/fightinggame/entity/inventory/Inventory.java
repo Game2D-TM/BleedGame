@@ -1,5 +1,6 @@
 package fightinggame.entity.inventory;
 
+import fightinggame.Game;
 import fightinggame.Gameplay;
 import fightinggame.animation.item.SlotAnimation;
 import fightinggame.entity.Character;
@@ -8,6 +9,9 @@ import fightinggame.entity.Player;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.Stats;
+import fightinggame.entity.state.GameState;
+import fightinggame.input.handler.GameHandler;
+import fightinggame.input.handler.game.player.PlayerKeyboardHandler;
 import fightinggame.resource.DataManager;
 import fightinggame.resource.ImageManager;
 import java.awt.Color;
@@ -32,15 +36,22 @@ public class Inventory {
     private GamePosition position;
     private Gameplay gameplay;
     private boolean isOpen;
+
+    //player stats
     private Map<String, BufferedImage> statsGuis;
-    
+    private int[] numberOfStats = {0, 0, 0, 0, 0, 0, 0, 0};
+    private int currStatIndex = 0;
+    private int currArrowIndex = 0;
+    private BufferedImage imageSelection;
+    private boolean haveLevelUpPoint;
+
     public Inventory(Character character, SpriteSheet sheet, Gameplay gameplay) {
         this.character = character;
         this.sheet = sheet;
         this.position = new GamePosition(0, 0, 0, 0);
         this.gameplay = gameplay;
         init();
-        if(character instanceof Player) {
+        if (character instanceof Player) {
             statsGuis = ImageManager.loadImagesFromFolderToMap("assets/res/gui/stats/player");
         }
     }
@@ -119,6 +130,116 @@ public class Inventory {
                     position.setXPosition(gameplay.getCamera().getPosition().getXPosition() + DISTANCE_X_TO_CAMERA);
                     position.setYPosition(gameplay.getCamera().getPosition().getYPosition() + DISTANCE_Y_TO_CAMERA);
                     slotChangePosition();
+                    Player player = (Player) character;
+                    if (player != null) {
+                        List<GameHandler> controllers = player.getController();
+                        if (controllers != null && controllers.size() > 0) {
+                            PlayerKeyboardHandler keyHandler = (PlayerKeyboardHandler) controllers.get(0);
+                            if (keyHandler != null) {
+                                if (keyHandler.isDownArrowPressed()) {
+                                    if (currStatIndex < numberOfStats.length) {
+                                        currStatIndex++;
+                                    } else {
+                                        currStatIndex = 0;
+                                    }
+                                    keyHandler.setDownArrowPressed(false);
+                                }
+                                if (keyHandler.isUpArrowPressed()) {
+                                    if (currStatIndex > 0) {
+                                        currStatIndex--;
+                                    } else {
+                                        currStatIndex = numberOfStats.length;
+                                    }
+                                    keyHandler.setUpArrowPressed(false);
+                                }
+                                if (keyHandler.isRightArrowPressed()) {
+                                    if (currArrowIndex < 1) {
+                                        currArrowIndex++;
+                                    } else {
+                                        currArrowIndex = 0;
+                                    }
+                                    keyHandler.setRightArrowPressed(false);
+                                }
+                                if (keyHandler.isLeftArrowPressed()) {
+                                    if (currArrowIndex > 0) {
+                                        currArrowIndex--;
+                                    } else {
+                                        currArrowIndex = 1;
+                                    }
+                                    keyHandler.setLeftArrowPressed(false);
+                                }
+                                if (keyHandler.isEnterPressed()) {
+                                    if (numberOfStats.length > 0) {
+                                        if (currStatIndex < numberOfStats.length) {
+                                            int statPlus = numberOfStats[currStatIndex];
+                                            switch (currArrowIndex) {
+                                                case 0:
+                                                    if (statPlus > 0) {
+                                                        statPlus--;
+                                                        player.getStats().setLevelUpPoint(player.getStats().getLevelUpPoint() + 1);
+                                                    }
+                                                    break;
+                                                case 1:
+                                                    if (player.getStats().getLevelUpPoint() > 0) {
+                                                        statPlus++;
+                                                        player.getStats().setLevelUpPoint(player.getStats().getLevelUpPoint() - 1);
+                                                    }
+                                                    break;
+                                            }
+                                            numberOfStats[currStatIndex] = statPlus;
+                                        } else {
+                                            switch (currArrowIndex) {
+                                                case 0:
+                                                    for (int i = 0; i < numberOfStats.length; i++) {
+                                                        int statPlus = numberOfStats[i];
+                                                        if (statPlus > 0) {
+                                                            player.getStats().setLevelUpPoint(player.getStats().getLevelUpPoint() + statPlus);
+                                                        }
+                                                        numberOfStats[i] = 0;
+                                                    }
+                                                    break;
+                                                case 1:
+                                                    for (int i = 0; i < numberOfStats.length; i++) {
+                                                        int statPlus = numberOfStats[i];
+                                                        if (statPlus > 0) {
+                                                            switch (i) {
+                                                                case 0:
+                                                                    player.getHealthBar().setMaxHealth(player.getHealthBar().getMaxHealth() + statPlus);
+                                                                    break;
+                                                                case 1:
+                                                                    player.getHealthBar().setMaxEnergy(player.getHealthBar().getMaxEnergy() + statPlus);
+                                                                    break;
+                                                                case 2:
+                                                                    break;
+                                                                case 3:
+                                                                    player.getStats().setAttackDamage(player.getStats().getAttackDamage() + statPlus);
+                                                                    break;
+                                                                case 4:
+                                                                    player.getStats().setCritDamage(player.getStats().getCritDamage() + statPlus);
+                                                                    break;
+                                                                case 5:
+                                                                    break;
+                                                                case 6:
+                                                                    player.getStats().setDefenceDamage(player.getStats().getDefenceDamage() + statPlus);
+                                                                    break;
+                                                                case 7:
+                                                                    break;
+                                                            }
+                                                        }
+                                                        numberOfStats[i] = 0;
+                                                    }
+                                                    if (player.getStats().getLevelUpPoint() == 0) {
+                                                        haveLevelUpPoint = false;
+                                                    }
+                                                    break;
+                                            }
+                                        }
+                                        keyHandler.setEnterPressed(false);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 if (inventorySlots.size() > 0) {
                     for (int i = 0; i < inventorySlots.size(); i++) {
@@ -179,7 +300,7 @@ public class Inventory {
                         y += 40;
                         g.drawString("MP: " + stats.getEnergy() + "/" + player.getHealthBar().getMaxEnergy(), x, y);
                         y += 40;
-                        g.drawString("Experience: " + (int)stats.getLevelExperience() + "/" + (int)stats.getNextLevelExperience(), x, y);
+                        g.drawString("Experience: " + (int) stats.getLevelExperience() + "/" + (int) stats.getNextLevelExperience(), x, y);
                         y += 40;
                         g.drawString("Attack Damage: " + stats.getAttackDamage(), x, y);
                         y += 40;
@@ -190,45 +311,53 @@ public class Inventory {
                         g.drawString("Defence Damage: " + stats.getDefenceDamage(), x, y);
                         y += 40;
                         g.drawString("Defence Change: " + stats.getDefenceChangeString(), x, y);
-                        
-                        x = gameplay.getWidth() / 3;
-                        y = 390;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
-                        x += 35;
-                        y = 390;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y += 40;
-                        g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
-                        y = 210;
-                        g.drawString("Level Up Point: " + stats.getLevelUpPoint(), 145, (y + (gameplay.getHeight() / 2 + 100)) - 55);
-                        g.drawImage(statsGuis.get("plus"), gameplay.getWidth() / 3 + 20, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
-                        g.drawImage(statsGuis.get("cancel"), gameplay.getWidth() / 3 - 30, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
+
+                        if (haveLevelUpPoint) {
+                            y = 390;
+                            for (int i = 0; i < numberOfStats.length; i++) {
+                                x = gameplay.getWidth() / 3 - 20;
+                                g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
+                                g.drawString(numberOfStats[i] + "", x + 35, y + 27);
+                                x += 55;
+                                g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
+                                y += 40;
+                            }
+                            y = 210;
+                            g.drawString("Level Up Point: " + stats.getLevelUpPoint(), 145, (y + (gameplay.getHeight() / 2 + 100)) - 55);
+                            g.drawImage(statsGuis.get("plus"), gameplay.getWidth() / 3 + 20, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
+                            g.drawImage(statsGuis.get("cancel"), gameplay.getWidth() / 3 - 30, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
+                            switch (currArrowIndex) {
+                                case 0:
+                                    if (currStatIndex == numberOfStats.length) {
+                                        imageSelection = statsGuis.get("cancel_red");
+                                        x = gameplay.getWidth() / 3 - 30;
+                                    } else {
+                                        imageSelection = statsGuis.get("arrow_red_left");
+                                        x = gameplay.getWidth() / 3 - 20;
+                                    }
+                                    break;
+                                case 1:
+
+                                    if (currStatIndex == numberOfStats.length) {
+                                        imageSelection = statsGuis.get("plus_red");
+                                        x = gameplay.getWidth() / 3 + 20;
+                                    } else {
+                                        imageSelection = statsGuis.get("arrow_red_right");
+                                        x = gameplay.getWidth() / 3 + 35;
+                                    }
+                                    break;
+                            }
+                            if (currStatIndex > 0) {
+                                if (currStatIndex == numberOfStats.length) {
+                                    y = (210 + (gameplay.getHeight() / 2 + 100)) - 80;
+                                } else {
+                                    y = 390 + currStatIndex * 40;
+                                }
+                            } else {
+                                y = 390;
+                            }
+                            g.drawImage(imageSelection, x, y, 30, 30, null);
+                        }
                     }
                 }
             }
@@ -355,9 +484,25 @@ public class Inventory {
     // need to code
     public void open() {
         if (!isOpen) {
+            if (gameplay.getPlayer().getStats().getLevelUpPoint() > 0) {
+                haveLevelUpPoint = true;
+            }
+            Game.STATE = GameState.PLAYER_STATE;
             isOpen = true;
         } else {
+            currStatIndex = 0;
+            currArrowIndex = 0;
+            if (numberOfStats.length > 0) {
+                for (int i = 0; i < numberOfStats.length; i++) {
+                    int statPlus = numberOfStats[i];
+                    if (statPlus > 0) {
+                        gameplay.getPlayer().getStats().setLevelUpPoint(gameplay.getPlayer().getStats().getLevelUpPoint() + statPlus);
+                    }
+                    numberOfStats[i] = 0;
+                }
+            }
             isOpen = false;
+            Game.STATE = GameState.GAME_STATE;
         }
     }
 
@@ -443,6 +588,22 @@ public class Inventory {
 
     public void setGameplay(Gameplay gameplay) {
         this.gameplay = gameplay;
+    }
+
+    public int getCurrStatIndex() {
+        return currStatIndex;
+    }
+
+    public void setCurrStatIndex(int currStatIndex) {
+        this.currStatIndex = currStatIndex;
+    }
+
+    public int getCurrArrowIndex() {
+        return currArrowIndex;
+    }
+
+    public void setCurrArrowIndex(int currArrowIndex) {
+        this.currArrowIndex = currArrowIndex;
     }
 
 }

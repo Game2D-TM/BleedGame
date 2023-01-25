@@ -1,5 +1,6 @@
 package fightinggame.resource;
 
+import fightinggame.Gameplay;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
@@ -21,11 +22,12 @@ public class DataManager {
     public static final String SOUNDS_PATH = "assets/res/sound";
     public static final String DATA_FOLDER = "data/";
     public static final String SCENE_FILENAME = "scene_";
+    public static final String SAVE_DATA_PATH = "data/Saves/";
     public static File CUSTOM_FONT_FILE = new File("assets/res/gui/font/AbaddonBold.ttf");
 
     private static final Map<String, File> sceneData = new HashMap<>();
     private static int sceneIndex = 0;
-    
+
     public static Font getFont(float size) {
         try {
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, CUSTOM_FONT_FILE).deriveFont(size);
@@ -115,6 +117,11 @@ public class DataManager {
             return -1;
         }
         return sceneIndex;
+    }
+
+    // need to code
+    public boolean saveData(Gameplay gameplay) {
+        return false;
     }
 
     public static boolean loadSceneData() {

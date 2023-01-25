@@ -53,6 +53,7 @@ import fightinggame.entity.quest.type.EnemyRequired;
 import fightinggame.entity.quest.type.ItemRequired;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.state.GameState;
+import static fightinggame.entity.state.GameState.DIALOGUE_STATE;
 import fightinggame.input.handler.game.player.PlayerAbilityHandler;
 import fightinggame.input.handler.game.player.PlayerMouseHandler;
 import fightinggame.input.handler.game.player.PlayerKeyboardHandler;
@@ -71,7 +72,7 @@ import javax.swing.JPanel;
 public class Gameplay extends JPanel implements Runnable {
 
     public static final int GRAVITY = 7; //7
-    public static final int FIRST_SCENE = 2;
+    public static final int FIRST_SCENE = 1;
     private int currentFps = 0;
 
     private Background background;
@@ -128,13 +129,13 @@ public class Gameplay extends JPanel implements Runnable {
 //        initFirstScene();
     }
 
-    public void loadScene(String sceneName, String sceneDataFilePath) {
+    public void loadScene(Player player, String sceneName, String sceneDataFilePath) {
         loadingScreen.resetLoading();
         Game.STATE = GameState.LOADING_STATE;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                initScene(sceneName, sceneDataFilePath);
+                initScene(player, sceneName, sceneDataFilePath);
                 loadingScreen.setFinish(true);
                 rule.setTimeLimit(rule.getSceneTimeLimit());
                 try {
@@ -146,8 +147,12 @@ public class Gameplay extends JPanel implements Runnable {
             }
         }).start();
     }
+    
+    public void loadScene(String sceneName, String sceneDataFilePath) {
+        loadScene(null, sceneName, sceneDataFilePath);
+    }
 
-    public void initScene(String sceneName, String sceneDataFilePath) {
+    public void initScene(Player player, String sceneName, String sceneDataFilePath) {
         background = new Background(0, sceneName,
                 ImageManager.loadImagesFromFolderToMap(DataManager.WALLPAPER_PATH),
                 ImageManager.loadImagesFromFolderToMap(DataManager.TILES_PATH),
@@ -164,7 +169,16 @@ public class Gameplay extends JPanel implements Runnable {
         initVictoryPosition();
         enemies.clear();
         itemsOnGround.clear();
-        playerInit(getPlatforms().get(11).get(3));
+        if (player == null) {
+            playerInit(getPlatforms().get(11).get(3));
+        } else {
+            Platform platform = getPlatforms().get(11).get(3);
+            GamePosition defPlayerPosition = new GamePosition(platform.middleTopPlatform().getXPosition(),
+                platform.middleTopPlatform().getYPosition(), 350, 259);
+            player.setPosition(defPlayerPosition);
+            player.setInsidePlatform(platform);
+            this.player = player;
+        }
         initEnemies();
 //        spawnEnemiesThread = new Thread(spawnEnemies());
 //        spawnEnemiesThread.start();
@@ -174,6 +188,10 @@ public class Gameplay extends JPanel implements Runnable {
         AudioPlayer.audioPlayers.clear();
         initBackgroundMusic();
         transitionScreen.startTransitionBackward();
+    }
+
+    public void initScene(String sceneName, String sceneDataFilePath) {
+        initScene(null, sceneName, sceneDataFilePath);
     }
 
     public void initNpcs() {
@@ -970,7 +988,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerWallAction_RTL wallSlideRTL = new PlayerWallAction_RTL(18, playerSpriteSheetMap.get("WallSlide01").convertRTL(), wallSlide_tick);
         PlayerSprint_RTL sprintRTL = new PlayerSprint_RTL(19, playerSpriteSheetMap.get("Sprint01").convertRTL(), sprint_tick);
         PlayerUseItem playerUseItemRTL = new PlayerUseItem(20, playerSpriteSheetMap.get("UseItem01").convertRTL(), useItem_tick);
-        
+
         //Put Animations to HashMap
         Map<CharacterState, Animation> playerAnimations = new HashMap();
 
@@ -1045,11 +1063,11 @@ public class Gameplay extends JPanel implements Runnable {
         playerAnimations.put(CharacterState.LEDGECLIMB_RTL, ledgeClimbRTL);//New
         playerAnimations.put(CharacterState.LEDGEGRAB_LTR, ledgeGrabLTR);//New
         playerAnimations.put(CharacterState.LEDGEGRAB_RTL, ledgeGrabRTL);//New
-        
+
         //Use Item
         playerAnimations.put(CharacterState.USEITEM_LTR, playerUseItemLTR);
         playerAnimations.put(CharacterState.USEITEM_RTL, playerUseItemRTL);
-        
+
         //Init Inventory
         SpriteSheet inventorySheet = new SpriteSheet();
         inventorySheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/inventory"));
@@ -1167,133 +1185,165 @@ public class Gameplay extends JPanel implements Runnable {
     }
 
     public void tick() {
-        if (Game.STATE == GameState.LOADING_STATE) {
-            if (loadingScreen != null) {
-                loadingScreen.tick();
-            }
-            return;
-        }
-        if (Game.STATE == GameState.GAME_STATE
-                || Game.STATE == GameState.DIALOGUE_STATE) {
-            GameTimer.getInstance().tick();
-            if (background != null) {
-                background.tick();
-            }
-            if (map != null) {
-                map.tick();
-            }
-            if (camera != null) {
-                camera.tick();
-            }
-            if (enemies != null) {
-                if (enemies.size() > 0) {
-                    for (int i = 0; i < enemies.size(); i++) {
-                        Enemy enemy = enemies.get(i);
-                        enemy.tick();
+        switch (Game.STATE) {
+            case LOADING_STATE:
+                if (loadingScreen != null) {
+                    loadingScreen.tick();
+                }
+                break;
+            case GAME_STATE, DIALOGUE_STATE:
+                GameTimer.getInstance().tick();
+                if (background != null) {
+                    background.tick();
+                }
+                if (map != null) {
+                    map.tick();
+                }
+                if (camera != null) {
+                    camera.tick();
+                }
+                if (enemies != null) {
+                    if (enemies.size() > 0) {
+                        for (int i = 0; i < enemies.size(); i++) {
+                            Enemy enemy = enemies.get(i);
+                            enemy.tick();
+                        }
                     }
                 }
-            }
-            if (itemsOnGround.size() > 0) {
-                for (int i = 0; i < itemsOnGround.size(); i++) {
-                    Item item = itemsOnGround.get(i);
-                    if (item != null) {
-                        item.tick();
+                if (itemsOnGround.size() > 0) {
+                    for (int i = 0; i < itemsOnGround.size(); i++) {
+                        Item item = itemsOnGround.get(i);
+                        if (item != null) {
+                            item.tick();
+                        }
                     }
                 }
-            }
-            if (npcs != null) {
-                if (npcs.size() > 0) {
-                    for (int i = 0; i < npcs.size(); i++) {
-                        NPC npc = npcs.get(i);
-                        npc.tick();
+                if (npcs != null) {
+                    if (npcs.size() > 0) {
+                        for (int i = 0; i < npcs.size(); i++) {
+                            NPC npc = npcs.get(i);
+                            npc.tick();
+                        }
                     }
                 }
-            }
-            if (player != null) {
-                player.tick();
-            }
-            if (rule != null) {
-                rule.tick();
-            }
-            transitionScreen.tick();
-        }
-        if (Game.STATE == GameState.OPTION_STATE) {
-            if (background != null) {
-                background.tick();
-            }
-            if (optionHandler != null) {
-                optionHandler.tick();
-            }
+                if (player != null) {
+                    player.tick();
+                }
+                if (rule != null) {
+                    rule.tick();
+                }
+                transitionScreen.tick();
+                break;
+            case OPTION_STATE:
+                if (background != null) {
+                    background.tick();
+                }
+                if (optionHandler != null) {
+                    optionHandler.tick();
+                }
+                break;
+            case PLAYER_STATE:
+                if (background != null) {
+                    background.tick();
+                }
+                if (map != null) {
+                    map.tick();
+                }
+                if (camera != null) {
+                    camera.tick();
+                }
+                if (player != null) {
+                    player.tick();
+                }
+                break;
         }
     }
 
     public void render(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        if (Game.STATE == GameState.LOADING_STATE) {
-            if (loadingScreen != null) {
-                loadingScreen.render(g2);
-            }
-            return;
-        }
-        if (Game.STATE == GameState.OPTION_STATE) {
-            if (background != null) {
-                background.render(g2);
-            }
-            if (map != null) {
-                map.render(g2);
-            }
-            if (optionHandler != null) {
-                optionHandler.render(g2);
-            }
-        } else {
-            if (background != null) {
-                background.render(g2);
-            }
-            if (camera != null) {
-                camera.render(g2);
-            }
-            if (enemies != null) {
-                if (enemies.size() > 0) {
-                    for (int i = 0; i < enemies.size(); i++) {
-                        Enemy enemy = enemies.get(i);
-                        if (camera.checkPositionRelateToCamera(enemy.getPosition())) {
-                            enemy.render(g2);
-                        }
-                    }
+        switch (Game.STATE) {
+            case LOADING_STATE:
+                if (loadingScreen != null) {
+                    loadingScreen.render(g2);
                 }
-            }
-            if (!isHideGUI()) {
+                break;
+            case OPTION_STATE:
+                if (background != null) {
+                    background.render(g2);
+                }
                 if (map != null) {
                     map.render(g2);
                 }
-            }
-            if (itemsOnGround.size() > 0) {
-                for (int i = 0; i < itemsOnGround.size(); i++) {
-                    Item item = itemsOnGround.get(i);
-                    if (item != null) {
-                        if (camera.checkPositionRelateToCamera(item.getPosition())) {
-                            item.render(g2);
+                if (optionHandler != null) {
+                    optionHandler.render(g2);
+                }
+                break;
+            case GAME_STATE, DIALOGUE_STATE:
+                if (background != null) {
+                    background.render(g2);
+                }
+                if (camera != null) {
+                    camera.render(g2);
+                }
+                if (enemies != null) {
+                    if (enemies.size() > 0) {
+                        for (int i = 0; i < enemies.size(); i++) {
+                            Enemy enemy = enemies.get(i);
+                            if (camera.checkPositionRelateToCamera(enemy.getPosition())) {
+                                enemy.render(g2);
+                            }
                         }
                     }
                 }
-            }
-            if (rule != null) {
-                rule.render(g2);
-            }
-            if (player != null) {
-                player.render(g2);
-            }
-            if (npcs != null) {
-                if (npcs.size() > 0) {
-                    for (int i = 0; i < npcs.size(); i++) {
-                        NPC npc = npcs.get(i);
-                        if (camera.checkPositionRelateToCamera(npc.getPosition())) {
-                            npc.render(g2);
+                if (!isHideGUI()) {
+                    if (map != null) {
+                        map.render(g2);
+                    }
+                }
+                if (itemsOnGround.size() > 0) {
+                    for (int i = 0; i < itemsOnGround.size(); i++) {
+                        Item item = itemsOnGround.get(i);
+                        if (item != null) {
+                            if (camera.checkPositionRelateToCamera(item.getPosition())) {
+                                item.render(g2);
+                            }
                         }
                     }
                 }
-            }
-            transitionScreen.render(g2);
+                if (rule != null) {
+                    rule.render(g2);
+                }
+                if (player != null) {
+                    player.render(g2);
+                }
+                if (npcs != null) {
+                    if (npcs.size() > 0) {
+                        for (int i = 0; i < npcs.size(); i++) {
+                            NPC npc = npcs.get(i);
+                            if (camera.checkPositionRelateToCamera(npc.getPosition())) {
+                                npc.render(g2);
+                            }
+                        }
+                    }
+                }
+                transitionScreen.render(g2);
+                break;
+            case PLAYER_STATE:
+                if (background != null) {
+                    background.render(g2);
+                }
+                if (!isHideGUI()) {
+                    if (map != null) {
+                        map.render(g2);
+                    }
+                }
+                if (camera != null) {
+                    camera.render(g2);
+                }
+                if (player != null) {
+                    player.render(g2);
+                }
+                break;
         }
     }
 

@@ -158,11 +158,11 @@ public class Stats {
 
     // need to code
     public void increaseLevelUpPoint() {
-        if (levelUpCount < 2) {
+        if (levelUpCount < 1) {
             levelUpCount++;
         } else {
             levelUpCount = 0;
-            levelUpPoint++;
+            levelUpPoint += 5;
         }
     }
 

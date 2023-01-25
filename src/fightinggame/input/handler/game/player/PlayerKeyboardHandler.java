@@ -222,7 +222,8 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (player.isAttacked() || player.isDeath() || player.isSpecialAttack() || Game.STATE == GameState.OPTION_STATE) {
+        if (player.isAttacked() || player.isDeath() || player.isSpecialAttack() 
+                || Game.STATE == GameState.OPTION_STATE) {
             return;
         }
         switch (e.getKeyCode()) {
@@ -251,7 +252,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                 escPressed = true;
                 break;
         }
-        if (Game.STATE == GameState.DIALOGUE_STATE) {
+        if (Game.STATE == GameState.DIALOGUE_STATE || Game.STATE == GameState.PLAYER_STATE) {
             return;
         }
         keyPresses.add(e.getKeyCode());
@@ -463,7 +464,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                                     } else {
                                         attack = player.getAnimations().get(CharacterState.ATTACK03_RTL);
                                     }
-                                    player.setIsSpecialAttack(true);
+//                                    player.setIsSpecialAttack(true);
                                     attackEnemies(attack, player.attackHitBox(), 50);
                                 }
                             }

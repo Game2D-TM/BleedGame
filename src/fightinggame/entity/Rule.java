@@ -79,7 +79,7 @@ public class Rule {
                                     missionComplete = false;
                                     gameplay.getAudioPlayer().closeThread("background_music");
                                     gameplay.getPlayer().resetEnemiesKilled();
-                                    gameplay.loadScene(DataManager.getSceneDataName(scene), scene.getAbsolutePath());
+                                    gameplay.loadScene(player, DataManager.getSceneDataName(scene), scene.getAbsolutePath());
                                 }
                             }
                         }
@@ -117,21 +117,21 @@ public class Rule {
                     gameplay.getWidth() / 2 - 50, 80);
             if (isRenderQuest) {
                 if (quests.size() > 0) {
-                    g.drawImage(questImages.get("page"), gameplay.getWidth() - 260, 270,
+                    g.drawImage(questImages.get("page"), gameplay.getWidth() - 260, 300,
                             250, 300, null);
-                    g.drawImage(questImages.get("title"), gameplay.getWidth() - 260, 270,
+                    g.drawImage(questImages.get("title"), gameplay.getWidth() - 260, 300,
                             250, 50, null, null);
                     g.setFont(DataManager.getFont(30f));
                     g.setColor(new Color(133, 0, 0));
-                    g.drawString("Quest", gameplay.getWidth() - 170, 310);
+                    g.drawString("Quest", gameplay.getWidth() - 170, 340);
                     g.setFont(DataManager.getFont(20f));
                     for (String id : quests.keySet()) {
                         Quest quest = quests.get(id);
                         if (quest != null) {
                             List<QuestRequired> requireds = quest.getRequireds();
                             if (requireds != null && requireds.size() > 0) {
-                                int yTitle = 350;
-                                int yCheck = 335;
+                                int yTitle = 380;
+                                int yCheck = 365;
                                 for (int i = 0; i < requireds.size(); i++) {
                                     if (i > 4) {
                                         break;

@@ -4,6 +4,7 @@ import fightinggame.Game;
 import fightinggame.Gameplay;
 import fightinggame.entity.OptionMenu;
 import fightinggame.entity.state.GameState;
+import fightinggame.entity.state.ScreenState;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,7 +20,7 @@ public class OptionKeyboardHandler implements KeyListener {
     public OptionKeyboardHandler(Map<String, BufferedImage> optionGuis, Gameplay gameplay) {
         this.gameplay = gameplay;
         optionMenu = new OptionMenu(optionGuis, gameplay);
-        if (Game.current == Game.ScreenState.fullscreen) {
+        if (Game.current == ScreenState.FULLSCREEN) {
             optionMenu.setFullscreen(true);
         }
     }
@@ -145,10 +146,10 @@ public class OptionKeyboardHandler implements KeyListener {
                                     chooseIndex = 0;
                                 }
                                 if (optionMenu.isFullscreen()) {
-                                    gameplay.getGame().changeWindowMode(Game.ScreenState.windowed);
+                                    gameplay.getGame().changeWindowMode(ScreenState.WINDOWED);
                                     gameplay.resolutionChange(1650, 950);
                                 } else {
-                                    gameplay.getGame().changeWindowMode(Game.ScreenState.fullscreen);
+                                    gameplay.getGame().changeWindowMode(ScreenState.FULLSCREEN);
                                     gameplay.resolutionChange(1680, 1050);
                                 }
                                 optionMenu.setFullscreen(!optionMenu.isFullscreen());

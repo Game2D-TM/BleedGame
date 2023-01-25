@@ -1,6 +1,7 @@
 package fightinggame;
 
 import fightinggame.entity.state.GameState;
+import fightinggame.entity.state.ScreenState;
 import fightinggame.input.handler.menu.MenuKeyboardHandler;
 import fightinggame.resource.DataManager;
 import java.awt.BorderLayout;
@@ -14,13 +15,9 @@ import javax.swing.JFrame;
 
 public class Game extends JFrame {
 
-    public enum ScreenState {
-        fullscreen, borderless, windowed, none
-    };
-
     public static ScreenState current;
-    private static GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    private static GraphicsDevice ev = env.getDefaultScreenDevice();
+    private static final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    private static final GraphicsDevice ev = env.getDefaultScreenDevice();
     public static final int FPS = 144;
     public static GameState STATE = GameState.MENU_STATE;
 
@@ -48,7 +45,7 @@ public class Game extends JFrame {
             }
         });
         DataManager.loadSceneData();
-        changeWindowMode(ScreenState.borderless);
+        changeWindowMode(ScreenState.BORDERLESS);
         menuHandler = new MenuKeyboardHandler(this, getWidth(), getHeight());
         addKeyListener(menuHandler);
         repaint();
@@ -128,23 +125,23 @@ public class Game extends JFrame {
     }
 
     public void changeWindowMode(ScreenState state) {
-        if (state == ScreenState.fullscreen && current != ScreenState.fullscreen) {
+        if (state == ScreenState.FULLSCREEN && current != ScreenState.FULLSCREEN) {
             if (ev.isFullScreenSupported()) {
                 ev.setFullScreenWindow(this);
             }
-            current = ScreenState.fullscreen;
+            current = ScreenState.FULLSCREEN;
         }
-        if (state == ScreenState.borderless && current != ScreenState.borderless) {
+        if (state == ScreenState.BORDERLESS && current != ScreenState.BORDERLESS) {
             setUndecorated(true);
             setExtendedState(JFrame.MAXIMIZED_BOTH);
-            current = ScreenState.borderless;
+            current = ScreenState.BORDERLESS;
         }
-        if (state == ScreenState.windowed && current != ScreenState.windowed) {
+        if (state == ScreenState.WINDOWED && current != ScreenState.WINDOWED) {
             // you can choose to make the screen fit or not
             if (ev.isFullScreenSupported()) {
                 ev.setFullScreenWindow(null);
             }
-            current = ScreenState.windowed;
+            current = ScreenState.WINDOWED;
         }
 //        System.out.println(getWidth() + " " + getHeight());
     }

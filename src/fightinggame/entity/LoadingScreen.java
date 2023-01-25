@@ -66,6 +66,7 @@ public class LoadingScreen {
     public void resetLoading() {
         percent = 0;
         loadingCounter = 0;
+        finish = false;
         progressBar.setDefaultIndex(0);
     }
 

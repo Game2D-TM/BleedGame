@@ -7,4 +7,5 @@ public enum GameState {
     TRANSITION_STATE,
     DIALOGUE_STATE,
     LOADING_STATE,
+    PLAYER_STATE,
 }
