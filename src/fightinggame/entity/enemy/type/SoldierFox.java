@@ -38,6 +38,7 @@ public class SoldierFox extends Enemy {
         healthBar.setAvatarPos(new GamePosition(1485, 8, 180, 120));
         stats.setSpeed(80);
         stats.setAttackRange(70);
+        stats.addAttackDamage(5);
         attackLimit = 30;
         experience = 120;
         point = 20;

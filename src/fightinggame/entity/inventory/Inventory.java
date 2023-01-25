@@ -39,7 +39,7 @@ public class Inventory {
 
     //player stats
     private Map<String, BufferedImage> statsGuis;
-    private int[] numberOfStats = {0, 0, 0, 0, 0, 0, 0, 0};
+    private int[] numberOfStats = {0, 0, 0, 0, 0};
     private int currStatIndex = 0;
     private int currArrowIndex = 0;
     private BufferedImage imageSelection;
@@ -204,25 +204,19 @@ public class Inventory {
                                                         if (statPlus > 0) {
                                                             switch (i) {
                                                                 case 0:
-                                                                    player.getHealthBar().setMaxHealth(player.getHealthBar().getMaxHealth() + statPlus);
+                                                                    player.getHealthBar().setMaxHealth(player.getHealthBar().getMaxHealth() + (statPlus * 2));
                                                                     break;
                                                                 case 1:
-                                                                    player.getHealthBar().setMaxEnergy(player.getHealthBar().getMaxEnergy() + statPlus);
+                                                                    player.getHealthBar().setMaxEnergy(player.getHealthBar().getMaxEnergy() + (statPlus * 2));
                                                                     break;
                                                                 case 2:
+                                                                    player.getStats().addAttackDamage(statPlus);
                                                                     break;
                                                                 case 3:
-                                                                    player.getStats().setAttackDamage(player.getStats().getAttackDamage() + statPlus);
-                                                                    break;
-                                                                case 4:
                                                                     player.getStats().setCritDamage(player.getStats().getCritDamage() + statPlus);
                                                                     break;
-                                                                case 5:
-                                                                    break;
-                                                                case 6:
-                                                                    player.getStats().setDefenceDamage(player.getStats().getDefenceDamage() + statPlus);
-                                                                    break;
-                                                                case 7:
+                                                                case 4:
+                                                                    player.getStats().addCritChance(statPlus);
                                                                     break;
                                                             }
                                                         }
@@ -300,20 +294,18 @@ public class Inventory {
                         y += 40;
                         g.drawString("MP: " + stats.getEnergy() + "/" + player.getHealthBar().getMaxEnergy(), x, y);
                         y += 40;
-                        g.drawString("Experience: " + (int) stats.getLevelExperience() + "/" + (int) stats.getNextLevelExperience(), x, y);
-                        y += 40;
                         g.drawString("Attack Damage: " + stats.getAttackDamage(), x, y);
                         y += 40;
                         g.drawString("Critical Damage: " + stats.getCritDamage(), x, y);
                         y += 40;
                         g.drawString("Critical Change: " + stats.getCritChangeString(), x, y);
                         y += 40;
-                        g.drawString("Defence Damage: " + stats.getDefenceDamage(), x, y);
+                        g.drawString("Armor: " + stats.getDefence(), x, y);
                         y += 40;
-                        g.drawString("Defence Change: " + stats.getDefenceChangeString(), x, y);
+                        g.drawString("Exp: " + (int) stats.getLevelExperience() + "/" + (int) stats.getNextLevelExperience(), x, y);
 
                         if (haveLevelUpPoint) {
-                            y = 390;
+                            y = 395;
                             for (int i = 0; i < numberOfStats.length; i++) {
                                 x = gameplay.getWidth() / 3 - 20;
                                 g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
@@ -351,10 +343,10 @@ public class Inventory {
                                 if (currStatIndex == numberOfStats.length) {
                                     y = (210 + (gameplay.getHeight() / 2 + 100)) - 80;
                                 } else {
-                                    y = 390 + currStatIndex * 40;
+                                    y = 395 + currStatIndex * 40;
                                 }
                             } else {
-                                y = 390;
+                                y = 395;
                             }
                             g.drawImage(imageSelection, x, y, 30, 30, null);
                         }

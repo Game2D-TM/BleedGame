@@ -51,40 +51,43 @@ public class DiorEnemy extends Enemy {
         switch (color) {
             case Red:
                 experience = 100;
-                stats.setAttackDamage(stats.getAttackDamage() + 20);
+                stats.addAttackDamage(25);
                 stats.setSpeed(stats.getSpeed() - 20);
                 stats.setHealth(stats.getHealth() - 150);
                 break;
             case Blue:
                 experience = 90;
-                stats.setAttackDamage(stats.getAttackDamage() + 10);
+                stats.addAttackDamage(15);
                 stats.setSpeed(stats.getSpeed() + 10);
                 stats.setHealth(stats.getHealth() + 50);
                 break;
             case Green:
                 experience = 80;
-                stats.setAttackDamage(stats.getAttackDamage() + 15);
+                stats.addAttackDamage(20);
                 stats.setSpeed(stats.getSpeed() - 10);
                 stats.setHealth(stats.getHealth() - 50);
                 break;
             case Orange:
                 experience = 80;
+                stats.addAttackDamage(5);
                 stats.setSpeed(stats.getSpeed() + 20);
                 stats.setHealth(stats.getHealth() + 100);
                 break;
             case Purple:
                 experience = 80;
+                stats.addAttackDamage(5);
                 stats.setSpeed(stats.getSpeed() - 5);
                 stats.setHealth(stats.getHealth() + 200);
                 break;
             case White:
                 experience = 80;
-                stats.setAttackDamage(stats.getAttackDamage() - 3);
+                stats.addAttackDamage(2);
                 stats.setSpeed(stats.getSpeed() - 5);
                 stats.setHealth(stats.getHealth() + 400);
                 break;
             case Yellow:
                 experience = 80;
+                stats.addAttackDamage(5);
                 stats.setSpeed(stats.getSpeed() + 30);
                 stats.setHealth(stats.getHealth() + 50);
                 break;

@@ -112,7 +112,7 @@ public class StatusBar {
         g.drawString("Level: " + character.getStats().getLevel(), getAvatarPos().getXPosition() + 20, getAvatarPos().getYPosition() + 135);
         if (character instanceof Player) {
             Player player = (Player) character;
-            g.drawString("Score: " + player.getScore(), getAvatarPos().getXPosition() + 20, getAvatarPos().getYPosition() + 165);
+            g.drawString("AP: " + player.getScore(), getAvatarPos().getXPosition() + 20, getAvatarPos().getYPosition() + 165);
         }
 //        if (getPlayerScore() != null) {
 //            g.drawString("EXP: " + character.getStats().getLevelExperience(), getPlayerScore().getXPosition() + 300, getPlayerScore().getYPosition() - 30);

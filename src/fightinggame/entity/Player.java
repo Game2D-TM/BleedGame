@@ -40,9 +40,7 @@ public class Player extends Character {
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(25f, 10f, 100, 100));
         stats.setSpeed(2);
         stats.setHealth(health);
-        stats.setAttackDamage(50);
-        stats.setCritChange(0.5f);
-        stats.setCritDamage(10);
+        stats.addAttackDamage(40);
         stats.setJumpSpeed(300);
         stats.setAttackRange(20);
         healthBar.getPositions().put("player_score",

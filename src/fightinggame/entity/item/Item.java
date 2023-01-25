@@ -41,7 +41,7 @@ public abstract class Item {
         this.amount = amount;
         this.gameplay = gameplay;
     }
-    
+
     public Item(int id, String name, Animation animation, Character character,
             Gameplay gameplay, int amount, int price) {
         this.id = id;
@@ -71,15 +71,16 @@ public abstract class Item {
         }
         if (spawnForever) {
             checkHit(gameplay.getPlayer());
-        }
-        if (spawnDrop && !spawnForever) {
-            dropExpireCounter++;
-            if (dropExpireCounter > timeExpire) {
-                gameplay.getItemsOnGround().remove(this);
-                spawnDrop = false;
-                dropExpireCounter = 0;
-            } else {
-                checkHit(gameplay.getPlayer());
+        } else {
+            if (spawnDrop) {
+                dropExpireCounter++;
+                if (dropExpireCounter > timeExpire) {
+                    gameplay.getItemsOnGround().remove(this);
+                    spawnDrop = false;
+                    dropExpireCounter = 0;
+                } else {
+                    checkHit(gameplay.getPlayer());
+                }
             }
         }
     }
@@ -235,19 +236,19 @@ public abstract class Item {
     public void setSpawnForever(boolean spawnForever) {
         this.spawnForever = spawnForever;
     }
-    
-     public Character getCharacter() {
+
+    public Character getCharacter() {
         return character;
     }
 
     public void setCharacter(Character character) {
-        if(this.character.equals(character)) {
+        if (this.character.equals(character)) {
             return;
         }
-        if(abilities != null && abilities.size() > 0) {
-            for(int i = 0; i < abilities.size(); i++) {
+        if (abilities != null && abilities.size() > 0) {
+            for (int i = 0; i < abilities.size(); i++) {
                 Ability ability = abilities.get(i);
-                if(ability != null) {
+                if (ability != null) {
                     ability.setCharacter(character);
                 }
             }

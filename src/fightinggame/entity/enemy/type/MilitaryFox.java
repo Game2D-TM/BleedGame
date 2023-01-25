@@ -38,7 +38,7 @@ public class MilitaryFox extends Enemy {
         healthBar.setAvatarPos(new GamePosition(1500, 8, 180, 120));
         stats.setSpeed(80);
         stats.setAttackRange(100);
-        stats.setAttackDamage(stats.getAttackDamage() + 5);
+        stats.addAttackDamage(10);
         attackLimit = 60;
         experience = 160;
         point = 25;

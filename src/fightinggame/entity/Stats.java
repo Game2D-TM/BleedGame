@@ -5,7 +5,7 @@ import fightinggame.entity.enemy.Enemy;
 import java.util.Random;
 
 public class Stats {
-    
+
     public static int NEXT_LEVEL_RATE = 100;
 
     private Character character;
@@ -15,8 +15,7 @@ public class Stats {
     private double nextLevelExperience = 0;
     private int attackDamage;
     private int attackRange = 30;
-    private int defenceDamage;
-    private float defenceChange = 0.001f;
+    private int defence;
     private int bounceRange = 30;
     private int health;
     private int energy = 0;
@@ -28,15 +27,20 @@ public class Stats {
     private float vely = 0;
     private int jumpFlySpeed = 4;
     private float dropSpeed = 0.08f; // 0.05
+    
+    private int magicDamage;
+    private int statusDef;
+    private int evasionChance;
+    
 
-    public Stats(Character character, int level, double levelExperience, int attackDamage, int defenceDamage, 
+    public Stats(Character character, int level, double levelExperience, int attackDamage, int defence,
             int health, int energy, int speed, int levelUpPoint, int critDamage, float critChange) {
         this.character = character;
         this.level = level;
         this.levelExperience = levelExperience;
         nextLevelExperience += level * NEXT_LEVEL_RATE;
         this.attackDamage = attackDamage;
-        this.defenceDamage = defenceDamage;
+        this.defence = defence;
         this.health = health;
         this.energy = energy;
         this.speed = speed;
@@ -45,26 +49,36 @@ public class Stats {
         this.critChange = critChange;
     }
 
-    public Stats(Character character, int attackDamage, int defenceDamage
-            , int health, int energy, int speed, int critDamage, float critChange) {
+    public Stats(Character character, int attackDamage, int defence,
+            int health, int energy, int speed, int critDamage, float critChange) {
         this.character = character;
         this.attackDamage = attackDamage;
-        this.defenceDamage = defenceDamage;
+        this.defence = defence;
         this.health = health;
         this.energy = energy;
         this.speed = speed;
         this.critDamage = critDamage;
         this.critChange = critChange;
     }
-    
+
     public void addAttackDamage(int amount) {
         attackDamage += amount;
+        critDamage = attackDamage / 5;
+    }
+    public void minusAttackDamage(int amount) {
+        attackDamage -= amount;
+        critDamage = attackDamage / 5;
+    }
+    
+    public void addCritChance(int amount) {
+        critChange += (float)amount / 100;
     }
 
     public int getHit(Stats attackerStats) {
         int receiveDamage = (attackerStats.getAttackDamageWithCrit());
-        if (checkChangeSuccessDamage(defenceChange)) {
-            receiveDamage -= defenceDamage;
+        receiveDamage -= defence;
+        if(receiveDamage <= 0) {
+            return 0;
         }
         int nHealth = this.health - receiveDamage;
         if (nHealth < 0) {
@@ -76,8 +90,9 @@ public class Stats {
 
     public int getHit(Stats attackerStats, int attackDamage) {
         int receiveDamage = (attackerStats.getAttackDamageWithCrit(attackDamage));
-        if (checkChangeSuccessDamage(defenceChange)) {
-            receiveDamage -= defenceDamage;
+        receiveDamage -= defence;
+        if(receiveDamage <= 0) {
+            return 0;
         }
         int nHealth = this.health - receiveDamage;
         if (nHealth < 0) {
@@ -98,35 +113,43 @@ public class Stats {
 
     public int getAttackDamageWithCrit(int attackDamage) {
         int attackWithCrit = attackDamage;
-        if (checkChangeSuccessDamage(critChange)) {
-            attackWithCrit += critDamage;
+        if (critChange > 0) {
+            if (checkChangeSuccessDamage(critChange)) {
+                attackWithCrit += critDamage;
+            }
         }
         return attackWithCrit;
     }
 
     public int getAttackDamageWithCrit() {
         int attackWithCrit = attackDamage;
-        if (checkChangeSuccessDamage(critChange)) {
-            attackWithCrit += critDamage;
+        if (critChange > 0) {
+            if (checkChangeSuccessDamage(critChange)) {
+                attackWithCrit += critDamage;
+            }
         }
         return attackWithCrit;
     }
-    
+
     public boolean useEnergy(int energy) {
-        if(energy <= 0) return false;
+        if (energy <= 0) {
+            return false;
+        }
         int nEnergy = this.energy - energy;
-        if(nEnergy > 0) {
+        if (nEnergy > 0) {
             this.energy = nEnergy;
         } else {
             this.energy = 0;
         }
         return true;
     }
-    
+
     public boolean addEnergy(int energy) {
-        if(energy <= 0) return false;
+        if (energy <= 0) {
+            return false;
+        }
         int nEnergy = this.energy + energy;
-        if(nEnergy > character.getHealthBar().getMaxEnergy()) {
+        if (nEnergy > character.getHealthBar().getMaxEnergy()) {
             this.energy = character.getHealthBar().getMaxEnergy();
         } else {
             this.energy = nEnergy;
@@ -136,14 +159,16 @@ public class Stats {
 
     // need to code
     public void addExperience(double experience) {
-        if(character.isDeath()) return;
+        if (character.isDeath()) {
+            return;
+        }
         double nLevelExperience = levelExperience + experience;
         if (nextLevelExperience <= nLevelExperience) {
             levelUp();
             levelExperience = nLevelExperience - nextLevelExperience;
             nextLevelExperience += level * NEXT_LEVEL_RATE;
-            while(true) {
-                if(levelExperience >= nextLevelExperience) {
+            while (true) {
+                if (levelExperience >= nextLevelExperience) {
                     levelUp();
                     levelExperience -= nextLevelExperience;
                     nextLevelExperience += level * NEXT_LEVEL_RATE;
@@ -158,7 +183,7 @@ public class Stats {
 
     // need to code
     public void increaseLevelUpPoint() {
-        if (levelUpCount < 1) {
+        if (levelUpCount < 0) {
             levelUpCount++;
         } else {
             levelUpCount = 0;
@@ -168,21 +193,20 @@ public class Stats {
 
     // need to code
     public void levelUp() {
-        if(character.isDeath()) return;
+        if (character.isDeath()) {
+            return;
+        }
         increaseLevelUpPoint();
         level += 1;
         if (character != null) {
             if (character instanceof Player) {
                 if (level <= 10) {
-                    attackDamage += 1;
                     if (health < character.getHealthBar().getMaxHealth()) {
                         character.setHealingAmount(Math.abs(health - character.getHealthBar().getMaxHealth()));
                         health = character.getHealthBar().getMaxHealth();
                     }
-                    health += 5;
-                    character.getHealthBar().setMaxHealth(health);
-                    defenceDamage += 1;
-                    defenceChange += 0.005f;
+                    attackDamage += 1;
+                    defence += 1;
                 }
             } else {
                 if (level <= 10) {
@@ -193,9 +217,8 @@ public class Stats {
                     }
                     health += 50;
                     character.getHealthBar().setMaxHealth(health);
-                    defenceDamage += 5;
-                    defenceChange += 0.01f;
-                    Enemy enemy = ((Enemy)character);
+                    defence += 5;
+                    Enemy enemy = ((Enemy) character);
                     enemy.addExperience(50);
                     enemy.addPoint(10);
                 } else {
@@ -205,9 +228,8 @@ public class Stats {
                     }
                     health += 100;
                     character.getHealthBar().setMaxHealth(health);
-                    defenceDamage += 10;
-                    defenceChange += 0.02f;
-                    Enemy enemy = ((Enemy)character);
+                    defence += 10;
+                    Enemy enemy = ((Enemy) character);
                     enemy.addExperience(100);
                     enemy.addPoint(20);
                 }
@@ -243,16 +265,12 @@ public class Stats {
         return attackDamage;
     }
 
-    public void setAttackDamage(int attackDamage) {
-        this.attackDamage = attackDamage;
+    public int getDefence() {
+        return defence;
     }
 
-    public int getDefenceDamage() {
-        return defenceDamage;
-    }
-
-    public void setDefenceDamage(int defenceDamage) {
-        this.defenceDamage = defenceDamage;
+    public void setDefence(int defenceDamage) {
+        this.defence = defenceDamage;
     }
 
     public int getHealth() {
@@ -290,9 +308,9 @@ public class Stats {
     public float getCritChange() {
         return critChange;
     }
-    
+
     public String getCritChangeString() {
-        return (int)(critChange * 100) + "%";
+        return (int) (critChange * 100) + "%";
     }
 
     public void setCritChange(float critChange) {
@@ -313,17 +331,6 @@ public class Stats {
 
     public void setNextLevelExperience(double nextLevelExperience) {
         this.nextLevelExperience = nextLevelExperience;
-    }
-
-    public float getDefenceChange() {
-        return defenceChange;
-    }
-    public String getDefenceChangeString() {
-        return (defenceChange * 100) + "%";
-    }
-
-    public void setDefenceChange(float defenceChange) {
-        this.defenceChange = defenceChange;
     }
 
     public int getJumpSpeed() {
@@ -377,9 +384,9 @@ public class Stats {
     public int getEnergy() {
         return energy;
     }
-    
+
     public boolean haveEnergy() {
-        if(energy <= 0) {
+        if (energy <= 0) {
             return false;
         }
         return true;

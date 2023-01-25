@@ -36,7 +36,7 @@ public class PirateCat extends Enemy {
         healthBar.setAvatarPos(new GamePosition(1500, 8, 180, 120));
         stunTime = 100;
         stats.setBounceRange(180);
-        stats.setAttackDamage(30);
+        stats.addAttackDamage(25);
         stats.setAttackRange(180);
         stats.setSpeed(60);
         point = 100;
