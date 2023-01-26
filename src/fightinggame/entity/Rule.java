@@ -58,8 +58,10 @@ public class Rule {
                 }
             } else {
                 if (timeLimit != null) {
-                    if (GameTimer.getInstance().countDownEnd(timeLimit)) {
-//                        player.setIsDeath(true);
+                    if (GameTimer.getInstance().compareTo(timeLimit) <= 0) {
+                        if (GameTimer.getInstance().countDownEnd(timeLimit)) {
+                            player.setIsDeath(true);
+                        }
                     }
                 }
                 if (missionComplete) {

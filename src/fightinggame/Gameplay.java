@@ -23,6 +23,7 @@ import fightinggame.entity.Rule;
 import fightinggame.entity.TransitionScreen;
 import fightinggame.entity.ability.type.healing.GreaterHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
+import fightinggame.entity.ability.type.increase.CritChanceIncrease;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.enemy.type.DiorEnemy;
@@ -33,6 +34,9 @@ import fightinggame.entity.item.Item;
 import fightinggame.entity.item.collectable.CollectableItemType;
 import fightinggame.entity.item.collectable.buff.SmallEnergyPotion;
 import fightinggame.entity.item.collectable.buff.SmallHealthPotion;
+import fightinggame.entity.item.collectable.coin.CopperCoin;
+import fightinggame.entity.item.collectable.coin.GoldCoin;
+import fightinggame.entity.item.collectable.coin.SilverCoin;
 import fightinggame.entity.item.collectable.quest.Key;
 import fightinggame.entity.item.equipment.EquipmentItemType;
 import fightinggame.entity.item.equipment.weapon.Sword;
@@ -73,7 +77,7 @@ public class Gameplay extends JPanel implements Runnable {
 
     public static final int GRAVITY = 7; //7
     public static final int FIRST_SCENE = 1;
-    private int currentFps = 0;
+    public static int CURRENT_FPS = 0;
 
     private Background background;
     private GameMap map;
@@ -479,6 +483,33 @@ public class Gameplay extends JPanel implements Runnable {
                                         chest.getItems().add(item);
                                     }
                                     break;
+                                case COPPER_COIN:
+                                    item = new CopperCoin(itemCount, null, this, amount);
+                                    gameObject = background.getGameObjectsTouchable().get(chestName);
+                                    if (gameObject != null) {
+                                        Chest chest = (Chest) gameObject;
+                                        item.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH + 50, Item.ITEM_HEIGHT + 50));
+                                        chest.getItems().add(item);
+                                    }
+                                    break;
+                                case SILVER_COIN:
+                                    item = new SilverCoin(itemCount, null, this, amount);
+                                    gameObject = background.getGameObjectsTouchable().get(chestName);
+                                    if (gameObject != null) {
+                                        Chest chest = (Chest) gameObject;
+                                        item.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH + 50, Item.ITEM_HEIGHT + 50));
+                                        chest.getItems().add(item);
+                                    }
+                                    break;
+                                case GOLD_COIN:
+                                    item = new GoldCoin(itemCount, null, this, amount);
+                                    gameObject = background.getGameObjectsTouchable().get(chestName);
+                                    if (gameObject != null) {
+                                        Chest chest = (Chest) gameObject;
+                                        item.setPosition(chest.getPlatform().middleTopPlatform(Item.ITEM_WIDTH + 50, Item.ITEM_HEIGHT + 50));
+                                        chest.getItems().add(item);
+                                    }
+                                    break;
                             }
                             break;
                         case "equipment":
@@ -538,6 +569,8 @@ public class Gameplay extends JPanel implements Runnable {
                                     Sword fireSword = new Sword(1, "Fire Sword", fireSwordAnimation, null, this, amount, itemEquipAnimations);
                                     AttackIncrease attackIncrease = new AttackIncrease(1, "Attack Increase", 30, null, null, this, null);
                                     fireSword.getAbilities().add(attackIncrease);
+                                    CritChanceIncrease critChanceIncrease = new CritChanceIncrease(1, "Crit Chance Increase", 5, null, null, this, null);
+                                    fireSword.getAbilities().add(critChanceIncrease);
                                     GameObject gameObject = background.getGameObjectsTouchable().get(chestName);
                                     if (gameObject != null) {
                                         if (gameObject instanceof Chest) {
@@ -555,6 +588,7 @@ public class Gameplay extends JPanel implements Runnable {
                             }
                             break;
                     }
+                    itemCount++;
                 }
             }
         }
@@ -729,7 +763,6 @@ public class Gameplay extends JPanel implements Runnable {
                                 case SOLDIER_FOX:
                                     enemy = new SoldierFox().init(firstPlatform, this);
                                     break;
-
                             }
                             if (enemy == null) {
                                 continue;
@@ -864,13 +897,13 @@ public class Gameplay extends JPanel implements Runnable {
             totalFrames++;
             if (System.nanoTime() > lastFpsCheck + 1000000000) {
                 lastFpsCheck = System.nanoTime();
-                currentFps = totalFrames;
+                CURRENT_FPS = totalFrames;
                 totalFrames = 0;
 //                System.out.println("Current Fps: " + currentFps);
             }
             try {
                 tick();
-                revalidate();
+//                revalidate();
                 repaint();
             } catch (Exception ex) {
 //                System.out.println(ex.toString());
@@ -892,7 +925,7 @@ public class Gameplay extends JPanel implements Runnable {
                 && Game.STATE != GameState.TRANSITION_STATE) {
             g.setColor(Color.red);
             g.setFont(DataManager.getFont(30f));
-            g.drawString(currentFps + " FPS", getWidth() - 100, getHeight() - 25);
+            g.drawString(CURRENT_FPS + " FPS", getWidth() - 100, getHeight() - 25);
         }
     }
 
@@ -925,7 +958,7 @@ public class Gameplay extends JPanel implements Runnable {
                 attack3_tick = 13, death_tick = 50,
                 jump_tick = 10, falldown_tick = 50,
                 spellcast_tick = 40, crouch_tick = 10,
-                spellcast_loop_tick = 15, slide_tick = 30,
+                spellcast_loop_tick = 15, slide_tick = 15,
                 airAttack1_tick = 20, airAttack2_tick = 26,
                 airAttack3_tick = 26, airAttack_loop_tick = 20, jumpRoll_tick = 15,
                 getUp_tick = 15, knockDown_tick = 21,

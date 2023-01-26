@@ -4,9 +4,11 @@ import fightinggame.Game;
 import fightinggame.entity.state.MoveState;
 import fightinggame.Gameplay;
 import fightinggame.animation.player.PlayerCrouch;
+import fightinggame.animation.player.PlayerHeavyAttack;
 import fightinggame.animation.player.PlayerIdle;
 import fightinggame.animation.player.PlayerJump_LTR;
 import fightinggame.animation.player.PlayerJump_RTL;
+import fightinggame.animation.player.PlayerLightAttack;
 import fightinggame.animation.player.PlayerRun_LTR;
 import fightinggame.animation.player.PlayerRun_RTL;
 import fightinggame.animation.player.PlayerSlide_LTR;
@@ -42,6 +44,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
     private int heavyAttackCounter = 0;
     private int heavyAttackLimit = 100;
     private boolean canHeavyAttack = false;
+
     private boolean eBtnPressed;
     private boolean spaceBtnPressed;
     private boolean upArrowPressed;
@@ -95,6 +98,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                         player.getPosition().setWidth(player.getPosition().getWidth() - 20);
                         player.getPosition().setXPosition(player.getPosition().getXPosition() + 20);
                     }
+                    gameplay.getCamera().setIsCheckCameraPos(true);
                     if (player.isAttack() && !player.isSpecialAttack()
                             && !player.isInAir() && !player.isFallDown()) {
                         if (player.isLTR()) {
@@ -222,7 +226,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (player.isAttacked() || player.isDeath() || player.isSpecialAttack() 
+        if (player.isAttacked() || player.isDeath() || player.isSpecialAttack()
                 || Game.STATE == GameState.OPTION_STATE) {
             return;
         }
@@ -286,7 +290,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                             }
                             break;
                         }
-                        if (player.isAttack() || player.isInAir() || player.isFallDown() || player.isSlide()) {
+                        if (player.isAttack() || player.isAttacked() || player.isInAir() || player.isFallDown() || player.isSlide()) {
                             break;
                         }
                         if (player.getStandPlatform() != null) {
@@ -300,8 +304,16 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                         break;
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
-                        if (player.isAttack() || player.isSlide()) {
+                        if (player.isAttacked() || player.isSlide()) {
                             break;
+                        }
+                        if (player.isAttack()) {
+                            gameplay.getCamera().setIsCheckCameraPos(true);
+                            if (player.getCurrAnimation() != null) {
+                                if (player.getCurrAnimation().getSheet().getSpriteIndex() <= 1) {
+                                    break;
+                                }
+                            }
                         }
                         player.setIsLTR(false);
                         if (!player.isInAir() && !player.isFallDown()) {
@@ -319,15 +331,25 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                         break;
                     case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
-                        if (player.isAttack() || player.getPosition().isMoving()) {
+                        if (player.isAttack() || player.isAttacked() || player.getPosition().isMoving()) {
                             break;
                         }
                         player.getPosition().isCrouch = true;
                         break;
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
-                        if (player.isAttack() || player.isSlide()) {
+                        if (player.isAttacked() || player.isSlide()) {
                             break;
+                        }
+                        if (player.isAttack()) {
+                            gameplay.getCamera().setIsCheckCameraPos(true);
+                            if (player.getCurrAnimation() != null &&
+                                    (player.getCurrAnimation() instanceof PlayerHeavyAttack
+                                    || player.getCurrAnimation() instanceof PlayerLightAttack)) {
+                                if (player.getCurrAnimation().getSheet().getSpriteIndex() <= 1) {
+                                    break;
+                                }
+                            }
                         }
                         player.setIsLTR(true);
                         if (!player.isInAir() && !player.isFallDown()) {
@@ -376,6 +398,7 @@ public class PlayerKeyboardHandler extends MovementHandler implements KeyListene
                             break;
                         }
                         if (!player.getPosition().isMoving()) {
+                            gameplay.getCamera().setIsCheckCameraPos(false);
                             Animation attack = null;
                             if ((player.isFallDown() || player.isInAir())) {
                                 if (player.isAirAttack()) {

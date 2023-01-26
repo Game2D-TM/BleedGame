@@ -11,7 +11,7 @@ public class Key extends CollectableItem {
     public Key(int id, String name, Character character, Gameplay gameplay, int amount) {
         super(id, name, null, character, gameplay, amount);
         SpriteSheet keySheet = new SpriteSheet();
-        keySheet.add("assets/res/item/key.png");
+        keySheet.add("assets/res/item/Quests/key.png");
         animation = new KeyAnimation(1, keySheet, -1);
     }
 

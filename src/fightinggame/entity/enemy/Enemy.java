@@ -1,6 +1,8 @@
 package fightinggame.entity.enemy;
 
 import fightinggame.Gameplay;
+import fightinggame.animation.effect.Effect;
+import fightinggame.animation.effect.enemy.EnemyHitEffect;
 import fightinggame.animation.enemy.EnemyHeavyAttack;
 import fightinggame.animation.enemy.EnemyLightAttack;
 import fightinggame.animation.enemy.EnemyRunBack;
@@ -32,6 +34,7 @@ public abstract class Enemy extends Character {
     public static int DEF_WIDTH_VISION_POS = 1000;
     public static int DEF_HEIGHT_VISION_POS = 100;
     public static Enemy ENEMY_HEALTHBAR_SHOW;
+    public static Enemy ENEMY_IS_SPEAK;
 
     protected int deathCounter = 0;
     protected int deathExpireLimit = 1500;
@@ -49,6 +52,7 @@ public abstract class Enemy extends Character {
     protected File dialogueFile;
     protected int attackCounter = 0;
     protected int attackLimit = 50;
+    protected Effect hitEffect;
 
     public Enemy() {
 
@@ -63,6 +67,11 @@ public abstract class Enemy extends Character {
         Random rand = new Random();
         stats.setHealth(health);
         stats.setSpeed(rand.nextInt(rangeRandomSpeed) + 30);
+        SpriteSheet enemyHitSheet
+                = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Impact_1.png"),
+                        0, 0, 32, 32,
+                        0, 0, 32, 32, 2);
+        hitEffect = new EnemyHitEffect(0, enemyHitSheet, 25);
     }
 
     public Enemy(int id, String name, int health, GamePosition position, Map<CharacterState, Animation> animations,
@@ -72,6 +81,11 @@ public abstract class Enemy extends Character {
         healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(gameplay.getGame().getWidth() - 160, 10f, 100, 100));
         healthBar.setAppearTimeLimit(1000);
         stats.setHealth(health);
+        SpriteSheet enemyHitSheet
+                = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Impact_1.png"),
+                        0, 0, 32, 32,
+                        0, 0, 32, 32, 2);
+        hitEffect = new EnemyHitEffect(0, enemyHitSheet, 25);
     }
 
     @Override
@@ -92,8 +106,19 @@ public abstract class Enemy extends Character {
         super.tick();
         healthBar.tick();
         if (isDeath) {
-            deathCounter++;
-            if (deathCounter >= deathExpireLimit) {
+            if (animateChange) {
+                if (!isLTR) {
+                    position.setXPosition(position.getXPosition() + stats.getAttackRange());
+                } else {
+                    position.setXPosition(position.getXPosition() - stats.getAttackRange());
+                }
+                position.setWidth(position.getWidth() - stats.getAttackRange());
+                animateChange = false;
+                attackCounter = 0;
+            }
+            if (deathCounter <= deathExpireLimit) {
+                deathCounter++;
+            } else {
                 List<Item> itemsInInventory = inventory.getAllItemsFromInventory();
                 if (itemsInInventory != null && itemsInInventory.size() > 0) {
                     for (int i = 0; i < itemsInInventory.size(); i++) {
@@ -124,13 +149,18 @@ public abstract class Enemy extends Character {
             }
         }
         if (isAttacked && !isDeath) {
-            isAttackedCounter++;
-            if (isAttackedCounter > stunTime) {
+            if (isAttackedCounter <= stunTime) {
+                if (hitEffect != null) {
+                    hitEffect.tick();
+                }
+                isAttackedCounter++;
+            } else {
                 if (isLTR) {
                     currAnimation = animations.get(CharacterState.IDLE_LTR);
                 } else {
                     currAnimation = animations.get(CharacterState.IDLE_RTL);
                 }
+                hitEffect.resetEffectCounter();
                 isAttacked = false;
                 isAttackedCounter = 0;
                 if (isAttack) {
@@ -138,8 +168,9 @@ public abstract class Enemy extends Character {
                 }
             }
         }
+        boolean playerOnSight = false;
         if (!isDeath && !inAir && !fallDown) {
-            checkPlayerOnSight();
+            playerOnSight = checkPlayerOnSight();
         }
         if (!isDeath && !isAttacked && !isAttack && !animateChange
                 && !inAir && !fallDown) {
@@ -173,13 +204,12 @@ public abstract class Enemy extends Character {
             }
         }
         if (dialogue != null) {
-            if (checkPlayerOnSight() && !isDeath && !gameplay.getPlayer().isSpeak()) {
-                if (isSpeak) {
+            if (playerOnSight && !isDeath && !gameplay.getPlayer().isSpeak()) {
+                if (isSpeak && ENEMY_IS_SPEAK == this) {
                     if (speakTimeDialogueCounter <= 500) {
                         speakTimeDialogueCounter++;
-                    }
-                    dialogue.tick();
-                    if (speakTimeDialogueCounter > 500) {
+                        dialogue.tick();
+                    } else {
                         dialogue.next();
                         speakTimeDialogueCounter = 0;
                     }
@@ -190,24 +220,25 @@ public abstract class Enemy extends Character {
                 } else {
                     if (speakCounter <= 100) {
                         speakCounter++;
-                    }
-                    if (speakCounter > 100) {
+                    } else {
                         boolean result = dialogue.loadDialogue(dialogueFile);
                         if (result) {
                             isSpeak = true;
                             speakCounter = 0;
                             dialogue.setEndDialogue(false);
+                            ENEMY_IS_SPEAK = this;
                         }
                     }
                 }
             }
-            if (Enemy.ENEMY_HEALTHBAR_SHOW != null
-                    && this == Enemy.ENEMY_HEALTHBAR_SHOW) {
-                if (isDeath) {
+            if (ENEMY_IS_SPEAK != null) {
+                if (ENEMY_IS_SPEAK != this) {
                     if (isSpeak) {
-                        isSpeak = false;
-                        speakTimeDialogueCounter = 0;
-                        dialogue.setEndDialogue(true);
+                        setIsSpeak(false);
+                    }
+                } else {
+                    if (isDeath) {
+                        setIsSpeak(false);
                     }
                 }
             }
@@ -274,13 +305,30 @@ public abstract class Enemy extends Character {
                 healthBar.render(g);
             }
         }
+        if (hitEffect != null) {
+            if (hitEffect.isActive()) {
+                int x;
+                if (isLTR) {
+                    x = getXMaxHitBox() - (getWidthHitBox() / 3 + 20);
+                } else {
+                    x = getXHitBox();
+                }
+                hitEffect.render(g, x - gameplay.getCamera().getPosition().getXPosition(),
+                        getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
+                        getWidthHitBox() / 3 + 20, getHeightHitBox() / 3 + 20);
+            }
+        }
+        if (isSpeak && ENEMY_IS_SPEAK == this) {
+            if (dialogue != null) {
+                dialogue.render(g);
+            }
+        }
         // vision hitbox
 //        g.setColor(Color.red);
 //        g.drawRect(position.getXPosition() + DEF_X_VISION_POS - gameplay.getCamera().getPosition().getXPosition(),
 //                position.getYPosition() + DEF_Y_VISION_POS - gameplay.getCamera().getPosition().getYPosition(),
 //                position.getWidth() + DEF_WIDTH_VISION_POS,
-//                getHeightHitBox() + DEF_HEIGHT_VISION_POS);
-
+//                position.getHeight() + DEF_HEIGHT_VISION_POS);
     }
 
     public abstract Enemy init(Platform firstPlatform, Gameplay gameplay);
@@ -320,7 +368,7 @@ public abstract class Enemy extends Character {
     public GamePosition getVisionPosition() {
         return new GamePosition(position.getXPosition() + DEF_X_VISION_POS,
                 position.getYPosition() + DEF_Y_VISION_POS,
-                position.getWidth() + DEF_WIDTH_VISION_POS, getHeightHitBox() + DEF_HEIGHT_VISION_POS);
+                position.getWidth() + DEF_WIDTH_VISION_POS, position.getHeight() + DEF_HEIGHT_VISION_POS);
     }
 
     public boolean checkInvalidPlatform() {
@@ -400,6 +448,7 @@ public abstract class Enemy extends Character {
                 if (ENEMY_HEALTHBAR_SHOW != null) {
                     ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
                 }
+                hitEffect.setActive(true);
                 ENEMY_HEALTHBAR_SHOW = this;
                 healthBar.setCanShow(true);
                 gameplay.setRenderMap(false);
@@ -416,6 +465,9 @@ public abstract class Enemy extends Character {
                 }
                 if (stats.getHealth() <= 0) {
                     isDeath = true;
+                    if (hitEffect != null) {
+                        hitEffect.resetEffectCounter();
+                    }
                     if (isLTR) {
                         currAnimation = animations.get(CharacterState.DEATH_LTR);
                     } else {
@@ -473,6 +525,10 @@ public abstract class Enemy extends Character {
     }
 
     public void setIsSpeak(boolean isSpeak) {
+        if (!isSpeak) {
+            dialogue.setEndDialogue(true);
+            speakTimeDialogueCounter = 0;
+        }
         this.isSpeak = isSpeak;
     }
 
@@ -490,6 +546,10 @@ public abstract class Enemy extends Character {
 
     public void setSpeakTimeDialogueCounter(int speakTimeDialogueCounter) {
         this.speakTimeDialogueCounter = speakTimeDialogueCounter;
+    }
+
+    public Effect getHitEffect() {
+        return hitEffect;
     }
 
 }

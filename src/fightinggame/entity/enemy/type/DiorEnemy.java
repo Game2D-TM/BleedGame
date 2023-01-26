@@ -144,11 +144,6 @@ public class DiorEnemy extends Enemy {
     @Override
     public void render(Graphics g) {
         super.render(g);
-        if (isSpeak) {
-            if (dialogue != null) {
-                dialogue.render(g);
-            }
-        }
         //hitbox
 //        g.setColor(Color.red);
 //        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),

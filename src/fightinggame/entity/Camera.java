@@ -8,6 +8,7 @@ public class Camera {
     private Player player;
     private GamePosition position;
     private final Gameplay gameplay;
+    private boolean isCheckCameraPos = true;
 
     public Camera(Player player, GamePosition position, int windowWidth, int windowHeight, Gameplay gameplay) {
         this.player = player;
@@ -20,11 +21,9 @@ public class Camera {
     public void tick() {
         if (position != null) {
             if (player != null) {
-//                if (!player.isAttack) {
-//                if (player.getPosition().getXPosition() <= position.getXPosition() + 300 || player.getPosition().getMaxX() >= position.getMaxX() - 300) {
-                getNewCameraPosition();
-//                }
-//                }
+                if (isCheckCameraPos) {
+                    getNewCameraPosition();
+                }
             }
         }
     }
@@ -87,6 +86,14 @@ public class Camera {
 
     public void setPosition(GamePosition position) {
         this.position = position;
+    }
+
+    public boolean isCheckCameraPos() {
+        return isCheckCameraPos;
+    }
+
+    public void setIsCheckCameraPos(boolean isCheckCameraPos) {
+        this.isCheckCameraPos = isCheckCameraPos;
     }
 
 }

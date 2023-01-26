@@ -2,6 +2,7 @@ package fightinggame.input.handler.game.player;
 
 import fightinggame.Game;
 import fightinggame.Gameplay;
+import fightinggame.animation.player.PlayerIdle;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.Rule;
@@ -38,6 +39,23 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_LTR));
                 } else {
                     player.setCurrAnimation(player.getAnimations().get(CharacterState.IDLE_RTL));
+                }
+                if (player.getPosition().isMoveRight) {
+                    if (player.getCurrAnimation() != null && player.getCurrAnimation() instanceof PlayerIdle) {
+                        if (player.isSprint()) {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.SPRINT_LTR));
+                        } else {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNFORWARD));
+                        }
+                    }
+                } else if (player.getPosition().isMoveLeft) {
+                    if (player.getCurrAnimation() != null && player.getCurrAnimation() instanceof PlayerIdle) {
+                        if (player.isSprint()) {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.SPRINT_RTL));
+                        } else {
+                            player.setCurrAnimation(player.getAnimations().get(CharacterState.RUNBACK));
+                        }
+                    }
                 }
                 player.setIsUseItem(false);
                 useItemCounter = 0;

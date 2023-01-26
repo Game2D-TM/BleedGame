@@ -1,2 +1,4 @@
 collectable:key,1,chest4
 collectable:key,1,chest3
+collectable:copper_coin,10,chest2
+collectable:copper_coin,10,chest1

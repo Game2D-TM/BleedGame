@@ -75,6 +75,7 @@ public class Fireball extends Throwable {
                                     if (enemy.checkHit(spawnPosition, true, character, attackDamage)) {
                                         gameplay.getAudioPlayer().startThread("fireball_hit", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                                         exploreEffect.setActive(true);
+                                        enemy.getHitEffect().resetEffectCounter();
                                         isHit = true;
                                         break;
                                     }

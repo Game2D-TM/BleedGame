@@ -80,7 +80,7 @@ public abstract class MerchantNPC extends NPC {
             Item nItem = itemInInventory.clone();
             nItem.setAmount(1);
             nItem.setCharacter(player);
-            if(nItem.getPrice() > 0) {
+            if (nItem.getPrice() > 0) {
                 int nPrice = nItem.getPrice() / 2;
                 nItem.setPrice(nPrice);
             }
@@ -175,6 +175,7 @@ public abstract class MerchantNPC extends NPC {
                                                 isConversation = false;
                                                 openOption = false;
                                                 gameplay.setHideGUI(false);
+                                                player.setIsShopping(false);
                                                 Game.STATE = GameState.GAME_STATE;
                                                 break;
                                         }
@@ -270,6 +271,7 @@ public abstract class MerchantNPC extends NPC {
                                         dialogue.setEndDialogue(true);
                                         openOption = false;
                                         dialogueOptionsIndex = 0;
+                                        player.setIsShopping(false);
                                         Game.STATE = GameState.GAME_STATE;
                                         break;
                                 }
@@ -301,6 +303,14 @@ public abstract class MerchantNPC extends NPC {
                             currAnimation = animations.get(CharacterState.IDLE_RTL);
                         }
                         isConversation = true;
+                        player.setIsShopping(true);
+                        if (player.isSpeak()) {
+                            player.setIsSpeak(false);
+                            int index = player.getSpeakDialogueIndex() - 1;
+                            if (index >= 0) {
+                                player.setSpeakDialogueIndex(index);
+                            }
+                        }
                     }
                 }
             } else {
@@ -308,6 +318,7 @@ public abstract class MerchantNPC extends NPC {
                 isConversation = false;
                 openOption = false;
                 dialogueOptionsIndex = 0;
+                player.setIsShopping(false);
             }
         }
     }

@@ -102,6 +102,10 @@ public class GameTimer {
     public String formatTimeString(LocalTime localTime, String format) {
         return localTime.format(DateTimeFormatter.ofPattern(format));
     }
+    
+    public int compareTo(LocalTime localTime) {
+        return time.compareTo(localTime);
+    }
 
     @Override
     public String toString() {

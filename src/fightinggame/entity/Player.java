@@ -30,6 +30,7 @@ public class Player extends Character {
     private int speakDialogueIndex = 1;
     private final List<Enemy> enemiesKilled = new ArrayList<>();
     private Effect hitEffect;
+    private boolean isShopping;
 
     public Player(int id, String name, int health, GamePosition position,
             Map<CharacterState, Animation> animations,
@@ -85,8 +86,9 @@ public class Player extends Character {
             if (hitEffect != null) {
                 hitEffect.tick();
             }
-            isStunCounter++;
-            if (isStunCounter > stunTime) {
+            if (isStunCounter <= stunTime) {
+                isStunCounter++;
+            } else {
                 isAttacked = false;
                 isStunCounter = 0;
                 hitEffect.resetEffectCounter();
@@ -95,35 +97,53 @@ public class Player extends Character {
                 } else {
                     currAnimation = animations.get(CharacterState.IDLE_RTL);
                 }
+                if (position.isMoveRight) {
+                    if (currAnimation != null && currAnimation instanceof PlayerIdle) {
+                        if (isSprint()) {
+                            currAnimation = animations.get(CharacterState.SPRINT_LTR);
+                        } else {
+                            currAnimation = animations.get(CharacterState.RUNFORWARD);
+                        }
+                    }
+                } else if (position.isMoveLeft) {
+                    if (currAnimation != null && currAnimation instanceof PlayerIdle) {
+                        if (isSprint()) {
+                            currAnimation = animations.get(CharacterState.SPRINT_RTL);
+                        } else {
+                            currAnimation = animations.get(CharacterState.RUNBACK);
+                        }
+                    }
+                }
                 if (stunTime > 50) {
                     stunTime = 50;
                 }
             }
         }
-        if (isSpeak) {
-            if (Enemy.ENEMY_HEALTHBAR_SHOW != null) {
-                Enemy enemy = Enemy.ENEMY_HEALTHBAR_SHOW;
-                if (enemy.isSpeak()) {
-                    enemy.setIsSpeak(false);
+        if (!isShopping) {
+            if (isSpeak) {
+                if (Enemy.ENEMY_IS_SPEAK != null) {
+                    Enemy enemy = Enemy.ENEMY_IS_SPEAK;
+                    if (enemy.isSpeak()) {
+                        enemy.setIsSpeak(false);
+                    }
                 }
-            }
-            if (dialogue != null) {
-                dialogue.tick();
-            }
-            if (dialogue.isEndDialogue()) {
-                isSpeak = false;
-            }
-        } else {
-            if (speakCounter <= 1500) {
-                speakCounter++;
-            }
-            if (speakCounter > 1500) {
-                boolean result = dialogue.loadDialogue(DataManager.getFile("starter_" + speakDialogueIndex));
-                if (result) {
-                    dialogue.setEndDialogue(false);
-                    isSpeak = true;
-                    speakCounter = 0;
-                    speakDialogueIndex++;
+                if (dialogue != null) {
+                    dialogue.tick();
+                }
+                if (dialogue.isEndDialogue()) {
+                    isSpeak = false;
+                }
+            } else {
+                if (speakCounter <= 1500) {
+                    speakCounter++;
+                } else {
+                    boolean result = dialogue.loadDialogue(DataManager.getFile("starter_" + speakDialogueIndex));
+                    if (result) {
+                        dialogue.setEndDialogue(false);
+                        isSpeak = true;
+                        speakCounter = 0;
+                        speakDialogueIndex++;
+                    }
                 }
             }
         }
@@ -484,4 +504,21 @@ public class Player extends Character {
     public void setIsUseItem(boolean isUseItem) {
         this.isUseItem = isUseItem;
     }
+
+    public boolean isShopping() {
+        return isShopping;
+    }
+
+    public void setIsShopping(boolean isShopping) {
+        this.isShopping = isShopping;
+    }
+
+    public int getSpeakDialogueIndex() {
+        return speakDialogueIndex;
+    }
+
+    public void setSpeakDialogueIndex(int speakDialogueIndex) {
+        this.speakDialogueIndex = speakDialogueIndex;
+    }
+
 }

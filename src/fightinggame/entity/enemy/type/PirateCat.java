@@ -68,7 +68,7 @@ public class PirateCat extends Enemy {
     public void tick() {
         super.tick();
         if (!isAttack && !animateChange && !isAttacked && !isDeath) {
-            if (pushBackUseCounter <= 1000) {
+            if (pushBackUseCounter <= 500) {
                 pushBackUseCounter++;
             } else {
                 if (!pushBackAttack) {

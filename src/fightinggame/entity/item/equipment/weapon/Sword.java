@@ -22,14 +22,25 @@ public class Sword extends Equipment {
     @Override
     public boolean use() {
         if (!isEquip) {
-            IncreaseStat increaseStat = (IncreaseStat) abilities.get(0);
-            if (increaseStat != null) {
+            if(abilities.size() <= 0) {
+                return false;
+            }
+            boolean result = false;
+            for(int i = 0; i < abilities.size(); i++) {
+                IncreaseStat increaseStat = (IncreaseStat) abilities.get(i);
+                if(increaseStat != null) {
+                    increaseStat.execute();
+                    if(!result) {
+                        result = true;
+                    }
+                }
+            }
+            if (result) {
                 if (itemEquipAnimations != null && itemEquipAnimations.size() > 0) {
                     for (CharacterState state : itemEquipAnimations.keySet()) {
                         character.getAnimations().put(state, itemEquipAnimations.get(state));
                     }
                 }
-                increaseStat.execute();
                 isEquip = true;
                 return true;
             }
