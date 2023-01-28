@@ -24,13 +24,14 @@ import fightinggame.entity.TransitionScreen;
 import fightinggame.entity.ability.type.recovery.GreaterHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.increase.CritChanceIncrease;
-import fightinggame.entity.ability.type.recovery.ItemSlot;
+import fightinggame.entity.ability.type.skill.ItemSlot;
 import fightinggame.entity.ability.type.skill.ActiveSkill;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.enemy.type.DiorEnemy;
 import fightinggame.entity.enemy.type.MilitaryFox;
 import fightinggame.entity.enemy.type.PirateCat;
+import fightinggame.entity.enemy.type.SkeletonArcher;
 import fightinggame.entity.enemy.type.SoldierFox;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.item.collectable.CollectableItemType;
@@ -78,7 +79,7 @@ import javax.swing.JPanel;
 public class Gameplay extends JPanel implements Runnable {
 
     public static final int GRAVITY = 7; //7
-    public static final int FIRST_SCENE = 3;
+    public static final int FIRST_SCENE = 4;
     public static int CURRENT_FPS = 0;
 
     private Background background;
@@ -764,6 +765,9 @@ public class Gameplay extends JPanel implements Runnable {
                                     break;
                                 case SOLDIER_FOX:
                                     enemy = new SoldierFox().init(firstPlatform, this);
+                                    break;
+                                case SKELETON_ARCHER:
+                                    enemy = new SkeletonArcher().init(firstPlatform, this);
                                     break;
                             }
                             if (enemy == null) {

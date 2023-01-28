@@ -6,9 +6,9 @@ import fightinggame.entity.Character;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.ability.type.recovery.PotionHeal;
 import fightinggame.entity.inventory.Inventory;
-import fightinggame.entity.item.collectable.CollectableItem;
+import fightinggame.entity.item.collectable.ConsumeItem;
 
-public abstract class HealthPotion extends CollectableItem {
+public abstract class HealthPotion extends ConsumeItem {
 
     protected int healPoint;
 

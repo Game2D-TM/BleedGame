@@ -9,6 +9,7 @@ import fightinggame.entity.Player;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.Stats;
+import fightinggame.entity.item.collectable.ConsumeItem;
 import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.GameHandler;
 import fightinggame.input.handler.game.player.PlayerKeyboardHandler;
@@ -394,6 +395,27 @@ public class Inventory {
                         if (slot != null) {
                             if (slot.getItem() != null) {
                                 return slot;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    public Item getConsumeItemAscending() {
+        if (inventorySlots.size() > 0) {
+            for (int i = 0; i < inventorySlots.size(); i++) {
+                if (inventorySlots.get(i) != null && inventorySlots.get(i).size() > 0) {
+                    for (int j = 0; j < inventorySlots.get(i).size(); j++) {
+                        SlotInventory slot = inventorySlots.get(i).get(j);
+                        if (slot != null) {
+                            Item item = slot.getItem();
+                            if (item != null) {
+                                if(item instanceof ConsumeItem) {
+                                    return item;
+                                }
                             }
                         }
                     }

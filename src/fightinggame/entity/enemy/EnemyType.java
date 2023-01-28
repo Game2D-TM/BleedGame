@@ -4,5 +4,6 @@ public enum EnemyType {
     DIOR,
     PIRATE_CAT,
     MILITARY_FOX,
-    SOLDIER_FOX
+    SOLDIER_FOX,
+    SKELETON_ARCHER
 }

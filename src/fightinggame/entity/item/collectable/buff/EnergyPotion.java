@@ -7,9 +7,9 @@ import fightinggame.entity.ability.Ability;
 import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.ability.type.recovery.PotionEnergyRecovery;
 import fightinggame.entity.inventory.Inventory;
-import fightinggame.entity.item.collectable.CollectableItem;
+import fightinggame.entity.item.collectable.ConsumeItem;
 
-public abstract class EnergyPotion extends CollectableItem {
+public abstract class EnergyPotion extends ConsumeItem {
 
     protected int recoverPoint;
 

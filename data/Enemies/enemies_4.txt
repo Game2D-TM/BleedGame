@@ -1,1 +1,1 @@
-pirate_cat:16,16
+skeleton_archer:16,16

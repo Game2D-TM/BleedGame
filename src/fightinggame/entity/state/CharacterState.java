@@ -57,5 +57,10 @@ public enum CharacterState {
     SLIDE_LTR,
     SLIDE_RTL,
     USEITEM_LTR,
-    USEITEM_RTL
+    USEITEM_RTL,
+    SHOT01_LTR,
+    SHOT01_RTL,
+    SHOT02_LTR,
+    SHOT02_RTL
+    
 }

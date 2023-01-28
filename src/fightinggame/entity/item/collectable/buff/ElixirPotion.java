@@ -8,9 +8,9 @@ import fightinggame.entity.ability.type.EnergyRecovery;
 import fightinggame.entity.ability.type.recovery.PotionEnergyRecovery;
 import fightinggame.entity.ability.type.recovery.PotionHeal;
 import fightinggame.entity.inventory.Inventory;
-import fightinggame.entity.item.collectable.CollectableItem;
+import fightinggame.entity.item.collectable.ConsumeItem;
 
-public abstract class ElixirPotion extends CollectableItem {
+public abstract class ElixirPotion extends ConsumeItem {
 
     protected int healPoint;
     protected int energyPoint;

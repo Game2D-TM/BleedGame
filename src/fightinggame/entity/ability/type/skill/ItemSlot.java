@@ -1,4 +1,4 @@
-package fightinggame.entity.ability.type.recovery;
+package fightinggame.entity.ability.type.skill;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.Character;
@@ -7,6 +7,7 @@ import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.ability.type.skill.ActiveSkill;
 import fightinggame.entity.item.Item;
+import fightinggame.entity.item.collectable.ConsumeItem;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -25,7 +26,7 @@ public class ItemSlot extends ActiveSkill {
             super.tick();
         } else {
             if (character != null) {
-                setItem(character.getInventory().getItemAscending());
+                setItem(character.getInventory().getConsumeItemAscending());
             }
         }
     }
@@ -70,14 +71,19 @@ public class ItemSlot extends ActiveSkill {
         if (item == null) {
             return;
         }
-        this.item = item;
-        resetTime = item.getAbilityResetTime(0);
-        skillIcon = new SpriteSheet();
-        skillIcon.getImages().add(item.getIcon());
-        Ability ability = item.getAbilities().get(0);
-        if (ability != null) {
-            setSkillCounter(ability.getSkillCounter());
-            setCanUse(ability.isCanUse());
+        if (item instanceof ConsumeItem) {
+            this.item = item;
+            resetTime = item.getAbilityResetTime(0);
+            skillIcon = new SpriteSheet();
+            skillIcon.getImages().add(item.getIcon());
+            List<Ability> abilities = item.getAbilities();
+            if (abilities != null && abilities.size() > 0) {
+                Ability ability = abilities.get(0);
+                if (ability != null) {
+                    setSkillCounter(ability.getSkillCounter());
+                    setCanUse(ability.isCanUse());
+                }
+            }
         }
     }
 

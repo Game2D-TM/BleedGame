@@ -3,12 +3,10 @@ package fightinggame.entity.item.collectable.coin;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.Player;
-import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
-import fightinggame.entity.item.collectable.CollectableItem;
+import fightinggame.entity.item.collectable.NonConsumeItem;
 
-public class CoinItem extends CollectableItem {
+public class CoinItem extends NonConsumeItem {
 
     private int coinValue;
 
@@ -22,20 +20,6 @@ public class CoinItem extends CollectableItem {
 
     @Override
     public boolean use() {
-        if (amount > 0) {
-            Player player = (Player) character;
-            if (player != null) {
-                player.addScore(coinValue);
-                int nAmount = amount - 1;
-                if (nAmount == 0) {
-                    Inventory inventory = character.getInventory();
-                    inventory.removeItemFromInventory(this);
-                } else {
-                    amount = nAmount;
-                }
-                return true;
-            }
-        }
         return false;
     }
 

@@ -6,7 +6,7 @@ import fightinggame.animation.player.PlayerIdle;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.Rule;
-import fightinggame.entity.ability.type.recovery.ItemSlot;
+import fightinggame.entity.ability.type.skill.ItemSlot;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.state.CharacterState;

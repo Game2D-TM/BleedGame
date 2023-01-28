@@ -161,7 +161,7 @@ public abstract class Enemy extends Character {
                 } else {
                     currAnimation = animations.get(CharacterState.IDLE_RTL);
                 }
-                if(stunTime != defStunTime) {
+                if (stunTime != defStunTime) {
                     stunTime = defStunTime;
                 }
                 hitEffect.resetEffectCounter();
@@ -276,10 +276,16 @@ public abstract class Enemy extends Character {
                     }
                     position.setWidth(position.getWidth() - stats.getAttackRange());
                     animateChange = false;
-                    if (isLTR) {
-                        currAnimation = animations.get(CharacterState.IDLE_LTR);
+                    if (position.isMoveRight) {
+                        currAnimation = animations.get(CharacterState.RUNBACK);
+                    } else if (position.isMoveLeft) {
+                        currAnimation = animations.get(CharacterState.RUNFORWARD);
                     } else {
-                        currAnimation = animations.get(CharacterState.IDLE_RTL);
+                        if (isLTR) {
+                            currAnimation = animations.get(CharacterState.IDLE_LTR);
+                        } else {
+                            currAnimation = animations.get(CharacterState.IDLE_RTL);
+                        }
                     }
                     attackCounter = 0;
                 }
