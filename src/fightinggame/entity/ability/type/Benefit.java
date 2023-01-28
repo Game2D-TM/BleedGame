@@ -3,24 +3,15 @@ package fightinggame.entity.ability.type;
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
-import fightinggame.entity.GamePosition;
-import fightinggame.entity.ability.Ability;
 import fightinggame.entity.SpriteSheet;
-import java.awt.image.BufferedImage;
+import fightinggame.entity.ability.type.skill.PassiveSkill;
 import java.util.List;
 
-public abstract class Benefit extends Ability {
+public abstract class Benefit extends PassiveSkill {
 
     public Benefit(int id, String name, long resetTime, int energyLost,
-            SpriteSheet skillIcon, GamePosition position,
-             Animation animationLTR, Animation animationRTL, Gameplay gameplay, Character character) {
-        super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, gameplay, character);
-    }
-
-    public Benefit(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon,
-            GamePosition position, Animation animationLTR, Animation animationRTL,
-             BufferedImage border, Gameplay gameplay, Character character) {
-        super(id, name, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
+            SpriteSheet skillIcon, Animation animationLTR, Animation animationRTL, Gameplay gameplay, Character character) {
+        super(id, name, resetTime, energyLost, skillIcon, animationLTR, animationRTL, gameplay, character);
     }
 
     @Override

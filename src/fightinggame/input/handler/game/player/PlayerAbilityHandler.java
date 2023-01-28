@@ -6,15 +6,15 @@ import fightinggame.animation.player.PlayerIdle;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.Rule;
+import fightinggame.entity.ability.type.recovery.ItemSlot;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.item.Item;
-import fightinggame.entity.item.collectable.buff.EnergyPotion;
-import fightinggame.entity.item.collectable.buff.HealthPotion;
 import fightinggame.entity.state.CharacterState;
 import fightinggame.entity.state.GameState;
 import fightinggame.input.handler.GameHandler;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 
 public class PlayerAbilityHandler extends GameHandler implements KeyListener {
 
@@ -22,6 +22,8 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
     private final Gameplay gameplay;
     private int useItemCounter = 0;
     private int useItemLimit = 100;
+
+    private int itemIndex = 0;
 
     public PlayerAbilityHandler(Player player, String name, Gameplay gameplay) {
         super(name);
@@ -71,9 +73,12 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if (Game.STATE == GameState.GAME_STATE) {
             if (e.getKeyCode() == KeyEvent.VK_8) {
-                player.getStats().setHealth(player.getHealthBar().getMaxHealth());
-                player.getStats().addEnergy(player.getHealthBar().getMaxEnergy());
+                player.getStats().setHealth(player.getStatusBar().getMaxHealth());
+                player.getStats().addEnergy(player.getStatusBar().getMaxEnergy());
                 player.setIsDeath(false);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_5) {
+                player.getStats().setHealth(50);
             }
         }
         if (!player.isDeath()) {
@@ -82,6 +87,11 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_I:
                         if (!player.isAttack() && !player.getPosition().isMoving()) {
+                            player.getInventory().open();
+                        }
+                        break;
+                    case KeyEvent.VK_ESCAPE:
+                        if (player.getInventory().isOpen()) {
                             player.getInventory().open();
                         }
                         break;
@@ -136,18 +146,12 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                         }
                         break;
                     case KeyEvent.VK_3:
-                        Item item = player.getInventory().getItemByName("S Health Potion");
-                        if (item == null) {
-                            item = player.getInventory().getItemByName("M Health Potion");
-                        }
-                        if (item == null) {
-                            item = player.getInventory().getItemByName("L Health Potion");
-                        }
-                        if (item == null) {
+                        ItemSlot itemSlot = ((ItemSlot) player.getAbility(2));
+                        if (itemSlot == null) {
                             break;
                         }
-                        if (item instanceof HealthPotion) {
-                            if (item.use()) {
+                        if (itemSlot.haveItem()) {
+                            if (itemSlot.execute()) {
                                 player.setIsUseItem(true);
                                 if (player.isLTR()) {
                                     player.setCurrAnimation(player.getAnimations().get(CharacterState.USEITEM_LTR));
@@ -159,29 +163,45 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                             }
                         }
                         break;
-                    case KeyEvent.VK_4:
-                        item = player.getInventory().getItemByName("S Energy Potion");
-                        if (item == null) {
-                            item = player.getInventory().getItemByName("M Energy Potion");
+                    case KeyEvent.VK_U:
+                        List<Item> items = player.getInventory().getAllItemsFromInventory();
+                        if (items == null || items.isEmpty()) {
+                            break;
                         }
-                        if (item == null) {
-                            item = player.getInventory().getItemByName("L Energy Potion");
+                        if (itemIndex < items.size() - 1) {
+                            itemIndex++;
+                        } else {
+                            itemIndex = 0;
                         }
+                        Item item = items.get(itemIndex);
                         if (item == null) {
                             break;
                         }
-                        if (item instanceof EnergyPotion) {
-                            if (item.use()) {
-                                player.setIsUseItem(true);
-                                if (player.isLTR()) {
-                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.USEITEM_LTR));
-                                } else {
-                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.USEITEM_RTL));
-                                }
-                            } else {
-                                System.out.println("Is Cooldown.");
-                            }
+                        itemSlot = ((ItemSlot) player.getAbility(2));
+                        if (itemSlot == null) {
+                            break;
                         }
+                        itemSlot.setItem(item);
+                        break;
+                    case KeyEvent.VK_O:
+                        items = player.getInventory().getAllItemsFromInventory();
+                        if (items == null || items.isEmpty()) {
+                            break;
+                        }
+                        if (itemIndex > 0) {
+                            itemIndex--;
+                        } else {
+                            itemIndex = items.size() - 1;
+                        }
+                        item = items.get(itemIndex);
+                        if (item == null) {
+                            break;
+                        }
+                        itemSlot = ((ItemSlot) player.getAbility(2));
+                        if (itemSlot == null) {
+                            break;
+                        }
+                        itemSlot.setItem(item);
                         break;
                     case KeyEvent.VK_Q:
                         Rule rule = gameplay.getRule();

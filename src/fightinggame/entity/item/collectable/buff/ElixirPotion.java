@@ -5,8 +5,8 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.ability.Ability;
 import fightinggame.entity.ability.type.EnergyRecovery;
-import fightinggame.entity.ability.type.healing.PotionEnergyRecovery;
-import fightinggame.entity.ability.type.healing.PotionHeal;
+import fightinggame.entity.ability.type.recovery.PotionEnergyRecovery;
+import fightinggame.entity.ability.type.recovery.PotionHeal;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.collectable.CollectableItem;
 
@@ -15,32 +15,42 @@ public abstract class ElixirPotion extends CollectableItem {
     protected int healPoint;
     protected int energyPoint;
 
-    public ElixirPotion(int id, String name, 
-            Animation animation, Character character, 
+    public ElixirPotion(int id, String name,
+            Animation animation, Character character,
             Gameplay gameplay, int amount, int healPoint, int energyPoint) {
         super(id, name, animation, character, gameplay, amount);
         this.healPoint = healPoint;
         this.energyPoint = energyPoint;
-        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, null, null, gameplay, character);
+        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, gameplay, character);
         abilities.add(potionHeal);
         EnergyRecovery energyRecovery = new PotionEnergyRecovery(energyPoint, 0, 1000,
-                null, null, null, null, gameplay, character);
+                null, null, gameplay, character);
         abilities.add(energyRecovery);
         description = "[" + name + "] Recover " + healPoint + " HP And " + energyPoint + " MP.";
     }
 
-    public ElixirPotion(int id, String name, 
-            Animation animation, Character character, 
+    public ElixirPotion(int id, String name,
+            Animation animation, Character character,
             Gameplay gameplay, int amount, int price, int healPoint, int energyPoint) {
         super(id, name, animation, character, gameplay, amount, price);
         this.healPoint = healPoint;
         this.energyPoint = energyPoint;
-        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, null, null, gameplay, character);
+        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, gameplay, character);
         abilities.add(potionHeal);
         EnergyRecovery energyRecovery = new PotionEnergyRecovery(energyPoint, 0, 1000,
-                null, null, null, null, gameplay, character);
+                null, null, gameplay, character);
         abilities.add(energyRecovery);
         description = "[" + name + "] Recover " + healPoint + " HP And " + energyPoint + " MP.";
+    }
+
+    @Override
+    public boolean checkHit(Character character) {
+        boolean result = super.checkHit(character);
+        if (result) {
+            gameplay.getAudioPlayer().startThread("potion_pickup", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -67,9 +77,9 @@ public abstract class ElixirPotion extends CollectableItem {
                 if (nAmount == 0) {
                     Inventory inventory = character.getInventory();
                     inventory.removeItemFromInventory(this);
-                } else {
-                    amount = nAmount;
                 }
+                amount = nAmount;
+                gameplay.getAudioPlayer().startThread("potion_use", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                 return true;
             }
         }

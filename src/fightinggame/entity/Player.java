@@ -52,6 +52,8 @@ public class Player extends Character {
                 0, 0, 18, 18,
                 0, 0, 18, 18, 4);
         hitEffect = new PlayerHitEffect(0, exploreFireBallSheet, stunTime);
+        
+        score = 100000;
     }
 
     @Override
@@ -151,6 +153,10 @@ public class Player extends Character {
 
     @Override
     public void render(Graphics g) {
+//      attackhitbox
+//        g.fillRect(attackHitBox().getXPosition() - gameplay.getCamera().getPosition().getXPosition()
+//                    , attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition()
+//                    , attackHitBox().getWidth(), attackHitBox().getHeight());
         super.render(g);
         if (!gameplay.isHideGUI()) {
             healthBar.render(g);
@@ -173,10 +179,7 @@ public class Player extends Character {
 //        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
 //                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
 //                getWidthHitBox(), getHeightHitBox());
-        //attackhitbox
-//        g.fillRect(attackHitBox().getXPosition() - gameplay.getCamera().getPosition().getXPosition()
-//                    , attackHitBox().getYPosition() - gameplay.getCamera().getPosition().getYPosition()
-//                    , attackHitBox().getWidth(), attackHitBox().getHeight());
+
     }
 
     @Override
@@ -315,9 +318,9 @@ public class Player extends Character {
                     isAttacked = true;
                     hitEffect.setActive(true);
                     if (attackDamage == -1) {
-                        receiveDamage = stats.getHit(character.getStats());
+                        addReceiveDamage(stats.getHit(character.getStats()));
                     } else {
-                        receiveDamage = stats.getHit(character.getStats(), attackDamage);
+                        addReceiveDamage(stats.getHit(character.getStats(), attackDamage));
                     }
                     if (character.isLTR) {
                         position.setXPosition(position.getXPosition() + character.getStats().getBounceRange());
@@ -473,6 +476,13 @@ public class Player extends Character {
                     attackX -= 16;
                 } else {
                     attackX += 16;
+                }
+            } else if(currAnimation instanceof PlayerAttackSpecial) {
+                if(isLTR) {
+                    attackWidth += 10;
+                } else {
+                    attackX -= 10;
+                    attackWidth += 10;
                 }
             } else if (currAnimation instanceof PlayerAirAttack_LTR) {
                 attackX -= 12;

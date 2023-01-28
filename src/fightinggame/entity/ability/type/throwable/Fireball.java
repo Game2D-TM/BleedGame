@@ -21,9 +21,9 @@ public class Fireball extends Throwable {
     private boolean isHit;
 
     public Fireball(int attackDamage, int speed, int id, long resetTime, int energyLost,
-            SpriteSheet skillIcon, GamePosition position, Animation animationLTR, Animation animationRTL,
+            SpriteSheet skillIcon, Animation animationLTR, Animation animationRTL,
             Gameplay gameplay, Character character) {
-        super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, gameplay, character);
+        super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, animationLTR, animationRTL, gameplay, character);
         SpriteSheet exploreFireBallSheet = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect10.png"),
                 0, 0, 48, 48,
                 0, 0, 48, 48, 4);
@@ -33,7 +33,7 @@ public class Fireball extends Throwable {
     public Fireball(int attackDamage, int speed, int id, long resetTime, int energyLost, SpriteSheet skillIcon,
             GamePosition position, Animation animationLTR, Animation animationRTL,
             BufferedImage border, Gameplay gameplay, Character character) {
-        super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
+        super(attackDamage, speed, id, "Fire Ball", resetTime, energyLost, skillIcon, animationLTR, animationRTL, position, border, gameplay, character);
         SpriteSheet exploreFireBallSheet = new SpriteSheet(ImageManager.loadImage("assets/res/effect/Mini_Effect_2D/Effect10.png"),
                 0, 0, 48, 48,
                 0, 0, 48, 48, 4);

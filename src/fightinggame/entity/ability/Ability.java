@@ -2,14 +2,10 @@ package fightinggame.entity.ability;
 
 import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
-import fightinggame.entity.GamePosition;
 import fightinggame.input.handler.GameHandler;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.Character;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,21 +22,18 @@ public abstract class Ability {
     protected Animation animationLTR;
     protected Animation animationRTL;
     protected Animation currAnimation;
-    protected BufferedImage border;
-    protected GamePosition position;
     protected List<GameHandler> handlers = new ArrayList<>();
     protected Gameplay gameplay;
     protected Character character;
     protected boolean isLTR;
 
-    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, GamePosition position,
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon,
             Animation animationLTR, Animation animationRTL, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
         this.energyLost = energyLost;
         this.skillIcon = skillIcon;
-        this.position = position;
         this.animationLTR = animationLTR;
         this.animationRTL = animationRTL;
         this.gameplay = gameplay;
@@ -54,39 +47,14 @@ public abstract class Ability {
         }
     }
 
-    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon, GamePosition position,
-            Animation animationLTR, Animation animationRTL, BufferedImage border, Gameplay gameplay, Character character) {
-        this.id = id;
-        this.name = name;
-        this.resetTime = resetTime;
-        this.energyLost = energyLost;
-        this.skillIcon = skillIcon;
-        this.animationLTR = animationLTR;
-        this.animationRTL = animationRTL;
-        this.position = position;
-        this.border = border;
-        this.gameplay = gameplay;
-        this.character = character;
-        if (character != null) {
-            if (character.isLTR()) {
-                currAnimation = animationLTR;
-            } else {
-                currAnimation = animationRTL;
-            }
-        }
-    }
-
-    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon
-            , Animation currAnimation, GamePosition position, BufferedImage border
-            , Gameplay gameplay, Character character) {
+    public Ability(int id, String name, long resetTime, int energyLost, SpriteSheet skillIcon,
+            Animation currAnimation, Gameplay gameplay, Character character) {
         this.id = id;
         this.name = name;
         this.resetTime = resetTime;
         this.energyLost = energyLost;
         this.currAnimation = currAnimation;
-        this.border = border;
         this.skillIcon = skillIcon;
-        this.position = position;
         this.gameplay = gameplay;
         this.character = character;
     }
@@ -102,12 +70,13 @@ public abstract class Ability {
             }
         }
         if (!canUse) {
-            resetTimeCounter++;
-        }
-        if (resetTimeCounter > resetTime) {
-            canUse = true;
-            resetTimeCounter = 0;
-            coolDown = resetTime;
+            if (resetTimeCounter < resetTime) {
+                resetTimeCounter++;
+            } else {
+                canUse = true;
+                resetTimeCounter = 0;
+                coolDown = resetTime;
+            }
         }
         if (currAnimation != null) {
             currAnimation.tick();
@@ -115,26 +84,6 @@ public abstract class Ability {
     }
 
     public void render(Graphics g) {
-        // skill icon
-        if (border != null) {
-            g.drawImage(border, position.getXPosition() - 5, position.getYPosition() - 5,
-                    position.getWidth() + 10, position.getHeight() + 10, null);
-        }
-        if (skillIcon != null && position != null) {
-            skillIcon.render(g, position.getXPosition(), position.getYPosition(), position.getWidth(), position.getHeight());
-//          rectangle
-//            g.setColor(Color.red);
-//            g.drawRect(position.getXPosition(), position.getYPosition(), position.getWidth(), position.getHeight());
-            g.setColor(Color.white);
-            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
-            g.drawString(id + "", position.getXPosition() + 5, position.getMaxY() - 10);
-            if (resetTimeCounter > 0) {
-                g.drawString(getCoolDownTime() + "s", position.getXPosition() + position.getWidth() / 2 - 10,
-                        position.getYPosition() + position.getHeight() / 2 + 5);
-            }
-        }
-        //
-
     }
 
     public abstract boolean execute();
@@ -158,6 +107,8 @@ public abstract class Ability {
     public void setName(String name) {
         this.name = name;
     }
+    
+    
 
     public long getResetTime() {
         return resetTime;
@@ -191,14 +142,6 @@ public abstract class Ability {
         this.canUse = canUse;
     }
 
-    public GamePosition getPosition() {
-        return position;
-    }
-
-    public void setPosition(GamePosition position) {
-        this.position = position;
-    }
-
     public List<GameHandler> getHandlers() {
         return handlers;
     }
@@ -223,4 +166,11 @@ public abstract class Ability {
         this.energyLost = energyLost;
     }
 
+    public SpriteSheet getSkillIcon() {
+        return skillIcon;
+    }
+
+    public void setSkillIcon(SpriteSheet skillIcon) {
+        this.skillIcon = skillIcon;
+    }
 }

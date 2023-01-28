@@ -83,12 +83,12 @@ public class StatusBar {
     public void render(Graphics g) {
         g.setColor(Color.red);
         if (healthStateImage != null) {
-            g.drawImage(healthStateImage, getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition(),
-                    getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);
-            if (energyStateImage != null) {
-                g.drawImage(energyStateImage, getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition() + getHealthBarPos().getHeight(),
-                        getHealthBarPos().getWidth(), getHealthBarPos().getHeight(), null);
-            }
+            g.drawImage(healthStateImage, getStatusBarPos().getXPosition(), getStatusBarPos().getYPosition(),
+                    getStatusBarPos().getWidth(), getStatusBarPos().getHeight(), null);
+        }
+        if (energyStateImage != null) {
+            g.drawImage(energyStateImage, getStatusBarPos().getXPosition(), getStatusBarPos().getYPosition() + getStatusBarPos().getHeight(),
+                    getStatusBarPos().getWidth(), getStatusBarPos().getHeight(), null);
         }
 //      rectangle
 //        g.drawRect(getHealthBarPos().getXPosition(), getHealthBarPos().getYPosition(),
@@ -196,7 +196,7 @@ public class StatusBar {
         return positions.get("player_score");
     }
 
-    public GamePosition getHealthBarPos() {
+    public GamePosition getStatusBarPos() {
         return positions.get("status_bar_pos");
     }
 

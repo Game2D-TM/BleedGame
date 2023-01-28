@@ -30,6 +30,7 @@ public class Chest extends ObjectTouchable {
     public boolean checkHit(GamePosition attackHitBox) {
         boolean result = super.checkHit(attackHitBox);
         if (result) {
+            gameplay.getAudioPlayer().startThread("chest_open", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
             if (items != null && items.size() > 0) {
                 for (int i = 0; i < items.size(); i++) {
                     Item item = items.get(i);

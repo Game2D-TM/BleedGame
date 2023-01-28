@@ -5,6 +5,8 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.Stats;
+import fightinggame.entity.ability.Ability;
+import fightinggame.entity.ability.type.harm.Bleeding;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.platform.tile.trap.TrapLocation;
 import fightinggame.entity.state.CharacterState;
@@ -23,12 +25,14 @@ public abstract class TrapTile extends Tile {
     protected int trapAniLimit = 150;
     protected int hitBounce = 80;
     protected TrapLocation location;
+    protected Ability bleeding;
 
     public TrapTile(Animation trapAnimation, int hitDamage, TrapLocation location, String name, BufferedImage image, GamePosition position, Gameplay gameplay) {
         super(name, image, position, gameplay, -1, -1);
         this.hitDamage = hitDamage;
         this.trapAnimation = trapAnimation;
         this.location = location;
+        bleeding = new Bleeding(1400, 200, 2, 0, gameplay, null);
     }
 
     @Override
@@ -68,13 +72,14 @@ public abstract class TrapTile extends Tile {
                                 player.setCurrAnimation(player.getAnimations().get(CharacterState.KNOCKDOWN_RTL));
                                 player.getPosition().setXPosition(player.getPosition().getXPosition() + hitBounce);
                             }
-                            player.setReceiveDamage(hitDamage);
+                            player.addReceiveDamage(hitDamage);
                             player.setStunTime(150);
                             if (nHealth > 0) {
                                 stats.setHealth(nHealth);
                             } else {
                                 player.setIsDeath(true);
                             }
+                            bleeding.execute(player);
                         }
                         activeTrap = true;
                     }
@@ -101,7 +106,7 @@ public abstract class TrapTile extends Tile {
                                     } else {
                                         enemy.setIsDeath(true);
                                     }
-                                    enemy.setReceiveDamage(hitDamage);
+                                    enemy.addReceiveDamage(hitDamage);
                                 }
                                 activeTrap = true;
                             }
@@ -118,6 +123,9 @@ public abstract class TrapTile extends Tile {
                     trapCounter = 0;
                     activeTrap = false;
                 }
+            }
+            if(bleeding != null) {
+                bleeding.tick();
             }
         }
     }

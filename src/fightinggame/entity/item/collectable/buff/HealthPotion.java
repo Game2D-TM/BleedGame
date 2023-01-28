@@ -4,7 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.entity.Animation;
 import fightinggame.entity.Character;
 import fightinggame.entity.ability.Ability;
-import fightinggame.entity.ability.type.healing.PotionHeal;
+import fightinggame.entity.ability.type.recovery.PotionHeal;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.collectable.CollectableItem;
 
@@ -17,7 +17,7 @@ public abstract class HealthPotion extends CollectableItem {
             Gameplay gameplay, int amount, int healPoint) {
         super(id, name, animation, character, gameplay, amount);
         this.healPoint = healPoint;
-        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, null, null, gameplay, character);
+        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, gameplay, character);
         abilities.add(potionHeal);
         description = "[" + name + "] Recover " + healPoint + " HP.";
     }
@@ -27,7 +27,7 @@ public abstract class HealthPotion extends CollectableItem {
             Gameplay gameplay, int amount, int price, int healPoint) {
         super(id, name, animation, character, gameplay, amount, price);
         this.healPoint = healPoint;
-        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, null, null, gameplay, character);
+        Ability potionHeal = new PotionHeal(healPoint, 0, 1000, null, null, gameplay, character);
         abilities.add(potionHeal);
         description = "[" + name + "] Recover " + healPoint + " HP.";
     }
@@ -36,7 +36,7 @@ public abstract class HealthPotion extends CollectableItem {
     public boolean checkHit(Character character) {
         boolean result = super.checkHit(character);
         if (result) {
-            gameplay.getAudioPlayer().startThread("health_pickup", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
+            gameplay.getAudioPlayer().startThread("potion_pickup", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
             return true;
         }
         return false;
@@ -44,15 +44,15 @@ public abstract class HealthPotion extends CollectableItem {
 
     @Override
     public boolean use() {
-        if(abilities.size() <= 0) {
+        if (abilities.size() <= 0) {
             return false;
         }
         boolean result = false;
-        for(int i = 0 ; i < abilities.size() ; i++) {
+        for (int i = 0; i < abilities.size(); i++) {
             Ability ability = abilities.get(i);
-            if(ability != null) {
+            if (ability != null) {
                 boolean temp = ability.execute();
-                if(temp) {
+                if (temp) {
                     result = true;
                 }
             }
@@ -66,9 +66,9 @@ public abstract class HealthPotion extends CollectableItem {
                 if (nAmount == 0) {
                     Inventory inventory = character.getInventory();
                     inventory.removeItemFromInventory(this);
-                } else {
-                    amount = nAmount;
                 }
+                amount = nAmount;
+                gameplay.getAudioPlayer().startThread("potion_use", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                 return true;
             }
         }

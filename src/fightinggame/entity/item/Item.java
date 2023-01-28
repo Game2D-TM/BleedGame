@@ -6,6 +6,7 @@ import fightinggame.entity.GamePosition;
 import fightinggame.entity.ability.Ability;
 import fightinggame.input.handler.GameHandler;
 import fightinggame.entity.Character;
+import fightinggame.entity.SpriteSheet;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -156,6 +157,28 @@ public abstract class Item {
             }
         }
         return null;
+    }
+    
+    public SpriteSheet getSkillIcon() {
+        if(abilities.size() > 0) {
+            return abilities.get(0).getSkillIcon();
+        }
+        return null;
+    }
+    
+    public long getAbilityResetTime(int index) {
+        if(abilities.size() > 0) {
+            return abilities.get(index).getResetTime();
+        }
+        return 0;
+    }
+    
+    public boolean setSkillIcon(int index, SpriteSheet spriteSheet) {
+        if(abilities.size() > 0) {
+            abilities.get(index).setSkillIcon(spriteSheet);
+            return true;
+        }
+        return false;
     }
 
     @Override

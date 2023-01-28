@@ -22,16 +22,18 @@ public class Sword extends Equipment {
     @Override
     public boolean use() {
         if (!isEquip) {
-            if(abilities.size() <= 0) {
+            if (abilities.size() <= 0) {
                 return false;
             }
             boolean result = false;
-            for(int i = 0; i < abilities.size(); i++) {
-                IncreaseStat increaseStat = (IncreaseStat) abilities.get(i);
-                if(increaseStat != null) {
-                    increaseStat.execute();
-                    if(!result) {
-                        result = true;
+            for (int i = 0; i < abilities.size(); i++) {
+                if (abilities.get(i) instanceof IncreaseStat) {
+                    IncreaseStat increaseStat = (IncreaseStat) abilities.get(i);
+                    if (increaseStat != null) {
+                        increaseStat.execute();
+                        if (!result) {
+                            result = true;
+                        }
                     }
                 }
             }

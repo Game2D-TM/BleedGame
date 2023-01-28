@@ -204,10 +204,10 @@ public class Inventory {
                                                         if (statPlus > 0) {
                                                             switch (i) {
                                                                 case 0:
-                                                                    player.getHealthBar().setMaxHealth(player.getHealthBar().getMaxHealth() + (statPlus * 2));
+                                                                    player.getStatusBar().setMaxHealth(player.getStatusBar().getMaxHealth() + (statPlus * 2));
                                                                     break;
                                                                 case 1:
-                                                                    player.getHealthBar().setMaxEnergy(player.getHealthBar().getMaxEnergy() + (statPlus * 2));
+                                                                    player.getStatusBar().setMaxEnergy(player.getStatusBar().getMaxEnergy() + (statPlus * 2));
                                                                     break;
                                                                 case 2:
                                                                     player.getStats().addAttackDamage(statPlus);
@@ -290,9 +290,9 @@ public class Inventory {
                         g.drawString("AP: " + player.getScore(), x, y);
                         x = 145;
                         y = 420;
-                        g.drawString("HP: " + stats.getHealth() + "/" + player.getHealthBar().getMaxHealth(), x, y);
+                        g.drawString("HP: " + stats.getHealth() + "/" + player.getStatusBar().getMaxHealth(), x, y);
                         y += 40;
-                        g.drawString("MP: " + stats.getEnergy() + "/" + player.getHealthBar().getMaxEnergy(), x, y);
+                        g.drawString("MP: " + stats.getEnergy() + "/" + player.getStatusBar().getMaxEnergy(), x, y);
                         y += 40;
                         g.drawString("Attack Damage: " + stats.getAttackDamage(), x, y);
                         y += 40;
@@ -596,6 +596,14 @@ public class Inventory {
 
     public void setCurrArrowIndex(int currArrowIndex) {
         this.currArrowIndex = currArrowIndex;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setIsOpen(boolean isOpen) {
+        this.isOpen = isOpen;
     }
 
 }

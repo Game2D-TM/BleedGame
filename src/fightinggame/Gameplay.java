@@ -21,9 +21,11 @@ import fightinggame.entity.LoadingScreen;
 import fightinggame.entity.ProgressBar;
 import fightinggame.entity.Rule;
 import fightinggame.entity.TransitionScreen;
-import fightinggame.entity.ability.type.healing.GreaterHeal;
+import fightinggame.entity.ability.type.recovery.GreaterHeal;
 import fightinggame.entity.ability.type.increase.AttackIncrease;
 import fightinggame.entity.ability.type.increase.CritChanceIncrease;
+import fightinggame.entity.ability.type.recovery.ItemSlot;
+import fightinggame.entity.ability.type.skill.ActiveSkill;
 import fightinggame.entity.ability.type.throwable.Fireball;
 import fightinggame.entity.background.touchable.Chest;
 import fightinggame.entity.enemy.type.DiorEnemy;
@@ -76,7 +78,7 @@ import javax.swing.JPanel;
 public class Gameplay extends JPanel implements Runnable {
 
     public static final int GRAVITY = 7; //7
-    public static final int FIRST_SCENE = 1;
+    public static final int FIRST_SCENE = 3;
     public static int CURRENT_FPS = 0;
 
     private Background background;
@@ -535,7 +537,7 @@ public class Gameplay extends JPanel implements Runnable {
                                     PlayerIdle fireIdleLTR = new PlayerIdle(0, spriteSheetMap.get("FireIdle01"), fire_idle_tick);
                                     PlayerLightAttack fireAttack01LTR = new PlayerLightAttack(2, spriteSheetMap.get("FireAttack01"), fire_attack1_tick);
                                     PlayerHeavyAttack fireAttack02LTR = new PlayerHeavyAttack(2, spriteSheetMap.get("FireAttack02"), fire_attack2_tick);
-                                    PlayerAttackSpecial_LTR fireAttack03LTR = new PlayerAttackSpecial_LTR(2, spriteSheetMap.get("FireAttack03"), fire_attack3_tick);
+                                    PlayerAttackSpecial fireAttack03LTR = new PlayerAttackSpecial(2, spriteSheetMap.get("FireAttack03"), fire_attack3_tick);
                                     PlayerDeath fireDeathLTR = new PlayerDeath(4, spriteSheetMap.get("FireDeath01"), fireDeath_tick);
                                     PlayerAirAttack_LTR fireAirAttack01LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack01"), fireAirAttack1_tick);
                                     PlayerAirAttack_LTR fireAirAttack02LTR = new PlayerAirAttack_LTR(11, spriteSheetMap.get("FireAirAttack02"), fireAirAttack2_tick);
@@ -544,7 +546,7 @@ public class Gameplay extends JPanel implements Runnable {
                                     PlayerIdle fireIdleRTL = new PlayerIdle(0, spriteSheetMap.get("FireIdle01").convertRTL(), fire_idle_tick);
                                     PlayerLightAttack fireAttack01RTL = new PlayerLightAttack(2, spriteSheetMap.get("FireAttack01").convertRTL(), fire_attack1_tick);
                                     PlayerHeavyAttack fireAttack02RTL = new PlayerHeavyAttack(2, spriteSheetMap.get("FireAttack02").convertRTL(), fire_attack2_tick);
-                                    PlayerAttackSpecial_RTL fireAttack03RTL = new PlayerAttackSpecial_RTL(2, spriteSheetMap.get("FireAttack03").convertRTL(), fire_attack3_tick);
+                                    PlayerAttackSpecial fireAttack03RTL = new PlayerAttackSpecial(2, spriteSheetMap.get("FireAttack03").convertRTL(), fire_attack3_tick);
                                     PlayerDeath fireDeathRTL = new PlayerDeath(4, spriteSheetMap.get("FireDeath01").convertRTL(), fireDeath_tick);
                                     PlayerAirAttack_RTL fireAirAttack01RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack01").convertRTL(), fireAirAttack1_tick);
                                     PlayerAirAttack_RTL fireAirAttack02RTL = new PlayerAirAttack_RTL(11, spriteSheetMap.get("FireAirAttack02").convertRTL(), fireAirAttack2_tick);
@@ -972,7 +974,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerRun_LTR runLTR = new PlayerRun_LTR(1, playerSpriteSheetMap.get("Run01"), run_tick); // 0
         PlayerLightAttack attack01LTR = new PlayerLightAttack(2, playerSpriteSheetMap.get("Attack01"), attack1_tick); // 12
         PlayerHeavyAttack attack02LTR = new PlayerHeavyAttack(2, playerSpriteSheetMap.get("Attack02"), attack2_tick); // 12
-        PlayerAttackSpecial_LTR attack03LTR = new PlayerAttackSpecial_LTR(2, playerSpriteSheetMap.get("Attack03"), attack3_tick);
+        PlayerAttackSpecial attack03LTR = new PlayerAttackSpecial(2, playerSpriteSheetMap.get("Attack03"), attack3_tick);
         PlayerDeath deathLTR = new PlayerDeath(4, playerSpriteSheetMap.get("Death01"), death_tick);
         PlayerJump_LTR jumpLTR = new PlayerJump_LTR(5, playerSpriteSheetMap.get("Jump02"), jump_tick);
         PlayerFallDown_LTR fallDownLTR = new PlayerFallDown_LTR(6, playerSpriteSheetMap.get("FallAnim01"), falldown_tick);
@@ -1000,7 +1002,7 @@ public class Gameplay extends JPanel implements Runnable {
         PlayerRun_RTL runRTL = new PlayerRun_RTL(1, playerSpriteSheetMap.get("Run01").convertRTL(), run_tick);
         PlayerLightAttack attack01RTL = new PlayerLightAttack(2, playerSpriteSheetMap.get("Attack01").convertRTL(), attack1_tick);
         PlayerHeavyAttack attack02RTL = new PlayerHeavyAttack(2, playerSpriteSheetMap.get("Attack02").convertRTL(), attack2_tick);
-        PlayerAttackSpecial_RTL attack03RTL = new PlayerAttackSpecial_RTL(2, playerSpriteSheetMap.get("Attack03").convertRTL(), attack3_tick);
+        PlayerAttackSpecial attack03RTL = new PlayerAttackSpecial(2, playerSpriteSheetMap.get("Attack03").convertRTL(), attack3_tick);
         PlayerCrouch crouchRTL = new PlayerCrouch(8, playerSpriteSheetMap.get("Crouch01").convertRTL(), crouch_tick);
         PlayerDeath deathRTL = new PlayerDeath(4, playerSpriteSheetMap.get("Death01").convertRTL(), death_tick);
         PlayerJump_RTL jumpRTL = new PlayerJump_RTL(5, playerSpriteSheetMap.get("Jump02").convertRTL(), jump_tick);
@@ -1137,8 +1139,8 @@ public class Gameplay extends JPanel implements Runnable {
         BufferedImage redBorder = ImageManager.loadImage("assets/res/ability/border-red.png");
         SpriteSheet greaterHealSheet = new SpriteSheet();
         greaterHealSheet.getImages().add(ImageManager.loadImage("assets/res/ability/Greater-Heal.png"));
-        GamePosition firstSkillPosition = new GamePosition(character.getHealthBar().getHealthBarPos().getXPosition(),
-                character.getHealthBar().getHealthBarPos().getMaxY() + 90, 80, 80);
+        GamePosition firstSkillPosition = new GamePosition(character.getStatusBar().getStatusBarPos().getXPosition(),
+                character.getStatusBar().getStatusBarPos().getMaxY() + 90, 80, 80);
         Ability greaterHeal = new GreaterHeal(15, 1, 2500, 5, greaterHealSheet, null,
                 firstSkillPosition, redBorder, this, character);
         abilities.add(greaterHeal);
@@ -1158,6 +1160,10 @@ public class Gameplay extends JPanel implements Runnable {
                         firstSkillPosition.getYPosition(), firstSkillPosition.getWidth(), firstSkillPosition.getHeight()),
                 fireBallAnimationLTR, fireBallAnimationRTL, redBorder, this, character);
         abilities.add(fireball);
+        ActiveSkill itemSlot = new ItemSlot(redBorder, new GamePosition(fireball.getPosition().getMaxX() + 15,
+                        fireball.getPosition().getYPosition(), fireball.getPosition().getWidth()
+                    , fireball.getPosition().getHeight()), 3, 0, 0, null, this, character);
+        abilities.add(itemSlot);
     }
 
     public Runnable spawnEnemies() {

@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,12 +45,13 @@ public abstract class Character {
     protected boolean wallSlide = false;
     protected boolean grapEdge = false;
     protected Stats stats;
-    protected int receiveDamage = 0;
+    protected LinkedList<Integer> receiveDamages = new LinkedList<>();
+    protected LinkedList<Integer> healingAmounts = new LinkedList<>();
+    protected LinkedList<Integer> energyAmounts = new LinkedList<>();
     protected int receiveDamageRenderTick = 0;
-    protected int healingAmount = 0;
     protected int healingAmountRenderTick = 0;
-    protected int energyAmount = 0;
     protected int energyAmountRenderTick = 0;
+    protected int renderStatisticLimit = 80;
 
     public Character() {
         inventory = null;
@@ -329,42 +331,45 @@ public abstract class Character {
 //                getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
 //                getWidthHitBox(), getHeightHitBox() - getHeightHitBox() / 3);
         // Draw damage taken
-        if (receiveDamage > 0) {
+        if (!receiveDamages.isEmpty()) {
             g.setColor(Color.red);
             g.setFont(DataManager.getFont(22f));
-            g.drawString(receiveDamage + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
+            g.drawString(receiveDamages.getFirst() + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
                     getYHitBox() - 10 - gameplay.getCamera().getPosition().getYPosition());
             g.setFont(null);
             g.setColor(null);
-            receiveDamageRenderTick++;
-            if (receiveDamageRenderTick > 80) {
-                receiveDamage = 0;
+            if (receiveDamageRenderTick <= renderStatisticLimit) {
+                receiveDamageRenderTick++;
+            } else {
+                receiveDamages.removeFirst();
                 receiveDamageRenderTick = 0;
             }
         } else {
-            if (healingAmount > 0) {
+            if (!healingAmounts.isEmpty()) {
                 g.setColor(new Color(78, 159, 61));
                 g.setFont(DataManager.getFont(22f));
-                g.drawString("+" + healingAmount + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
+                g.drawString("+" + healingAmounts.getFirst() + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
                         getYHitBox() - 10 - gameplay.getCamera().getPosition().getYPosition());
                 g.setFont(null);
                 g.setColor(null);
-                healingAmountRenderTick++;
-                if (healingAmountRenderTick > 80) {
-                    healingAmount = 0;
+                if (healingAmountRenderTick <= renderStatisticLimit) {
+                    healingAmountRenderTick++;
+                } else {
+                    healingAmounts.removeFirst();
                     healingAmountRenderTick = 0;
                 }
             } else {
-                if (energyAmount > 0) {
+                if (!energyAmounts.isEmpty()) {
                     g.setColor(new Color(0, 129, 201));
                     g.setFont(DataManager.getFont(22f));
-                    g.drawString("+" + energyAmount + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
+                    g.drawString("+" + energyAmounts.getFirst() + "", getXHitBox() + getWidthHitBox() / 2 - gameplay.getCamera().getPosition().getXPosition(),
                             getYHitBox() - 10 - gameplay.getCamera().getPosition().getYPosition());
                     g.setFont(null);
                     g.setColor(null);
-                    energyAmountRenderTick++;
-                    if (energyAmountRenderTick > 80) {
-                        energyAmount = 0;
+                    if (energyAmountRenderTick <= renderStatisticLimit) {
+                        energyAmountRenderTick++;
+                    } else {
+                        energyAmounts.removeFirst();
                         energyAmountRenderTick = 0;
                     }
                 }
@@ -451,20 +456,11 @@ public abstract class Character {
         this.fallDown = fallDown;
     }
 
-    public int getReceiveDamage() {
-        return receiveDamage;
-    }
-
-    public void setReceiveDamage(int receiveDamage) {
-        this.receiveDamage = receiveDamage;
-    }
-
-    public int getReceiveDamageRenderTick() {
-        return receiveDamageRenderTick;
-    }
-
-    public void setReceiveDamageRenderTick(int receiveDamageRenderTick) {
-        this.receiveDamageRenderTick = receiveDamageRenderTick;
+    public void addReceiveDamage(int receiveDamage) {
+        if (receiveDamage <= 0) {
+            return;
+        }
+        receiveDamages.addLast(receiveDamage);
     }
 
     public Platform getInsidePlatform() {
@@ -543,7 +539,7 @@ public abstract class Character {
         this.avatar = avatar;
     }
 
-    public StatusBar getHealthBar() {
+    public StatusBar getStatusBar() {
         return healthBar;
     }
 
@@ -643,12 +639,18 @@ public abstract class Character {
         this.grapEdge = grapEdge;
     }
 
-    public void setHealingAmount(int healingAmount) {
-        this.healingAmount = healingAmount;
+    public void addHealingAmount(int healingAmount) {
+        if (healingAmount <= 0) {
+            return;
+        }
+        healingAmounts.addLast(healingAmount);
     }
 
-    public void setEnergyAmount(int energyAmount) {
-        this.energyAmount = energyAmount;
+    public void addEnergyAmount(int energyAmount) {
+        if (energyAmount <= 0) {
+            return;
+        }
+        energyAmounts.addLast(energyAmount);
     }
 
 }

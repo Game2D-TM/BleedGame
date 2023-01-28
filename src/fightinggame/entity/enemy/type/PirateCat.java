@@ -6,7 +6,7 @@ import fightinggame.entity.Animation;
 import fightinggame.entity.GamePosition;
 import fightinggame.entity.Player;
 import fightinggame.entity.SpriteSheet;
-import fightinggame.entity.ability.type.healing.TimeHeal;
+import fightinggame.entity.ability.type.recovery.TimeHeal;
 import fightinggame.entity.enemy.Enemy;
 import fightinggame.entity.inventory.Inventory;
 import fightinggame.entity.item.Item;
@@ -34,7 +34,6 @@ public class PirateCat extends Enemy {
         avatar = ImageManager.flipImage(avatar);
         healthBar.setAvatar(avatar);
         healthBar.setAvatarPos(new GamePosition(1500, 8, 180, 120));
-        stunTime = 100;
         stats.setBounceRange(180);
         stats.addAttackDamage(25);
         stats.setAttackRange(180);
@@ -219,8 +218,8 @@ public class PirateCat extends Enemy {
 
         EnemyIdle idleRTL = new EnemyIdle(0, idleRTLSheet);
         EnemyIdle idleLTR = new EnemyIdle(1, idleLTRSheet);
-        EnemyHit hitRTL = new EnemyHit(2, hitRTLSheet, 25);
-        EnemyHit hitLTR = new EnemyHit(3, hitLTRSheet, 25);
+        EnemyHit hitRTL = new EnemyHit(2, hitRTLSheet, 12);
+        EnemyHit hitLTR = new EnemyHit(3, hitLTRSheet, 12);
         EnemyDeath deathRTL = new EnemyDeath(4, deathRTLSheet, 136);
         EnemyDeath deathLTR = new EnemyDeath(5, deathLTRSheet, 136);
         EnemyRunForward runForward = new EnemyRunForward(6, runRTLSheet, 40);

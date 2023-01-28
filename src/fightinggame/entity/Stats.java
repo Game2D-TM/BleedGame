@@ -149,8 +149,8 @@ public class Stats {
             return false;
         }
         int nEnergy = this.energy + energy;
-        if (nEnergy > character.getHealthBar().getMaxEnergy()) {
-            this.energy = character.getHealthBar().getMaxEnergy();
+        if (nEnergy > character.getStatusBar().getMaxEnergy()) {
+            this.energy = character.getStatusBar().getMaxEnergy();
         } else {
             this.energy = nEnergy;
         }
@@ -200,10 +200,11 @@ public class Stats {
         level += 1;
         if (character != null) {
             if (character instanceof Player) {
+                character.getGameplay().getAudioPlayer().startThread("level_up", false, character.getGameplay().getOptionHandler().getOptionMenu().getSfxVolume());
                 if (level <= 10) {
-                    if (health < character.getHealthBar().getMaxHealth()) {
-                        character.setHealingAmount(Math.abs(health - character.getHealthBar().getMaxHealth()));
-                        health = character.getHealthBar().getMaxHealth();
+                    if (health < character.getStatusBar().getMaxHealth()) {
+                        character.addHealingAmount(Math.abs(health - character.getStatusBar().getMaxHealth()));
+                        health = character.getStatusBar().getMaxHealth();
                     }
                     attackDamage += 1;
                     defence += 1;
@@ -211,23 +212,23 @@ public class Stats {
             } else {
                 if (level <= 10) {
                     attackDamage += 15;
-                    if (health < character.getHealthBar().getMaxHealth()) {
-                        character.setHealingAmount(Math.abs(health - character.getHealthBar().getMaxHealth()));
-                        health = character.getHealthBar().getMaxHealth();
+                    if (health < character.getStatusBar().getMaxHealth()) {
+                        character.addHealingAmount(Math.abs(health - character.getStatusBar().getMaxHealth()));
+                        health = character.getStatusBar().getMaxHealth();
                     }
                     health += 50;
-                    character.getHealthBar().setMaxHealth(health);
+                    character.getStatusBar().setMaxHealth(health);
                     defence += 5;
                     Enemy enemy = ((Enemy) character);
                     enemy.addExperience(50);
                     enemy.addPoint(10);
                 } else {
                     attackDamage += 30;
-                    if (health < character.getHealthBar().getMaxHealth()) {
-                        health = character.getHealthBar().getMaxHealth();
+                    if (health < character.getStatusBar().getMaxHealth()) {
+                        health = character.getStatusBar().getMaxHealth();
                     }
                     health += 100;
-                    character.getHealthBar().setMaxHealth(health);
+                    character.getStatusBar().setMaxHealth(health);
                     defence += 10;
                     Enemy enemy = ((Enemy) character);
                     enemy.addExperience(100);

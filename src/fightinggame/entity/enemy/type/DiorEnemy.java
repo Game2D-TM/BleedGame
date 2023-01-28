@@ -109,19 +109,19 @@ public class DiorEnemy extends Enemy {
                 if (fireBallAbility.isCanUse()) {
                     int spawnX;
                     int xChange;
-                    int skillDistance = 1400;
+                    int skillDistance = 500;
                     GamePosition endPos;
                     if (!isLTR) {
                         xChange = 215;
-                        spawnX = position.getXPosition() - xChange;
+                        spawnX = getXHitBox() - xChange;
                         endPos = new GamePosition(
-                                position.getXPosition() - skillDistance - xChange, 0,
-                                position.getMaxX() + skillDistance, 0);
+                                getXHitBox() - skillDistance - xChange, 0,
+                                getXMaxHitBox() + skillDistance, 0);
                     } else {
                         xChange = 15;
-                        spawnX = position.getMaxX() + xChange;
+                        spawnX = getXMaxHitBox() + xChange;
                         endPos = new GamePosition(
-                                position.getXPosition() - skillDistance,
+                                getXHitBox() - skillDistance,
                                 0, position.getMaxX() + skillDistance + xChange, 0);
                     }
                     GamePosition fireBallPos = new GamePosition(spawnX,
@@ -330,7 +330,7 @@ public class DiorEnemy extends Enemy {
         sheetRTL.setImages(fireBallsRTL);
         Animation fireBallAnimationLTR = new FireBallAnimation(0, sheetLTR, 0);
         Animation fireBallAnimationRTL = new FireBallAnimation(1, sheetRTL, 0);
-        Fireball fireball = new Fireball(20, 15, 2, 2000, 0, null, null,
+        Fireball fireball = new Fireball(20, 15, 2, 2000, 0, null,
                 fireBallAnimationLTR, fireBallAnimationRTL, gameplay, enemy);
         enemy.getAbilities().add(fireball);
         dropItems(enemy.getInventory(), gameplay);

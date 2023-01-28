@@ -45,6 +45,7 @@ public abstract class Enemy extends Character {
     protected int point = 10;
     protected double experience = 0;
     protected int stunTime = 50;
+    protected int defStunTime = 50;
     protected boolean isSpeak;
     protected Dialogue dialogue;
     protected int speakCounter = 0;
@@ -159,6 +160,9 @@ public abstract class Enemy extends Character {
                     currAnimation = animations.get(CharacterState.IDLE_LTR);
                 } else {
                     currAnimation = animations.get(CharacterState.IDLE_RTL);
+                }
+                if(stunTime != defStunTime) {
+                    stunTime = defStunTime;
                 }
                 hitEffect.resetEffectCounter();
                 isAttacked = false;
@@ -446,7 +450,7 @@ public abstract class Enemy extends Character {
                     && attackHitBox.getYPosition() < getYHitBox())))) {
                 setDefAttackedCounter();
                 if (ENEMY_HEALTHBAR_SHOW != null) {
-                    ENEMY_HEALTHBAR_SHOW.getHealthBar().resetShowCounter();
+                    ENEMY_HEALTHBAR_SHOW.getStatusBar().resetShowCounter();
                 }
                 hitEffect.setActive(true);
                 ENEMY_HEALTHBAR_SHOW = this;
@@ -454,9 +458,9 @@ public abstract class Enemy extends Character {
                 gameplay.setRenderMap(false);
                 isAttacked = true;
                 if (attackDamage == -1) {
-                    receiveDamage = stats.getHit(character.getStats());
+                    addReceiveDamage(stats.getHit(character.getStats()));
                 } else {
-                    receiveDamage = stats.getHit(character.getStats(), attackDamage);
+                    addReceiveDamage(stats.getHit(character.getStats(), attackDamage));
                 }
                 if (character.isLTR()) {
                     position.setXPosition(position.getXPosition() + character.getStats().getBounceRange());
