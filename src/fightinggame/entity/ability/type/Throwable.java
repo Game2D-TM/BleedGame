@@ -41,4 +41,27 @@ public abstract class Throwable extends ActiveSkill {
         }
         return false;
     }
+    
+    public abstract int getXHitBox();
+    
+    public abstract int getYHitBox();
+    public abstract int getWidthHitBox();
+    public abstract int getHeightHitBox();
+    
+    public int getXMaxHitBox() {
+        return getXHitBox() + getWidthHitBox();
+    }
+    
+    public int getYMaxHitBox() {
+        return getYHitBox() + getHeightHitBox();
+    }
+    
+    public GamePosition getHitBoxPos() {
+        return new GamePosition(getXHitBox(), getYHitBox(), getWidthHitBox(), getHeightHitBox());
+    }
+
+    @Override
+    public abstract Throwable clone();
+    
+    
 }

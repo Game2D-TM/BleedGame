@@ -154,7 +154,7 @@ public class Gameplay extends JPanel implements Runnable {
             }
         }).start();
     }
-    
+
     public void loadScene(String sceneName, String sceneDataFilePath) {
         loadScene(null, sceneName, sceneDataFilePath);
     }
@@ -181,7 +181,7 @@ public class Gameplay extends JPanel implements Runnable {
         } else {
             Platform platform = getPlatforms().get(11).get(3);
             GamePosition defPlayerPosition = new GamePosition(platform.middleTopPlatform().getXPosition(),
-                platform.middleTopPlatform().getYPosition(), 350, 259);
+                    platform.middleTopPlatform().getYPosition(), 350, 259);
             player.setPosition(defPlayerPosition);
             player.setInsidePlatform(platform);
             this.player = player;
@@ -1165,8 +1165,8 @@ public class Gameplay extends JPanel implements Runnable {
                 fireBallAnimationLTR, fireBallAnimationRTL, redBorder, this, character);
         abilities.add(fireball);
         ActiveSkill itemSlot = new ItemSlot(redBorder, new GamePosition(fireball.getPosition().getMaxX() + 15,
-                        fireball.getPosition().getYPosition(), fireball.getPosition().getWidth()
-                    , fireball.getPosition().getHeight()), 3, 0, 0, null, this, character);
+                fireball.getPosition().getYPosition(), fireball.getPosition().getWidth(),
+                 fireball.getPosition().getHeight()), 3, 0, 0, null, this, character);
         abilities.add(itemSlot);
     }
 

@@ -103,10 +103,13 @@ public class DiorEnemy extends Enemy {
     public void tick() {
         super.tick();
 //        if (color == DiorColor.Red) {
-        if (!isAttack && !isDeath) {
+        if (!isAttack && !isDeath && !animateChange) {
             if (checkPlayerOnSight()) {
                 Fireball fireBallAbility = ((Fireball) abilities.get(0));
                 if (fireBallAbility.isCanUse()) {
+                    fireBallAbility.setCanUse(false);
+                    fireBallAbility = (Fireball) fireBallAbility.clone();
+                    abilities.add(fireBallAbility);
                     int spawnX;
                     int xChange;
                     int skillDistance = 500;

@@ -4,6 +4,7 @@ import fightinggame.Gameplay;
 import fightinggame.animation.effect.Effect;
 import fightinggame.animation.effect.enemy.EnemyHitEffect;
 import fightinggame.animation.enemy.EnemyHeavyAttack;
+import fightinggame.animation.enemy.EnemyHit;
 import fightinggame.animation.enemy.EnemyLightAttack;
 import fightinggame.animation.enemy.EnemyRunBack;
 import fightinggame.animation.enemy.EnemyRunForward;
@@ -19,20 +20,16 @@ import fightinggame.entity.StatusBar;
 import fightinggame.entity.Player;
 import fightinggame.entity.item.Item;
 import fightinggame.entity.platform.Platform;
-import fightinggame.entity.platform.tile.Tile;
-import fightinggame.entity.platform.tile.WallTile;
 import fightinggame.resource.ImageManager;
 import fightinggame.entity.SpriteSheet;
 import fightinggame.entity.inventory.Inventory;
+import fightinggame.entity.platform.tile.Tile;
+import fightinggame.entity.platform.tile.WallTile;
 import java.io.File;
 import java.util.List;
 
 public abstract class Enemy extends Character {
 
-    public static int DEF_X_VISION_POS = -500;
-    public static int DEF_Y_VISION_POS = -100;
-    public static int DEF_WIDTH_VISION_POS = 1000;
-    public static int DEF_HEIGHT_VISION_POS = 100;
     public static Enemy ENEMY_HEALTHBAR_SHOW;
     public static Enemy ENEMY_IS_SPEAK;
 
@@ -54,6 +51,7 @@ public abstract class Enemy extends Character {
     protected int attackCounter = 0;
     protected int attackLimit = 50;
     protected Effect hitEffect;
+    protected boolean canMove = true;
 
     public Enemy() {
 
@@ -156,10 +154,14 @@ public abstract class Enemy extends Character {
                 }
                 isAttackedCounter++;
             } else {
-                if (isLTR) {
-                    currAnimation = animations.get(CharacterState.IDLE_LTR);
-                } else {
-                    currAnimation = animations.get(CharacterState.IDLE_RTL);
+                if (currAnimation != null) {
+                    if (currAnimation instanceof EnemyHit) {
+                        if (isLTR) {
+                            currAnimation = animations.get(CharacterState.IDLE_LTR);
+                        } else {
+                            currAnimation = animations.get(CharacterState.IDLE_RTL);
+                        }
+                    }
                 }
                 if (stunTime != defStunTime) {
                     stunTime = defStunTime;
@@ -176,37 +178,7 @@ public abstract class Enemy extends Character {
         if (!isDeath && !inAir && !fallDown) {
             playerOnSight = checkPlayerOnSight();
         }
-        if (!isDeath && !isAttacked && !isAttack && !animateChange
-                && !inAir && !fallDown) {
-            if (walkCounter <= walkLimit) {
-                walkCounter++;
-            } else {
-                if (currAnimation == null) {
-                    if (!isLTR) {
-                        currAnimation = animations.get(CharacterState.RUNFORWARD);
-                    } else {
-                        currAnimation = animations.get(CharacterState.RUNBACK);
-                    }
-                } else {
-                    if (!isLTR) {
-                        if (currAnimation instanceof EnemyRunForward); else {
-                            currAnimation = animations.get(CharacterState.RUNFORWARD);
-                        }
-                    } else {
-                        if (currAnimation instanceof EnemyRunBack); else {
-                            currAnimation = animations.get(CharacterState.RUNBACK);
-                        }
-                    }
-                }
-                checkInvalidPlatform();
-                if (!isLTR) {
-                    position.isMoveLeft = true;
-                } else {
-                    position.isMoveRight = true;
-                }
-                walkCounter = 0;
-            }
-        }
+        move();
         if (dialogue != null) {
             if (playerOnSight && !isDeath && !gameplay.getPlayer().isSpeak()) {
                 if (isSpeak && ENEMY_IS_SPEAK == this) {
@@ -247,6 +219,47 @@ public abstract class Enemy extends Character {
                 }
             }
         }
+        attackMove();
+        if (!healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
+            gameplay.setRenderMap(true);
+        }
+    }
+
+    @Override
+    public void render(Graphics g) {
+        super.render(g);
+        if (!gameplay.isHideGUI()) {
+            if (healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
+                healthBar.render(g);
+            }
+        }
+        if (hitEffect != null) {
+            if (hitEffect.isActive()) {
+                int x;
+                if (isLTR) {
+                    x = getXMaxHitBox() - (getWidthHitBox() / 3 + 20);
+                } else {
+                    x = getXHitBox();
+                }
+                hitEffect.render(g, x - gameplay.getCamera().getPosition().getXPosition(),
+                        getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
+                        getWidthHitBox() / 3 + 20, getHeightHitBox() / 3 + 20);
+            }
+        }
+        if (isSpeak && ENEMY_IS_SPEAK == this) {
+            if (dialogue != null) {
+                dialogue.render(g);
+            }
+        }
+        // vision hitbox
+//        g.setColor(Color.red);
+//        g.drawRect(getVisionPosition().getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
+//                getVisionPosition().getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+//                getVisionPosition().getWidth(),
+//                getVisionPosition().getHeight());
+    }
+
+    protected void attackMove() {
         if (!isAttack && !isAttacked && !isDeath && !animateChange) {
             if (!gameplay.getPlayer().isAttacked()) {
                 if (gameplay.getPlayer().checkHit(attackHitBox(), false, null)) {
@@ -302,43 +315,42 @@ public abstract class Enemy extends Character {
                 }
             }
         }
-        if (!healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
-            gameplay.setRenderMap(true);
-        }
     }
 
-    @Override
-    public void render(Graphics g) {
-        super.render(g);
-        if (!gameplay.isHideGUI()) {
-            if (healthBar.isCanShow() && this.equals(ENEMY_HEALTHBAR_SHOW)) {
-                healthBar.render(g);
-            }
-        }
-        if (hitEffect != null) {
-            if (hitEffect.isActive()) {
-                int x;
-                if (isLTR) {
-                    x = getXMaxHitBox() - (getWidthHitBox() / 3 + 20);
+    protected void move() {
+        if (canMove) {
+            if (!isDeath && !isAttacked && !isAttack && !animateChange
+                    && !inAir && !fallDown) {
+                if (walkCounter <= walkLimit) {
+                    walkCounter++;
                 } else {
-                    x = getXHitBox();
+                    if (currAnimation == null) {
+                        if (!isLTR) {
+                            currAnimation = animations.get(CharacterState.RUNFORWARD);
+                        } else {
+                            currAnimation = animations.get(CharacterState.RUNBACK);
+                        }
+                    } else {
+                        if (!isLTR) {
+                            if (currAnimation instanceof EnemyRunForward); else {
+                                currAnimation = animations.get(CharacterState.RUNFORWARD);
+                            }
+                        } else {
+                            if (currAnimation instanceof EnemyRunBack); else {
+                                currAnimation = animations.get(CharacterState.RUNBACK);
+                            }
+                        }
+                    }
+                    checkInvalidPlatform();
+                    if (!isLTR) {
+                        position.isMoveLeft = true;
+                    } else {
+                        position.isMoveRight = true;
+                    }
+                    walkCounter = 0;
                 }
-                hitEffect.render(g, x - gameplay.getCamera().getPosition().getXPosition(),
-                        getYHitBox() + getHeightHitBox() / 3 - gameplay.getCamera().getPosition().getYPosition(),
-                        getWidthHitBox() / 3 + 20, getHeightHitBox() / 3 + 20);
             }
         }
-        if (isSpeak && ENEMY_IS_SPEAK == this) {
-            if (dialogue != null) {
-                dialogue.render(g);
-            }
-        }
-        // vision hitbox
-//        g.setColor(Color.red);
-//        g.drawRect(position.getXPosition() + DEF_X_VISION_POS - gameplay.getCamera().getPosition().getXPosition(),
-//                position.getYPosition() + DEF_Y_VISION_POS - gameplay.getCamera().getPosition().getYPosition(),
-//                position.getWidth() + DEF_WIDTH_VISION_POS,
-//                position.getHeight() + DEF_HEIGHT_VISION_POS);
     }
 
     public abstract Enemy init(Platform firstPlatform, Gameplay gameplay);
@@ -350,11 +362,15 @@ public abstract class Enemy extends Character {
     }
 
     public boolean checkPlayerOnSight() {
+        return checkPlayerInRange(getVisionPosition());
+    }
+
+    public boolean checkPlayerInRange(GamePosition rangePosition) {
         Player player = gameplay.getPlayer();
         if (player == null || player.isDeath()) {
             return false;
         }
-        GamePosition visionPos = getVisionPosition();
+        GamePosition visionPos = rangePosition;
         GamePosition playerPos = gameplay.getPlayer().getHitBoxPosition();
         if (visionPos == null || playerPos == null) {
             return false;
@@ -376,9 +392,10 @@ public abstract class Enemy extends Character {
     }
 
     public GamePosition getVisionPosition() {
-        return new GamePosition(position.getXPosition() + DEF_X_VISION_POS,
-                position.getYPosition() + DEF_Y_VISION_POS,
-                position.getWidth() + DEF_WIDTH_VISION_POS, position.getHeight() + DEF_HEIGHT_VISION_POS);
+        int visionX = -500, visionY = -100, visionWidth = 1000, visionHeight = 100;
+        return new GamePosition(getXHitBox() + visionX,
+                getYHitBox() + visionY,
+                getWidthHitBox() + visionWidth, getHeightHitBox() + visionHeight);
     }
 
     public boolean checkInvalidPlatform() {

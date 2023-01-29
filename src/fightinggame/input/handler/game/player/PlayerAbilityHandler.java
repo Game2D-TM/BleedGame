@@ -129,13 +129,19 @@ public class PlayerAbilityHandler extends GameHandler implements KeyListener {
                             GamePosition spawnPosition
                                     = new GamePosition(spawnX,
                                             player.getPosition().getYPosition() + 70, 200, 100);
-                            boolean result = ((Fireball) player.getAbility(1)).execute(spawnPosition, endPos);
-                            if (result) {
-                                player.setIsSpellCast(true);
-                                if (player.isLTR()) {
-                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCAST_LTR));
-                                } else {
-                                    player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCASTLOOP_RTL));
+                            Fireball fireball = ((Fireball) player.getAbility(1));
+                            if (fireball.isCanUse()) {
+                                player.getAbility(1).setCanUse(false);
+                                fireball = (Fireball) fireball.clone();
+                                player.getAbilities().add(fireball);
+                                boolean result = fireball.execute(spawnPosition, endPos);
+                                if (result) {
+                                    player.setIsSpellCast(true);
+                                    if (player.isLTR()) {
+                                        player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCAST_LTR));
+                                    } else {
+                                        player.setCurrAnimation(player.getAnimations().get(CharacterState.SPELLCASTLOOP_RTL));
+                                    }
                                 }
                             }
 //                try {

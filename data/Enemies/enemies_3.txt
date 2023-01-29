@@ -57,3 +57,10 @@ dior:14,45
 dior:32,28
 military_fox:32,30
 military_fox:32,28
+skeleton_archer:13,17
+skeleton_archer:7,24
+skeleton_archer:20,44
+skeleton_archer:25,24
+skeleton_archer:7,30
+skeleton_archer:15,80
+skeleton_archer:15,81

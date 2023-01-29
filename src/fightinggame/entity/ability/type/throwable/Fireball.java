@@ -51,12 +51,14 @@ public class Fireball extends Throwable {
                     endPosition = null;
                     isThrow = false;
                     isHit = false;
+                    character.getAbilities().remove(this);
                 }
             } else {
                 spawnPosition = null;
                 endPosition = null;
                 isThrow = false;
                 isHit = false;
+                character.getAbilities().remove(this);
             }
         } else {
             if (spawnPosition != null && isThrow) {
@@ -72,7 +74,7 @@ public class Fireball extends Throwable {
                             if (!gameplay.getEnemies().isEmpty()) {
                                 for (int i = 0; i < gameplay.getEnemies().size(); i++) {
                                     Enemy enemy = gameplay.getEnemies().get(i);
-                                    if (enemy.checkHit(spawnPosition, true, character, attackDamage)) {
+                                    if (enemy.checkHit(getHitBoxPos(), true, character, attackDamage)) {
                                         gameplay.getAudioPlayer().startThread("fireball_hit", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                                         exploreEffect.setActive(true);
                                         enemy.getHitEffect().resetEffectCounter();
@@ -82,7 +84,7 @@ public class Fireball extends Throwable {
                                 }
                             }
                         } else {
-                            if (gameplay.getPlayer().checkHit(spawnPosition, true, character, attackDamage)) {
+                            if (gameplay.getPlayer().checkHit(getHitBoxPos(), true, character, attackDamage)) {
                                 gameplay.getAudioPlayer().startThread("fireball_hit", false, gameplay.getOptionHandler().getOptionMenu().getSfxVolume());
                                 exploreEffect.setActive(true);
                                 gameplay.getPlayer().getHitEffect().resetEffectCounter();
@@ -96,12 +98,14 @@ public class Fireball extends Throwable {
                                     spawnPosition = null;
                                     endPosition = null;
                                     isThrow = false;
+                                    character.getAbilities().remove(this);
                                 }
                             } else {
                                 if (spawnPosition.getMaxX() <= endPosition.getXPosition()) {
                                     spawnPosition = null;
                                     endPosition = null;
                                     isThrow = false;
+                                    character.getAbilities().remove(this);
                                 }
                             }
                         }
@@ -117,40 +121,35 @@ public class Fireball extends Throwable {
         super.render(g);
         if (currAnimation != null) {
             if (spawnPosition != null && isThrow) {
-//                if (gameplay.getCamera().checkPositionRelateToCamera(spawnPosition)) {
-                    if (isHit) {
-                        int nX = spawnPosition.getXPosition();
-                        if(isLTR) {
-                            nX += 50;
-                        } else {
-                            nX -= 50;
-                        }
-                        exploreEffect.render(g, nX - gameplay.getCamera().getPosition().getXPosition(),
-                                spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
-                                spawnPosition.getWidth(), spawnPosition.getHeight());
-                        // effect hitbox
+                if (isHit) {
+                    int nX = spawnPosition.getXPosition();
+                    if (isLTR) {
+                        nX += 50;
+                    } else {
+                        nX -= 50;
+                    }
+                    exploreEffect.render(g, nX - gameplay.getCamera().getPosition().getXPosition(),
+                            spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
+                            spawnPosition.getWidth(), spawnPosition.getHeight());
+                    // effect hitbox
 //                        g.setColor(Color.red);
 //                        g.drawRect(spawnPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
 //                                spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
 //                                spawnPosition.getWidth(), spawnPosition.getHeight());
-                    } else {
+                } else {
+                    if (gameplay.getCamera().checkPositionRelateToCamera(spawnPosition)) {
                         currAnimation.render(g, spawnPosition.getXPosition() - gameplay.getCamera().getPosition().getXPosition(),
                                 spawnPosition.getYPosition() - gameplay.getCamera().getPosition().getYPosition(),
                                 spawnPosition.getWidth(), spawnPosition.getHeight());
+                        //hitbox
+//                        g.setColor(Color.red);
+//                        g.drawRect(getXHitBox() - gameplay.getCamera().getPosition().getXPosition(),
+//                                getYHitBox() - gameplay.getCamera().getPosition().getYPosition(),
+//                                getWidthHitBox(), getHeightHitBox());
                     }
-//                }
+                }
             }
         }
-        // attack hitbox
-//        if (spawnPosition != null) {
-//            int attackX = spawnPosition.getXPosition();
-//            if(character.isLTR()) attackX = spawnPosition.getMaxX();
-//            else attackX = spawnPosition.getXPosition() - 20;
-//            int attackY = spawnPosition.getYPosition();
-//            int attackHeight = spawnPosition.getHeight();
-//            g.setColor(Color.red);
-//            g.fillRect(attackX, attackY, 20, attackHeight);
-//        }
     }
 
     @Override
@@ -193,6 +192,47 @@ public class Fireball extends Throwable {
     @Override
     public boolean execute(List<Character> characters) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getXHitBox() {
+        if (spawnPosition != null) {
+            if (isLTR) {
+                return spawnPosition.getXPosition() + getWidthHitBox();
+            } else {
+                return spawnPosition.getXPosition();
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public int getYHitBox() {
+        if (spawnPosition != null) {
+            return spawnPosition.getYPosition();
+        }
+        return 0;
+    }
+
+    @Override
+    public int getWidthHitBox() {
+        if (spawnPosition != null) {
+            return spawnPosition.getWidth() / 2;
+        }
+        return 0;
+    }
+
+    @Override
+    public int getHeightHitBox() {
+        if (spawnPosition != null) {
+            return spawnPosition.getHeight();
+        }
+        return 0;
+    }
+
+    @Override
+    public Throwable clone() {
+        return new Fireball(attackDamage, speed, id, resetTime, energyLost, skillIcon, position, animationLTR, animationRTL, border, gameplay, character);
     }
 
 }
