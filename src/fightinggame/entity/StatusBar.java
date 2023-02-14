@@ -39,8 +39,8 @@ public class StatusBar {
         this.maxEnergy = maxEnergy;
         positions.put("status_bar_pos", statusBarPos);
         positions.put("avatar_pos", avatarPos);
-        positions.put("character_name", new GamePosition(statusBarPos.getXPosition(),
-                statusBarPos.getMaxY() + 25, 0, 0));
+        positions.put("character_name", new GamePosition(statusBarPos.getXPosition() + (statusBarPos.getWidth() / 2 - 80),
+                statusBarPos.getYPosition(), 0, 0));
         positions.put("character_health", new GamePosition(statusBarPos.getXPosition() + statusBarPos.getWidth() / 2 - 50,
                 statusBarPos.getYPosition() + statusBarPos.getHeight() / 2 + 8, 0, 0));
         customFont = DataManager.getFont(20);
@@ -55,8 +55,8 @@ public class StatusBar {
         this.character = character;
         positions.put("status_bar_pos", statusBarPos);
         positions.put("avatar_pos", avatarPos);
-        positions.put("character_name", new GamePosition(statusBarPos.getXPosition(),
-                statusBarPos.getMaxY() + 25, 0, 0));
+        positions.put("character_name", new GamePosition(statusBarPos.getXPosition() + (statusBarPos.getWidth() / 2 - 80),
+                statusBarPos.getYPosition(), 0, 0));
         positions.put("character_health", new GamePosition(statusBarPos.getXPosition() + statusBarPos.getWidth() / 2 - 50,
                 statusBarPos.getYPosition() + statusBarPos.getHeight() / 2 + 8, 0, 0));
         customFont = DataManager.getFont(20);
@@ -105,10 +105,10 @@ public class StatusBar {
         }
         if (energyStateImage != null) {
             g.drawString(character.getStats().getEnergy() + "/" + maxEnergy,
-                    getHealthPointPos().getXPosition(), getHealthPointPos().getYPosition() + 80);
+                    getHealthPointPos().getXPosition(), getHealthPointPos().getYPosition() + 75);
         }
         g.setColor(new Color(149, 1, 1));
-        g.drawString(character.getName(), getNamePos().getXPosition() + 180, getNamePos().getYPosition() - 100);
+        g.drawString(character.getName(), getNamePos().getXPosition(), getNamePos().getYPosition());
         g.drawString("Level: " + character.getStats().getLevel(), getAvatarPos().getXPosition() + 20, getAvatarPos().getYPosition() + 135);
         if (character instanceof Player) {
             Player player = (Player) character;

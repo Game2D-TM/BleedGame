@@ -65,8 +65,9 @@ public class Player extends Character {
         healthBarSheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/status-bar/HealthBar"));
         energyBarSheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/status-bar/EnergyBar"));
         healthBar = new StatusBar(avatar, healthBarSheet, energyBarSheet, this,
-                new GamePosition(120, 20, 550, 80), new GamePosition(15, 8, 100, 110),
-                maxHealth, 100);
+                new GamePosition(120, 20, gameplay.getGame().getWidth() / 3 + 40, gameplay.getGame().getHeight() / 3 - 180)
+                , new GamePosition(15, 8, 100, 110),
+                maxHealth, 100);//120, 20, 550, 80
     }
 
     @Override

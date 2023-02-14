@@ -61,8 +61,6 @@ public abstract class Enemy extends Character {
             Gameplay gameplay, int rangeRandomSpeed) {
         super(id, name, health, position, animations, gameplay, false, null);
         healthBarInit(health);
-        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(gameplay.getGame().getWidth() - 160, 10f, 100, 100));
-        healthBar.setAppearTimeLimit(1000);
         Random rand = new Random();
         stats.setHealth(health);
         stats.setSpeed(rand.nextInt(rangeRandomSpeed) + 30);
@@ -93,9 +91,15 @@ public abstract class Enemy extends Character {
 //        healthBarSheet.setImages(ImageManager.loadImagesWithCutFromFolderToList("assets/res/healthbar",
 //                1, 2, 126, 12));
         healthBarSheet.setImages(ImageManager.loadImagesFromFoldersToList("assets/res/status-bar/HealthBar"));
+        int healthBarX = gameplay.getGame().getWidth() - (gameplay.getGame().getWidth() / 3 + 40 + gameplay.getGame().getHeight() / 3 - 180) - 40;
+        int healthBarWidth = gameplay.getGame().getWidth() / 3 + 40;
         healthBar = new StatusBar(avatar, healthBarSheet, this,
-                new GamePosition(gameplay.getGame().getWidth() - (550 + 180), 20, 550, 80), new GamePosition(gameplay.getGame().getWidth() - 160, 8, 180, 120),
+                new GamePosition(healthBarX, 20, 
+                        healthBarWidth, gameplay.getHeight() / 3 - 180), 
+                new GamePosition(healthBarX + healthBarWidth + 10, 8, 160, 120),
                 maxHealth, 100);
+        healthBar.setOvalImage(new java.awt.geom.Ellipse2D.Float(healthBarX + healthBarWidth + 5, 10f, 100, 100));
+        healthBar.setAppearTimeLimit(1000);
         //975, 20, 550, 80
         //1540, 8, 180, 120
     }
