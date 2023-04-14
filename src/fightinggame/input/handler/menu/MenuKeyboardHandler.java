@@ -11,7 +11,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 public class MenuKeyboardHandler implements KeyListener {
 
     private final Game game;
@@ -90,25 +89,44 @@ public class MenuKeyboardHandler implements KeyListener {
 //            g.drawRect(width / 3 + 50, firstY + height / 8 + 40, width / 4, height / 8);
 //            g.drawRect(width / 3 + 50, firstY + (height / 8 + 40) * 2, width / 4, height / 8);
             g.setFont(customFont);
-            g.drawString(buttons[0], width / 3 + 190, firstY + 80);
-            g.drawString(buttons[1], width / 3 + 120, firstY + height / 8 + 40 + 80);
-            g.drawString(buttons[2], width / 3 + 200, firstY + (height / 8 + 40) * 2 + 80);
+         
+            centerString(buttons[0], 0, width/2, 4*height/10, g);
+            centerString(buttons[1], 0, width/(2), height/(2), g);
+            centerString(buttons[2], 0, width/(2), 6*height/(10), g);
+            
+             //  g.drawString(buttons[0],width/2 ,height/2);
+//            g.drawString(buttons[1], width / 3 + 120, firstY + height / 8 + 40 + 80);
+//            g.drawString(buttons[2], width / 3 + 200, firstY + (height / 8 + 40) * 2 + 80);
             g.setColor(Color.WHITE);
             switch (currIndex) {
                 case 1:
-                    x = width / 3 + 120;
-                    y = firstY + height / 8 + 40 + 80;
+                    x = width /2;
+                    y = height/2 ;
                     break;
                 case 2:
-                    x = width / 3 + 200;
-                    y = firstY + (height / 8 + 40) * 2 + 80;
+                    x = width / 2;
+                    y = height/(2)+ height/10;
                     break;
                 default:
-                    x = width / 3 + 190;
-                    y = firstY + 80;
+                    x = width / 2;
+                    y = height/(2)- height/10;
                     break;
             }
-            g.drawString(buttons[currIndex], x, y);
+            centerString(buttons[currIndex], 0, x, y, g);
         }
+
     }
+    
+
+    /**
+     * center your String 
+     *
+     */
+    private void centerString(String s, int width, int XPos, int YPos, Graphics g2d){
+        int stringLen = (int)
+            g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
+        int start = width/2 - stringLen/2;
+        g2d.drawString(s, start + XPos, YPos);
+ }
+    
 }
