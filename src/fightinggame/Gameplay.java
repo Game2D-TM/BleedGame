@@ -1134,7 +1134,7 @@ public class Gameplay extends JPanel implements Runnable {
 
         camera.setPlayer(player);
         // level up to 8
-//        player.getStats().addExperience(50000);
+        player.getStats().addExperience(50000);
     }
 
     public void abilitiesCharacterInit(List<Ability> abilities, Character character) {

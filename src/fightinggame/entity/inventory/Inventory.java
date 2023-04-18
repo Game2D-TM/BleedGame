@@ -306,48 +306,48 @@ public class Inventory {
                         g.drawString("Exp: " + (int) stats.getLevelExperience() + "/" + (int) stats.getNextLevelExperience(), x, y);
 
                         if (haveLevelUpPoint) {
-                            y = 395;
+                            y = DISTANCE_Y_TO_CAMERA + 185;
                             for (int i = 0; i < numberOfStats.length; i++) {
-                                x = gameplay.getWidth() / 3 - 20;
+                                x = DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 - 110;
                                 g.drawImage(statsGuis.get("arrow_left"), x, y, 30, 30, null);
                                 g.drawString(numberOfStats[i] + "", x + 35, y + 27);
                                 x += 55;
                                 g.drawImage(statsGuis.get("arrow_right"), x, y, 30, 30, null);
                                 y += 40;
                             }
-                            y = 210;
-                            g.drawString("Level Up Point: " + stats.getLevelUpPoint(), 145, (y + (gameplay.getHeight() / 2 + 100)) - 55);
-                            g.drawImage(statsGuis.get("plus"), gameplay.getWidth() / 3 + 20, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
-                            g.drawImage(statsGuis.get("cancel"), gameplay.getWidth() / 3 - 30, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
+                            y = DISTANCE_Y_TO_CAMERA;
+                            g.drawString("Level Up Point: " + stats.getLevelUpPoint(), DISTANCE_X_TO_CAMERA + 45, (y + (gameplay.getHeight() / 2 + 100)) - 55);
+                            g.drawImage(statsGuis.get("plus"), DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 - 60, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
+                            g.drawImage(statsGuis.get("cancel"), DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 - 110, (y + (gameplay.getHeight() / 2 + 100)) - 80, 30, 30, null);
                             switch (currArrowIndex) {
                                 case 0:
                                     if (currStatIndex == numberOfStats.length) {
                                         imageSelection = statsGuis.get("cancel_red");
-                                        x = gameplay.getWidth() / 3 - 30;
+                                        x = DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 - 110;
                                     } else {
                                         imageSelection = statsGuis.get("arrow_red_left");
-                                        x = gameplay.getWidth() / 3 - 20;
+                                        x = DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 - 110;
                                     }
                                     break;
                                 case 1:
 
                                     if (currStatIndex == numberOfStats.length) {
                                         imageSelection = statsGuis.get("plus_red");
-                                        x = gameplay.getWidth() / 3 + 20;
+                                        x = DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 - 60;
                                     } else {
                                         imageSelection = statsGuis.get("arrow_red_right");
-                                        x = gameplay.getWidth() / 3 + 35;
+                                        x = DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 - 55;
                                     }
                                     break;
                             }
                             if (currStatIndex > 0) {
                                 if (currStatIndex == numberOfStats.length) {
-                                    y = (210 + (gameplay.getHeight() / 2 + 100)) - 80;
+                                    y = (DISTANCE_Y_TO_CAMERA + (gameplay.getHeight() / 2 + 100)) - 80;
                                 } else {
-                                    y = 395 + currStatIndex * 40;
+                                    y = DISTANCE_Y_TO_CAMERA + 185 + currStatIndex * 40;
                                 }
                             } else {
-                                y = 395;
+                                y = DISTANCE_Y_TO_CAMERA + 185;
                             }
                             g.drawImage(imageSelection, x, y, 30, 30, null);
                         }
