@@ -27,8 +27,8 @@ public class Inventory {
     public static int ITEM_SLOT_WIDTH = 90;
     public static int ITEM_SLOT_HEIGHT = 90;
     public static int ITEM_SLOT_ANIMATION_TICK = -1;
-    public static int DISTANCE_X_TO_CAMERA = 670;
-    public static int DISTANCE_Y_TO_CAMERA = 250;
+    public static int DISTANCE_X_TO_CAMERA = 350;
+    public static int DISTANCE_Y_TO_CAMERA = 270;
     private int row = 6;
     private int column = 7;
     private Character character;
@@ -128,8 +128,8 @@ public class Inventory {
         if (character != null) {
             if (character instanceof Player) {
                 if (isOpen) {
-                    position.setXPosition(gameplay.getCamera().getPosition().getXPosition() + DISTANCE_X_TO_CAMERA);
-                    position.setYPosition(gameplay.getCamera().getPosition().getYPosition() + DISTANCE_Y_TO_CAMERA);
+                    position.setXPosition(gameplay.getCamera().getPosition().getXPosition() + DISTANCE_X_TO_CAMERA + gameplay.getWidth() / 3 + 10);
+                    position.setYPosition(gameplay.getCamera().getPosition().getYPosition() + DISTANCE_Y_TO_CAMERA + 5);
                     slotChangePosition();
                     Player player = (Player) character;
                     if (player != null) {
@@ -271,7 +271,7 @@ public class Inventory {
                     Stats stats = character.getStats();
                     Player player = gameplay.getPlayer();
                     if (statsGuis != null && statsGuis.size() > 0) {
-                        int x = 100, y = 210;
+                        int x = DISTANCE_X_TO_CAMERA, y = DISTANCE_Y_TO_CAMERA;
                         g.drawImage(statsGuis.get("background_stats"), x, y,
                                 gameplay.getWidth() / 3, gameplay.getHeight() / 2 + 100, null);
                         x += 30;
@@ -282,15 +282,15 @@ public class Inventory {
                         g.drawImage(player.getAvatar(), x, y, 150, 100, gameplay);
                         g.setFont(DataManager.getFont(30f));
                         g.setColor(new Color(133, 0, 0));
-                        x = 380;
-                        y = 280;
+                        x = DISTANCE_X_TO_CAMERA + 280;
+                        y = DISTANCE_Y_TO_CAMERA + 70;
                         g.drawString(player.getName(), x, y);
                         y += 40;
                         g.drawString("Level: " + stats.getLevel(), x, y);
                         y += 40;
                         g.drawString("AP: " + player.getScore(), x, y);
-                        x = 145;
-                        y = 420;
+                        x = DISTANCE_X_TO_CAMERA + 45;
+                        y = DISTANCE_Y_TO_CAMERA + 210;
                         g.drawString("HP: " + stats.getHealth() + "/" + player.getStatusBar().getMaxHealth(), x, y);
                         y += 40;
                         g.drawString("MP: " + stats.getEnergy() + "/" + player.getStatusBar().getMaxEnergy(), x, y);
