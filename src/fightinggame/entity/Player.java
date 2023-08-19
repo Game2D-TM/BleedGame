@@ -52,8 +52,6 @@ public class Player extends Character {
                 0, 0, 18, 18,
                 0, 0, 18, 18, 4);
         hitEffect = new PlayerHitEffect(0, exploreFireBallSheet, stunTime);
-        
-        score = 100000;
     }
 
     @Override
