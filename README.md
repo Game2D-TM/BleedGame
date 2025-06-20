@@ -68,4 +68,9 @@ git clone https://github.com/Game2D-TM/BleedGame.git
 cd BleedGame
 Open project in your IDE
 Run Game.java
+```
+
+## 🧑‍💻 Author
+Made by Ton Minh – a self-driven developer passionate about scalable game and software systems.
+Check out more at: https://ikminhton.github.io
 
